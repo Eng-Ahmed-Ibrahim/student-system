@@ -38,6 +38,7 @@
 
                         <!-- جدول الطلاب -->
                         <div class="table-responsive">
+<button class="btn btn-primary mb-3" onclick="downloadAllBarcodes()">📥 تحميل كل الباركودات</button>
 
                             <table class="table table-bordered">
                                 <thead>
@@ -289,6 +290,22 @@
 
 @endsection
 @section('js')
+<script>
+    function downloadAllBarcodes() {
+        // حدد كل روابط التحميل اللي تحتوي على base64 للباركود
+        const links = document.querySelectorAll('a[href^="data:image/png;base64,"]');
+
+        links.forEach((link, index) => {
+            const downloadLink = document.createElement('a');
+            downloadLink.href = link.href;
+            downloadLink.download = link.download || `barcode-${index + 1}.png`;
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+        });
+    }
+</script>
+
 
 
     <script>
