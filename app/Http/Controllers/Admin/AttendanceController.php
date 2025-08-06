@@ -35,8 +35,8 @@ class AttendanceController extends Controller
         $absentCount = 0;
 
         foreach ($students as $student) {
-            $attendance = $student->attendance->first();
-
+            $attendance = $student->attendance;
+            
             /** @phpstan-ignore-next-line */
             if ($attendance && $attendance->status == 1) {
                 $presentCount++;

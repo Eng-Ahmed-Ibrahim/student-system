@@ -200,9 +200,7 @@
                             `;
                             }
                         });
-                        // تحديث العدادات
-                        const presentCountSpan = document.querySelector('.total-present');
-                        const absentCountSpan = document.querySelector('.total-absent');
+     
 
 
 
