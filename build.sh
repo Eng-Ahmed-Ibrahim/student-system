@@ -2,9 +2,10 @@
 
 echo "🚀 Running deploy script"
 
-# تأكد إنك داخل Git repo
 if [ -d .git ]; then
-  echo "[1/7] 📥 Pulling latest code from GitHub (بدون مسح ملفات)"
+  echo "[1/7] 📥 Resetting and pulling latest code"
+  git reset --hard
+  git clean -fd
   git pull origin main --ff-only
 else
   echo "⚠️ Not a git repository, skipping git pull"
@@ -14,7 +15,7 @@ echo "[2/7] 🗃️ Creating database if one isn't found"
 touch database/database.sqlite
 
 echo "[3/7] 📦 Installing packages using composer"
-php composer.phar install --no-interaction --prefer-dist --optimize-autoloader
+composer install --no-interaction --prefer-dist --optimize-autoloader
 composer dump-autoload
 
 echo "[4/7] ⚙️ Publishing API Platform assets"
@@ -35,7 +36,5 @@ php artisan migrate --force
 
 echo "[7/7] 🌱 Seeding database"
 php artisan db:seed
-
-
 
 echo "✅ The app has been deployed successfully!"
