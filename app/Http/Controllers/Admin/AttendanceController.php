@@ -31,16 +31,9 @@ class AttendanceController extends Controller
             ->where("group_id", $request->group)
             ->get();
 
-        // عدد الحاضرين = اللي عندهم attendance في اليوم ده وحالتها = 1
-        $presentCount = $students->filter(function ($student) {
-            return optional($student->attendance->first())->status === 1;
-        })->count();
+        $presentCount = $students->filter(fn($student) => optional($student->attendance->first())->status == 1)->count();
+        $absentCount = $students->count() - $presentCount;
 
-        // عدد الغياب = اللي حالتهم 0 أو اللي مفيش ليهم record أصلاً
-        $absentCount = $students->filter(function ($student) {
-            $attendance = $student->attendance->first();
-            return is_null($attendance) || $attendance->status === 0;
-        })->count();
 
         return view('admin.attendance.index', compact('students', 'today', 'group', 'presentCount', 'absentCount'));
     }
