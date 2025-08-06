@@ -2,16 +2,17 @@
 
 echo "🚀 Running deploy script"
 
-# Reset local changes to avoid git pull conflicts
-echo "[0] 🔄 Resetting local changes"
-# Reset only if inside a Git repo
+
 if [ -d .git ]; then
   echo "[0] 🔄 Resetting local changes"
   git reset --hard HEAD
-  git clean -fd
+
+  # استبعاد مجلدات مثل storage/uploads وملف .env
+  git clean -fd -e storage/ -e .env -e public/uploads
 else
   echo "⚠️ Not a git repository, skipping reset and clean"
 fi
+
 
 echo "[1/8] 📥 Pulling latest code from GitHub"
 git pull origin main
