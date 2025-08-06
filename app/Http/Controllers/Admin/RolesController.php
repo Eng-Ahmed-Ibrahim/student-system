@@ -59,7 +59,7 @@ class RolesController extends Controller
     }
     public function update(Request $request){
         $role = Role::findById($request->id);
-        if (!$role) {
+        if ($role == null) {
             return redirect()->back()->with('error', __('messages.Not_found'));
         }
         $role->update([

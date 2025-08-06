@@ -7,9 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Attendance extends Model
 {
-       protected $guarded=[];
-        public function student()
+    protected $guarded = [];
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function student()
     {
-        return $this->belongsTo(Student::class,'student_id');
+        return $this->belongsTo(Student::class, 'student_id');
     }
 }

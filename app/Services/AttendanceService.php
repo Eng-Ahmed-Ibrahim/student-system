@@ -29,6 +29,7 @@ class AttendanceService
         $groups = Group::whereJsonContains('days', $today)->with('students')->get();
 
         foreach ($groups as $group) {
+            /** @var \App\Models\Student $student */
             foreach ($group->students as $student) {
                 // نستخدم firstOrCreate لتفادي التكرار
                 Attendance::firstOrCreate([

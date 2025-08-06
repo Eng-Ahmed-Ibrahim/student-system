@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Group extends Model
 {
     protected $guarded = [];
+        /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
         public function students()
     {
         return $this->hasMany(Student::class,'group_id');
