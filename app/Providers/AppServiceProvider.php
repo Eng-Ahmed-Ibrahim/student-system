@@ -20,23 +20,31 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-    public function boot(): void
-    {
+public function boot(): void
+{
+    if (app()->runningInConsole()) {
+        return; // لا تنفذ أثناء الأوامر مثل package:discover
+    }
+
+    try {
         $groupCounts = Group::whereIn('grade_level', [1, 2, 3])
             ->selectRaw('grade_level, COUNT(*) as count')
             ->groupBy('grade_level')
             ->pluck('count', 'grade_level');
 
-        // عدد الطلاب حسب grade_level
         $studentCounts = Student::whereIn('grade_level', [1, 2, 3])
             ->selectRaw('grade_level, COUNT(*) as count')
             ->groupBy('grade_level')
             ->pluck('count', 'grade_level');
 
-        // مشاركة القيم مع جميع الـ views
         View::share([
             'groupCounts' => $groupCounts,
             'studentCounts' => $studentCounts,
         ]);
+    } catch (\Exception $e) {
+        // مثلاً: سجل الخطأ أو تجاهله أثناء التشغيل في بيئة لا تتوفر بها قاعدة البيانات
+        // logger()->error($e->getMessage());
     }
+}
+
 }
