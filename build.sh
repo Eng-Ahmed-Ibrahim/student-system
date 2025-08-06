@@ -2,28 +2,19 @@
 
 echo "🚀 Running deploy script"
 
-
+# تأكد إنك داخل Git repo
 if [ -d .git ]; then
-  echo "[0] 🔄 Resetting local changes"
-  git reset --hard HEAD
-
-  # استبعاد مجلدات مثل storage/uploads وملف .env
-  git clean -fd -e storage/ -e .env -e public/uploads
+  echo "[1/8] 📥 Pulling latest code from GitHub (بدون مسح ملفات)"
+  git pull origin main --ff-only
 else
-  echo "⚠️ Not a git repository, skipping reset and clean"
+  echo "⚠️ Not a git repository, skipping git pull"
 fi
-
-
-echo "[1/8] 📥 Pulling latest code from GitHub"
-git pull origin main
 
 echo "[2/8] 🗃️ Creating database if one isn't found"
 touch database/database.sqlite
 
 echo "[3/8] 📦 Installing packages using composer"
 php composer.phar install --no-interaction --prefer-dist --optimize-autoloader
-echo "[3.1] 🔁 Dumping Composer Autoload (for helpers/functions)"
-php composer.phar dump-autoload
 composer dump-autoload
 
 echo "[4/8] ⚙️ Publishing API Platform assets"
@@ -39,14 +30,12 @@ php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
-
 echo "[6/8] 🛠️ Migrating database"
 php artisan migrate --force
 
-echo "[7/8] Seed Data "
+echo "[7/8] 🌱 Seeding database"
 php artisan db:seed
 
-echo "[8/8] re cache data"
-php artisan custom:refresh-cache
 
-echo "✅ The app has been built successfully !"
+
+echo "✅ The app has been deployed successfully!"
