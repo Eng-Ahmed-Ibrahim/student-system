@@ -8,9 +8,10 @@ use App\Http\Controllers\Controller;
 
 class GroupController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $groups = Group::all();
+        $groups = Group::where("grade_level",$request->grade_level)->paginate(15)->appends(request()->query());
+
         return view('admin.groups.index', compact('groups'));
     }
 

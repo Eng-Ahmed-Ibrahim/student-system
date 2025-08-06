@@ -11,9 +11,9 @@ use App\Http\Controllers\Controller;
 
 class StudentController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $students = Student::with('group')->get();
+        $students = Student::where("grade_level",$request->grade_level)->with('group')->paginate(15)->appends(request()->query());
         $groups = Group::all();
         return view('admin.students.index', compact('students', 'groups'));
     }
@@ -76,10 +76,6 @@ class StudentController extends Controller
             'parent_phone' => 'required|string',
             'national_id' => 'required|string',
             'address' => 'required|string',
-            'blocked' => 'required|boolean',
-            'block_reason' => 'nullable|string',
-            'discount' => 'nullable|string',
-            'discount_reason' => 'nullable|string',
                         'grade_level' => 'required|string',
 
         ]);
@@ -91,10 +87,6 @@ class StudentController extends Controller
             'parent_phone',
             'national_id',
             'address',
-            'blocked',
-            'block_reason',
-            'discount',
-            'discount_reason',
             'grade_level'
         ]));
 

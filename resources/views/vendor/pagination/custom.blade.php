@@ -42,29 +42,37 @@
 }
 </style>
 
+@php
+    $queryString = http_build_query(request()->except('page'));
+@endphp
+
 @if ($paginator->lastPage() > 1)
     <div class="pagination">
         {{-- Previous Page Link --}}
         @if ($paginator->onFirstPage())
             <div class="pagination-link disabled"><i class="fa-solid fa-angle-left"></i></div>
         @else
-            <a href="{{ $paginator->previousPageUrl() }}&category_id={{ request('category_id') }}" class="pagination-link">
+            <a href="{{ $paginator->previousPageUrl() }}&{{ $queryString }}" class="pagination-link">
                 <i class="fa-solid fa-angle-left"></i>
             </a>
         @endif
 
         {{-- Pagination Elements --}}
         @for ($i = 1; $i <= $paginator->lastPage(); $i++)
+            @php
+                $url = $paginator->url($i) . '&' . $queryString;
+            @endphp
+
             @if ($i == $paginator->currentPage())
                 <div class="pagination-link current">{{ $i }}</div>
             @else
-                <a href="{{ $paginator->url($i) }}" class="pagination-link">{{ $i }}</a>
+                <a href="{{ $url }}" class="pagination-link">{{ $i }}</a>
             @endif
         @endfor
 
         {{-- Next Page Link --}}
         @if ($paginator->hasMorePages())
-            <a href="{{ $paginator->nextPageUrl() }}" class="pagination-link">
+            <a href="{{ $paginator->nextPageUrl() }}&{{ $queryString }}" class="pagination-link">
                 <i class="fa-solid fa-angle-right"></i>
             </a>
         @else

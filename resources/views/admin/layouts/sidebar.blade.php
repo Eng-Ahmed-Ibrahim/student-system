@@ -95,41 +95,97 @@
                             <span class="menu-heading fw-bold text-uppercase fs-7">المجموعات</span>
                         </div>
                     </div>
-                    <div class="menu-item">
-                        <a href="{{ route('admin.groups.index') }}" class="menu-link">
+
+
+                    <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
+                        <span class="menu-link">
                             <span class="menu-icon">
-                                <i class="ki-duotone ki-calendar-8 fs-2">
+                                <i class="ki-duotone ki-address-book fs-2">
                                     <span class="path1"></span>
                                     <span class="path2"></span>
                                     <span class="path3"></span>
-                                    <span class="path4"></span>
-                                    <span class="path5"></span>
-                                    <span class="path6"></span>
                                 </i>
                             </span>
-                            <span class="menu-title"> المجموعات </span>
-                        </a>
+                            <span class="menu-title">المجموعات</span>
+                            <span class="menu-arrow"></span>
+                        </span>
+                        <div class="menu-sub menu-sub-accordion">
+                            <div class="menu-item">
+                                <a href="{{ route('admin.groups.index', ['grade_level' => 1]) }}"class="menu-link">
+                                    <span class="menu-bullet">
+                                        <span class="bullet bullet-dot"></span>
+                                    </span>
+                                    <span class="menu-title">الصف الاول الثانوي</span>
+                                </a>
+                            </div>
+                            <div class="menu-item">
+                                <a href="{{ route('admin.groups.index', ['grade_level' => 2]) }}"class="menu-link">
+                                    <span class="menu-bullet">
+                                        <span class="bullet bullet-dot"></span>
+                                    </span>
+                                    <span class="menu-title">الصف الثاني الثانوي</span>
+                                </a>
+                            </div>
+                            <div class="menu-item">
+                                <a href="{{ route('admin.groups.index', ['grade_level' => 3]) }}"class="menu-link">
+                                    <span class="menu-bullet">
+                                        <span class="bullet bullet-dot"></span>
+                                    </span>
+                                    <span class="menu-title">الصف الثالث الثانوي</span>
+                                </a>
+                            </div>
+
+                        </div>
                     </div>
+
+
                     <div class="menu-item pt-5">
                         <div class="menu-content">
                             <span class="menu-heading fw-bold text-uppercase fs-7">الطلاب</span>
                         </div>
                     </div>
-                    <div class="menu-item">
-                        <a href="{{ route('admin.students.index') }}" class="menu-link">
+
+                    <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
+                        <span class="menu-link">
                             <span class="menu-icon">
-                                <i class="ki-duotone ki-calendar-8 fs-2">
+                                <i class="ki-duotone ki-address-book fs-2">
                                     <span class="path1"></span>
                                     <span class="path2"></span>
                                     <span class="path3"></span>
-                                    <span class="path4"></span>
-                                    <span class="path5"></span>
-                                    <span class="path6"></span>
                                 </i>
                             </span>
-                            <span class="menu-title"> الطلاب </span>
-                        </a>
+                            <span class="menu-title">الطلاب</span>
+                            <span class="menu-arrow"></span>
+                        </span>
+                        <div class="menu-sub menu-sub-accordion">
+                            <div class="menu-item">
+                                <a href="{{ route('admin.students.index', ['grade_level' => 1]) }}"class="menu-link">
+                                    <span class="menu-bullet">
+                                        <span class="bullet bullet-dot"></span>
+                                    </span>
+                                    <span class="menu-title">الصف الاول الثانوي</span>
+                                </a>
+                            </div>
+                            <div class="menu-item">
+                                <a href="{{ route('admin.students.index', ['grade_level' => 2]) }}"class="menu-link">
+                                    <span class="menu-bullet">
+                                        <span class="bullet bullet-dot"></span>
+                                    </span>
+                                    <span class="menu-title">الصف الثاني الثانوي</span>
+                                </a>
+                            </div>
+                            <div class="menu-item">
+                                <a href="{{ route('admin.students.index', ['grade_level' => 3]) }}"class="menu-link">
+                                    <span class="menu-bullet">
+                                        <span class="bullet bullet-dot"></span>
+                                    </span>
+                                    <span class="menu-title">الصف الثالث الثانوي</span>
+                                </a>
+                            </div>
+
+                        </div>
                     </div>
+                    {{-- End of Home page --}}
                     <div class="menu-item pt-5">
                         <div class="menu-content">
                             <span class="menu-heading fw-bold text-uppercase fs-7">الحضور والغياب </span>
@@ -147,7 +203,7 @@
                                     <span class="path6"></span>
                                 </i>
                             </span>
-                            <span class="menu-title"> الحضور والغياب  </span>
+                            <span class="menu-title"> الحضور والغياب </span>
                         </a>
                     </div>
 

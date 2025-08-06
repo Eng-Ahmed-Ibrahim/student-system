@@ -119,6 +119,8 @@
                                     @endforeach
                                 </tbody>
                             </table>
+                            {{ $students->links('vendor.pagination.custom') }}
+
                         </div>
 
 
@@ -223,7 +225,7 @@
                         <!-- مودال التعديل -->
                         <div class="modal fade" id="editStudentModal" tabindex="-1">
                             <div class="modal-dialog">
-                                <form method="POST" id="editStudentForm" class="modal-content">
+                                <form  method="POST" id="editStudentForm" class="modal-content">
                                     @csrf
                                     @method('PUT')
                                     <div class="modal-header">
@@ -323,10 +325,10 @@
                 document.getElementById('editParentPhone').value = student.parent_phone;
                 document.getElementById('editNationalId').value = student.national_id;
                 document.getElementById('editAddress').value = student.address;
-                document.getElementById('editBlocked').value = student.blocked ? 1 : 0;
-                document.getElementById('editBlockReason').value = student.block_reason ?? '';
-                document.getElementById('editDiscount').value = student.discount ?? '';
-                document.getElementById('editDiscountReason').value = student.discount_reason ?? '';
+                // document.getElementById('editBlocked').value = student.blocked ? 1 : 0;
+                // document.getElementById('editBlockReason').value = student.block_reason ?? '';
+                // document.getElementById('editDiscount').value = student.discount ?? '';
+                // document.getElementById('editDiscountReason').value = student.discount_reason ?? '';
 
                 document.getElementById('editStudentForm').action = `/admin/students/${student.id}`;
             });
