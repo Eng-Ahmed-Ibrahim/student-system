@@ -7,3 +7,4 @@ Route::get('/', function () {
 
     return view('admin.app')->with('success', 'تم بنجاح');
 });
+
