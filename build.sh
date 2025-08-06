@@ -38,3 +38,4 @@ echo "[7/7] 🌱 Seeding database"
 php artisan db:seed
 
 echo "✅ The app has been deployed successfully!"
+
