@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Models\Group;
 use App\Models\Student;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -20,13 +21,13 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-public function boot(): void
-{
-    if (app()->runningInConsole()) {
-        return; // لا تنفذ أثناء الأوامر مثل package:discover
-    }
 
-    try {
+    public function boot(): void
+    {
+        if (!Schema::hasTable('groups') || !Schema::hasTable('students')) {
+            return;
+        }
+
         $groupCounts = Group::whereIn('grade_level', [1, 2, 3])
             ->selectRaw('grade_level, COUNT(*) as count')
             ->groupBy('grade_level')
@@ -41,10 +42,5 @@ public function boot(): void
             'groupCounts' => $groupCounts,
             'studentCounts' => $studentCounts,
         ]);
-    } catch (\Exception $e) {
-        // مثلاً: سجل الخطأ أو تجاهله أثناء التشغيل في بيئة لا تتوفر بها قاعدة البيانات
-        // logger()->error($e->getMessage());
     }
-}
-
 }
