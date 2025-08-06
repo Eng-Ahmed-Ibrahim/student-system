@@ -31,10 +31,19 @@ class AttendanceController extends Controller
             ->where("group_id", $request->group)
             ->get();
 
-            
-        $presentCount = $students->filter(fn($student) => optional($student->attendance->first())->status == 1)->count();
-        $absentCount = $students->count() - $presentCount;
+        $presentCount = 0;
+        $absentCount = 0;
 
+        foreach ($students as $student) {
+            $attendance = $student->attendance->first();
+
+            /** @phpstan-ignore-next-line */
+            if ($attendance && $attendance->status == 1) {
+                $presentCount++;
+            } else {
+                $absentCount++;
+            }
+        }
 
         return view('admin.attendance.index', compact('students', 'today', 'group', 'presentCount', 'absentCount'));
     }
