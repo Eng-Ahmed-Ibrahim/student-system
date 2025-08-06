@@ -31,6 +31,7 @@ class AttendanceController extends Controller
             ->where("group_id", $request->group)
             ->get();
 
+            
         $presentCount = $students->filter(fn($student) => optional($student->attendance->first())->status == 1)->count();
         $absentCount = $students->count() - $presentCount;
 
