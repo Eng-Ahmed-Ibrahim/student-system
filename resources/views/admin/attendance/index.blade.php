@@ -33,6 +33,20 @@
             <div id="kt_app_content_container" class="app-container container-xxl">
                 <div class="card">
                     <div class="card-body p-lg-17">
+                        {{-- معلومات المجموعة والحضور --}}
+                        <div class="mb-4 d-flex gap-2">
+                            <h4 class="mb-2">المجموعة:
+                                <span class="badge bg-primary">{{ $group->name }}</span>
+                            </h4>
+
+                            <h5 class="mb-1">عدد الحضور:
+                                <span class="badge bg-success total-present">{{ $presentCount }}</span>
+                            </h5>
+
+                            <h5>عدد الغياب:
+                                <span class="badge bg-danger total-absent">{{ $absentCount }}</span>
+                            </h5>
+                        </div>
 
                         <form id="barcode-form">
                             @csrf
@@ -56,52 +70,63 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($students as $student)
-                                    @php
-                                        $attendance = $student->attendance;
-                                    @endphp
+                                @if (count($students) > 0)
+                                    @foreach ($students as $student)
+                                        @php
+                                            $attendance = $student->attendance;
+                                        @endphp
+                                        <tr>
+                                            <td>{{ $student->student_code }}</td>
+                                            <td>{{ $student->name }}</td>
+                                            <td>{{ $student->phone }}</td>
+                                            <td>{{ $student->parent_phone }}</td>
+                                            <td>{{ $attendance->time ? \Carbon\Carbon::parse($attendance->time)->format('h:i A') : ' ' }}
+                                            </td>
+                                            <td>{{ \Carbon\Carbon::parse($attendance->date)->format('Y-m-d') }}</td>
+
+                                            <td>
+                                                @if ($attendance)
+                                                    <span
+                                                        class="badge {{ $attendance->status ? 'bg-success' : 'bg-danger' }}">
+                                                        {{ $attendance->status ? 'حاضر' : 'غائب' }}
+                                                    </span>
+                                                @else
+                                                    <span class="badge bg-secondary">غير محدد</span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if (!$attendance || !$attendance->status)
+                                                    <form
+                                                        action="{{ route('admin.attendance.mark', ['student' => $student->id, 'status' => 1]) }}"
+                                                        method="POST" class="d-inline">
+                                                        @csrf
+                                                        <button class="btn btn-success btn-sm">تسجيل حضور</button>
+                                                    </form>
+                                                @endif
+
+                                                @if (!$attendance || $attendance->status)
+                                                    <form
+                                                        action="{{ route('admin.attendance.mark', ['student' => $student->id, 'status' => 0]) }}"
+                                                        method="POST" class="d-inline">
+                                                        @csrf
+                                                        <button class="btn btn-danger btn-sm">تسجيل غياب</button>
+                                                    </form>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                @else
                                     <tr>
-                                        <td>{{ $student->student_code }}</td>
-                                        <td>{{ $student->name }}</td>
-                                        <td>{{ $student->phone }}</td>
-                                        <td>{{ $student->parent_phone }}</td>
-                                        <td>{{ $attendance->time ? \Carbon\Carbon::parse($attendance->time)->format('h:i A') : ' ' }}
-                                        </td>
-                                        <td>{{ \Carbon\Carbon::parse($attendance->date)->format('Y-m-d') }}</td>
-
-                                        <td>
-                                            @if ($attendance)
-                                                <span class="badge {{ $attendance->status ? 'bg-success' : 'bg-danger' }}">
-                                                    {{ $attendance->status ? 'حاضر' : 'غائب' }}
-                                                </span>
-                                            @else
-                                                <span class="badge bg-secondary">غير محدد</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if (!$attendance || !$attendance->status)
-                                                <form
-                                                    action="{{ route('admin.attendance.mark', ['student' => $student->id, 'status' => 1]) }}"
-                                                    method="POST" class="d-inline">
-                                                    @csrf
-                                                    <button class="btn btn-success btn-sm">تسجيل حضور</button>
-                                                </form>
-                                            @endif
-
-                                            @if (!$attendance || $attendance->status)
-                                                <form
-                                                    action="{{ route('admin.attendance.mark', ['student' => $student->id, 'status' => 0]) }}"
-                                                    method="POST" class="d-inline">
-                                                    @csrf
-                                                    <button class="btn btn-danger btn-sm">تسجيل غياب</button>
-                                                </form>
-                                            @endif
+                                        <td colspan="8" class="text-center text-muted py-4">
+                                            <div class="alert alert-info mb-0" role="alert">
+                                                لا يوجد حصه اليوم
+                                            </div>
                                         </td>
                                     </tr>
-                                @endforeach
+
+                                @endif
                             </tbody>
                         </table>
-                        {{ $students->links('vendor.pagination.custom') }}
 
 
 
@@ -171,6 +196,13 @@
                             `;
                             }
                         });
+                        // تحديث العدادات
+                        const presentCountSpan = document.querySelector('.total-present');
+                        const absentCountSpan = document.querySelector('.total-absent');
+
+
+
+
                     }
                 })
                 .catch(() => {

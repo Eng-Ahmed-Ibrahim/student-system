@@ -92,7 +92,11 @@ class StudentController extends Controller
 
         return redirect()->back()->with('success', 'تم تعديل الطالب بنجاح');
     }
-
+    public function destroy($id){
+        $student=Student::findOrFail($id);
+        $student->delete();
+        return redirect()->back()->with('success', 'تم الحذف الطالب بنجاح');
+    }
 
     public function block(Request $request)
     {

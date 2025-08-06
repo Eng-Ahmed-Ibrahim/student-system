@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use Carbon\Carbon;
+use App\Models\Group;
 use App\Models\Student;
 use App\Models\Attendance;
 use Illuminate\Http\Request;
@@ -16,18 +17,31 @@ class AttendanceController extends Controller
     {
         $this->AttendanceService = $AttendanceService;
     }
-    public function index()
+    public function index(Request $request)
     {
         $this->AttendanceService->generateAttendanceIfNotExists();
         $today = Carbon::today()->toDateString();
+        $group = Group::select('id', 'name', 'time')->findOrFail($request->group);
+
         $students = Student::whereHas('attendance', function ($query) use ($today) {
             $query->where('date', $today);
         })->with(['attendance' => function ($query) use ($today) {
             $query->where('date', $today);
-        }])->paginate(20);
+        }])
+            ->where("group_id", $request->group)
+            ->get();
 
+        // عدد الحضور
+        $presentCount = $students->filter(function ($student) {
+            return optional($student->attendance->first())->status === 1;
+        })->count();
 
-        return view('admin.attendance.index', compact('students', 'today'));
+        // عدد الغياب
+        $absentCount = $students->filter(function ($student) {
+            return optional($student->attendance->first())->status === 0;
+        })->count();
+
+        return view('admin.attendance.index', compact('students', 'today', 'group', 'presentCount', 'absentCount'));
     }
 
 

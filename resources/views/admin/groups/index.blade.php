@@ -90,14 +90,19 @@
                                         </td>
 
                                         <td>
-                                            <button class="btn btn-sm btn-warning edit-btn" data-id="{{ $group->id }}"
-                                                data-name="{{ $group->name }}" data-code="{{ $group->code }}"
-                                                data-limit="{{ $group->limit }}" data-days='@json($group->days)'
-                                                data-time="{{ $group->time }}"
-                                                data-grade_level="{{ $group->grade_level }}" data-bs-toggle="modal"
-                                                data-bs-target="#editGroupModal">
-                                                تعديل
-                                            </button>
+                                            
+                                            <div class="d-flex gap-1">
+
+                                                <button class="btn btn-sm btn-warning edit-btn" data-id="{{ $group->id }}"
+                                                    data-name="{{ $group->name }}" data-code="{{ $group->code }}"
+                                                    data-limit="{{ $group->limit }}" data-days='@json($group->days)'
+                                                    data-time="{{ $group->time }}"
+                                                    data-grade_level="{{ $group->grade_level }}" data-bs-toggle="modal"
+                                                    data-bs-target="#editGroupModal">
+                                                    تعديل
+                                                </button>
+                                                <a class="btn btn-sm btn-primary" href="{{ route('admin.attendance.index',['group'=>$group->id]) }}">الحضور والغياب</a>
+                                            </div>
                                         </td>
 
                                     </tr>

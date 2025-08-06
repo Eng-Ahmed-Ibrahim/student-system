@@ -90,12 +90,13 @@
                             <span class="menu-title"> الصلاحيات </span>
                         </a>
                     </div>
+
+                    {{-- Groups --}}
                     <div class="menu-item pt-5">
                         <div class="menu-content">
                             <span class="menu-heading fw-bold text-uppercase fs-7">المجموعات</span>
                         </div>
                     </div>
-
 
                     <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
                         <span class="menu-link">
@@ -116,6 +117,8 @@
                                         <span class="bullet bullet-dot"></span>
                                     </span>
                                     <span class="menu-title">الصف الاول الثانوي</span>
+                                            <span class="badge bg-white text-dark border">{{ $groupCounts[1] ?? 0 }}</span>
+
                                 </a>
                             </div>
                             <div class="menu-item">
@@ -124,6 +127,8 @@
                                         <span class="bullet bullet-dot"></span>
                                     </span>
                                     <span class="menu-title">الصف الثاني الثانوي</span>
+                                            <span class="badge bg-white text-dark border">{{ $groupCounts[2] ?? 0 }}</span>
+
                                 </a>
                             </div>
                             <div class="menu-item">
@@ -132,6 +137,8 @@
                                         <span class="bullet bullet-dot"></span>
                                     </span>
                                     <span class="menu-title">الصف الثالث الثانوي</span>
+                                            <span class="badge bg-white text-dark border">{{ $groupCounts[3] ?? 0 }}</span>
+
                                 </a>
                             </div>
 
@@ -139,6 +146,7 @@
                     </div>
 
 
+                    {{-- Students --}}
                     <div class="menu-item pt-5">
                         <div class="menu-content">
                             <span class="menu-heading fw-bold text-uppercase fs-7">الطلاب</span>
@@ -164,6 +172,8 @@
                                         <span class="bullet bullet-dot"></span>
                                     </span>
                                     <span class="menu-title">الصف الاول الثانوي</span>
+                                            <span class="badge bg-white text-dark border">{{ $studentCounts[1] ?? 0 }}</span>
+
                                 </a>
                             </div>
                             <div class="menu-item">
@@ -172,6 +182,8 @@
                                         <span class="bullet bullet-dot"></span>
                                     </span>
                                     <span class="menu-title">الصف الثاني الثانوي</span>
+                                            <span class="badge bg-white text-dark border">{{ $studentCounts[2] ?? 0 }}</span>
+
                                 </a>
                             </div>
                             <div class="menu-item">
@@ -180,17 +192,21 @@
                                         <span class="bullet bullet-dot"></span>
                                     </span>
                                     <span class="menu-title">الصف الثالث الثانوي</span>
+                                            <span class="badge bg-white text-dark border">{{ $studentCounts[3] ?? 0 }}</span>
+
                                 </a>
                             </div>
 
                         </div>
                     </div>
-                    {{-- End of Home page --}}
+
+
                     <div class="menu-item pt-5">
                         <div class="menu-content">
                             <span class="menu-heading fw-bold text-uppercase fs-7">الحضور والغياب </span>
                         </div>
                     </div>
+
                     <div class="menu-item">
                         <a href="{{ route('admin.attendance.index') }}" class="menu-link">
                             <span class="menu-icon">

@@ -114,6 +114,14 @@
                                                     data-blocked="{{ $student->blocked ? 1 : 0 }}">
                                                     {{ $student->blocked ? 'إلغاء الحظر' : 'حظر' }}
                                                 </button>
+                                                <form action="{{ route('admin.students.destroy', $student->id) }}"
+                                                    method="post"
+                                                    onsubmit="return confirm('هل أنت متأكد أنك تريد الحذف؟');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button class="btn btn-sm btn-danger">حذف</button>
+                                                </form>
+
                                             </td>
                                         </tr>
                                     @endforeach
@@ -178,16 +186,13 @@
                                             <label for="grade_level" class="form-label">الصف الدراسي</label>
                                             <select name="grade_level" id="grade_level" class="form-select" required>
                                                 <option value="" disabled selected>اختر الصف الدراسي</option>
-                                                <option value="1"
-                                                    >
+                                                <option value="1">
                                                     الصف الأول
                                                     الثانوي</option>
-                                                <option value="2"
-                                                    >
+                                                <option value="2">
                                                     الصف الثاني
                                                     الثانوي</option>
-                                                <option value="3"
-                                                    >
+                                                <option value="3">
                                                     الصف الثالث
                                                     الثانوي</option>
                                             </select>
@@ -225,7 +230,7 @@
                         <!-- مودال التعديل -->
                         <div class="modal fade" id="editStudentModal" tabindex="-1">
                             <div class="modal-dialog">
-                                <form  method="POST" id="editStudentForm" class="modal-content">
+                                <form method="POST" id="editStudentForm" class="modal-content">
                                     @csrf
                                     @method('PUT')
                                     <div class="modal-header">
@@ -235,7 +240,8 @@
                                     <div class="modal-body">
                                         <div class="mb-3">
                                             <label for="grade_level" class="form-label">الصف الدراسي</label>
-                                            <select name="grade_level" id="edit_grade_level" class="form-select" required>
+                                            <select name="grade_level" id="edit_grade_level" class="form-select"
+                                                required>
                                                 <option value="" disabled selected>اختر الصف الدراسي</option>
                                                 <option value="1"
                                                     {{ old('grade_level', $student->grade_level ?? '') == 1 ? 'selected' : '' }}>
@@ -285,31 +291,31 @@
 @section('js')
 
 
-<script>
-    // كل بيانات الجروبات من السيرفر بصيغة JSON
-    const allGroups = @json($groups);
+    <script>
+        // كل بيانات الجروبات من السيرفر بصيغة JSON
+        const allGroups = @json($groups);
 
-    // عناصر الـ select
-    const gradeSelects = document.querySelectorAll('select[name="grade_level"]');
-    const groupSelects = document.querySelectorAll('select[name="group_id"]');
+        // عناصر الـ select
+        const gradeSelects = document.querySelectorAll('select[name="grade_level"]');
+        const groupSelects = document.querySelectorAll('select[name="group_id"]');
 
-    // لما المستخدم يغير الصف
-    gradeSelects.forEach((gradeSelect, index) => {
-        gradeSelect.addEventListener('change', function () {
-            const selectedGrade = this.value;
+        // لما المستخدم يغير الصف
+        gradeSelects.forEach((gradeSelect, index) => {
+            gradeSelect.addEventListener('change', function() {
+                const selectedGrade = this.value;
 
-            const filteredGroups = allGroups.filter(group => group.grade_level == selectedGrade);
+                const filteredGroups = allGroups.filter(group => group.grade_level == selectedGrade);
 
-            // حدث قائمة الجروبات المقابلة لهذا الصف
-            const groupSelect = groupSelects[index];
-            groupSelect.innerHTML = `<option value="" disabled selected>اختر المجموعة</option>`;
+                // حدث قائمة الجروبات المقابلة لهذا الصف
+                const groupSelect = groupSelects[index];
+                groupSelect.innerHTML = `<option value="" disabled selected>اختر المجموعة</option>`;
 
-            filteredGroups.forEach(group => {
-                groupSelect.innerHTML += `<option value="${group.id}">${group.name}</option>`;
+                filteredGroups.forEach(group => {
+                    groupSelect.innerHTML += `<option value="${group.id}">${group.name}</option>`;
+                });
             });
         });
-    });
-</script>
+    </script>
 
 
 
