@@ -46,6 +46,9 @@
                             <h5>عدد الغياب:
                                 <span class="badge bg-danger total-absent">{{ $absentCount }}</span>
                             </h5>
+                               <h5>تبدأ الحصة:
+        <span class="badge bg-light text-dark">{{ \Carbon\Carbon::parse($group->time)->format('h:i A') }}</span>
+    </h5>
                         </div>
 
                         <form id="barcode-form">
