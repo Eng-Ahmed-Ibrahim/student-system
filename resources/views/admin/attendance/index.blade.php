@@ -1,0 +1,220 @@
+@extends('admin.app')
+@php
+    $title = 'الحضور والغياب';
+    $sub_title = 'الحضور والغياب';
+@endphp
+@section('title', $title)
+@section('content')
+    <div class="d-flex flex-column flex-column-fluid">
+
+        <div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
+            <div id="kt_app_toolbar_container" class="app-container container-xxl d-flex flex-stack">
+                <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
+                    <h1 class="page-heading d-flex text-dark fw-bold fs-3 flex-column justify-content-center my-0">
+                        {{ $title }}</h1>
+                    <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
+                        <li class="breadcrumb-item text-muted">
+                            <a class="text-muted text-hover-primary">{{ $sub_title }}</a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <span class="bullet bg-gray-400 w-5px h-2px"></span>
+                        </li>
+                        <li class="breadcrumb-item text-muted">{{ $title }}</li>
+                    </ul>
+                </div>
+                <div class="d-flex align-items-center gap-2 gap-lg-3">
+
+                    <a href="#" class="btn btn-sm fw-bold btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#kt_modal_create_app">Create</a>
+                </div>
+            </div>
+        </div>
+        <div id="kt_app_content" class="app-content flex-column-fluid">
+            <div id="kt_app_content_container" class="app-container container-xxl">
+                <div class="card">
+                    <div class="card-body p-lg-17">
+
+                        <form id="barcode-form">
+                            @csrf
+                            <input type="text" id="barcode-input" name="code" class="form-control mb-3"
+                                placeholder="كود الطالب ، دوس انتر بعد كتابه الكود لتحضير الطالب" autofocus>
+                        </form>
+                        <div id="barcode-result" class="alert d-none mt-2"></div>
+
+                        <table class="table table-bordered">
+
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>الكود</th>
+                                    <th>الاسم</th>
+                                    <th>رقم التلفون</th>
+                                    <th>رقم تلفون ولي الامر</th>
+                                    <th>وقت الحضور</th>
+                                    <th>تاريخ الحضور</th>
+                                    <th>الحالة</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($students as $student)
+                                    @php
+                                        $attendance = $student->attendance;
+                                    @endphp
+                                    <tr>
+                                        <td>{{ $student->student_code }}</td>
+                                        <td>{{ $student->name }}</td>
+                                        <td>{{ $student->phone }}</td>
+                                        <td>{{ $student->parent_phone }}</td>
+                                        <td>{{ $attendance->time ? \Carbon\Carbon::parse($attendance->time)->format('h:i A') : ' ' }}
+                                        </td>
+                                        <td>{{ \Carbon\Carbon::parse($attendance->date)->format('Y-m-d') }}</td>
+
+                                        <td>
+                                            @if ($attendance)
+                                                <span class="badge {{ $attendance->status ? 'bg-success' : 'bg-danger' }}">
+                                                    {{ $attendance->status ? 'حاضر' : 'غائب' }}
+                                                </span>
+                                            @else
+                                                <span class="badge bg-secondary">غير محدد</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if (!$attendance || !$attendance->status)
+                                                <form
+                                                    action="{{ route('admin.attendance.mark', ['student' => $student->id, 'status' => 1]) }}"
+                                                    method="POST" class="d-inline">
+                                                    @csrf
+                                                    <button class="btn btn-success btn-sm">تسجيل حضور</button>
+                                                </form>
+                                            @endif
+
+                                            @if (!$attendance || $attendance->status)
+                                                <form
+                                                    action="{{ route('admin.attendance.mark', ['student' => $student->id, 'status' => 0]) }}"
+                                                    method="POST" class="d-inline">
+                                                    @csrf
+                                                    <button class="btn btn-danger btn-sm">تسجيل غياب</button>
+                                                </form>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                        {{ $students->links('vendor.pagination.custom') }}
+
+
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+@endsection
+
+@section('js')
+    <script src="https://unpkg.com/html5-qrcode"></script>
+
+    <script>
+        // دالة الحضور (نفس اللي كتبته بالضبط)
+        function markAttendance(code) {
+            const input = document.getElementById('barcode-input');
+            const result = document.getElementById('barcode-result');
+
+            if (!code) return;
+
+            input.disabled = true;
+            input.value = code;
+
+            fetch("{{ route('admin.attendance.mark-barcode') }}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                    },
+                    body: JSON.stringify({
+                        code: code
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    result.className = 'alert mt-2 ' + (data.success ? 'alert-success' : 'alert-danger');
+                    result.textContent = data.message;
+                    result.classList.remove('d-none');
+                    input.value = '';
+
+                    if (data.success) {
+                        const rows = document.querySelectorAll("tbody tr");
+
+                        rows.forEach(row => {
+                            const studentCode = row.cells[0].textContent.trim();
+
+                            if (studentCode === code) {
+                                // تحديث الحالة
+                                row.cells[6].innerHTML = '<span class="badge bg-success">حاضر</span>';
+
+                                // تحديث الوقت
+                                const now = new Date();
+                                const hours = now.getHours() % 12 || 12;
+                                const minutes = now.getMinutes().toString().padStart(2, '0');
+                                const ampm = now.getHours() >= 12 ? 'PM' : 'AM';
+                                row.cells[4].textContent = `${hours}:${minutes} ${ampm}`;
+
+                                // تحديث زر الإجراء
+                                row.cells[7].innerHTML = `
+                                <form action="/admin/attendance/mark/${code}/0" method="POST" class="d-inline">
+                                    @csrf
+                                    <button class="btn btn-danger btn-sm">تسجيل غياب</button>
+                                </form>
+                            `;
+                            }
+                        });
+                    }
+                })
+                .catch(() => {
+                    result.className = 'alert alert-danger mt-2';
+                    result.textContent = 'حدث خطأ ما';
+                    result.classList.remove('d-none');
+                })
+                .finally(() => {
+                    input.disabled = false;
+                    input.focus();
+                });
+        }
+
+        // عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('barcode-form');
+            const input = document.getElementById('barcode-input');
+
+            // تشغيل الفوكس تلقائيًا
+            input.focus();
+
+            // عند إرسال الفورم (Enter من ماسح الباركود)
+            form.addEventListener('submit', function(e) {
+                e.preventDefault(); // منع إعادة تحميل الصفحة
+                const code = input.value.trim();
+                markAttendance(code);
+            });
+        });
+    </script>
+
+
+
+    <script>
+        const form = document.getElementById('barcode-form');
+        const input = document.getElementById('barcode-input');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault(); // يمنع إرسال الفورم بالشكل التقليدي
+            const code = input.value.trim();
+
+            if (code !== '') {
+                markAttendance(code);
+            }
+        });
+    </script>
+
+@endsection
