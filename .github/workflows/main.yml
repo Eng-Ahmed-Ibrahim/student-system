@@ -60,3 +60,4 @@ jobs:
             cd ${{ secrets.APP_PATH }}
             chmod +x build.sh
             ./build.sh
+
