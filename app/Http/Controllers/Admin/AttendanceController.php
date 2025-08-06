@@ -23,13 +23,11 @@ class AttendanceController extends Controller
         $today = Carbon::today()->toDateString();
         $group = Group::select('id', 'name', 'time')->findOrFail($request->group);
 
-        $students = Student::whereHas('attendance', function ($query) use ($today) {
-            $query->where('date', $today);
-        })->with(['attendance' => function ($query) use ($today) {
+        $students = Student::with(['attendance' => function ($query) use ($today) {
             $query->where('date', $today);
         }])
-            ->where("group_id", $request->group)
-            ->get();
+        ->where('group_id', $request->group)
+        ->get();
 
         // عدد الحضور
         $presentCount = $students->filter(function ($student) {
