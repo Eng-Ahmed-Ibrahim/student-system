@@ -26,12 +26,15 @@ else
 fi
 
 echo "[5/7] 🧹 Clearing and caching config/routes/views"
+rm -rf vendor composer.lock
+composer install --no-dev --optimize-autoloader
 php artisan config:clear
 php artisan route:clear
 php artisan view:clear
 php artisan cache:clear
-php artisan clear-compiled
-composer dump-autoload
+php artisan config:cache
+php artisan migrate --force
+
 
 
 echo "[6/7] 🛠️ Migrating database"
