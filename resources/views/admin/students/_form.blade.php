@@ -1,3 +1,29 @@
+
+<div class="row">
+    <div class="col mb-3">
+        <label for="name" class="form-label">اسم الطالب</label>
+        <input type="text" name="name" id="name" class="form-control" placeholder="اسم الطالب"
+            value="{{ old('name', $student->name ?? '') }}" required>
+    </div>
+    <div class="col mb-3">
+        <label for="phone" class="form-label">تليفون الطالب</label>
+        <input type="text" name="phone" id="phone" class="form-control" placeholder="تليفون الطالب"
+            value="{{ old('phone', $student->phone ?? '') }}" required>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col mb-3">
+        <label for="parent_phone" class="form-label">تليفون ولي الأمر</label>
+        <input type="text" name="parent_phone" id="parent_phone" class="form-control" placeholder="تليفون ولي الأمر"
+            value="{{ old('parent_phone', $student->parent_phone ?? '') }}" required>
+    </div>
+    <div class="col mb-3">
+        <label for="national_id" class="form-label">الرقم القومي</label>
+        <input type="text" name="national_id" id="national_id" class="form-control" placeholder="الرقم القومي"
+            value="{{ old('national_id', $student->national_id ?? '') }}" required>
+    </div>
+</div>
 <div class="row">
     <div class="mb-3 col">
         <label for="grade_level" class="form-label">الصف الدراسي</label>
@@ -23,32 +49,6 @@
                 </option>
             @endforeach
         </select>
-    </div>
-</div>
-
-<div class="row">
-    <div class="col mb-3">
-        <label for="name" class="form-label">اسم الطالب</label>
-        <input type="text" name="name" id="name" class="form-control" placeholder="اسم الطالب"
-            value="{{ old('name', $student->name ?? '') }}" required>
-    </div>
-    <div class="col mb-3">
-        <label for="phone" class="form-label">تليفون الطالب</label>
-        <input type="text" name="phone" id="phone" class="form-control" placeholder="تليفون الطالب"
-            value="{{ old('phone', $student->phone ?? '') }}" required>
-    </div>
-</div>
-
-<div class="row">
-    <div class="col mb-3">
-        <label for="parent_phone" class="form-label">تليفون ولي الأمر</label>
-        <input type="text" name="parent_phone" id="parent_phone" class="form-control" placeholder="تليفون ولي الأمر"
-            value="{{ old('parent_phone', $student->parent_phone ?? '') }}" required>
-    </div>
-    <div class="col mb-3">
-        <label for="national_id" class="form-label">الرقم القومي</label>
-        <input type="text" name="national_id" id="national_id" class="form-control" placeholder="الرقم القومي"
-            value="{{ old('national_id', $student->national_id ?? '') }}" required>
     </div>
 </div>
 
