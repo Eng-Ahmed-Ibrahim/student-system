@@ -42,7 +42,6 @@ class StudentService
                 'student_id' => $student->id,
                 'group_id' => $group->id,
                 'amount' => $monthlyFee,
-                'paid_amount' => 0,
                 'status' => 'unpaid',
                 'month' => $month,
                 'year' => $year,
