@@ -60,7 +60,7 @@
                                 <div class="me-7 mb-4">
                                     <div class="symbol symbol-100px symbol-lg-160px symbol-fixed position-relative">
                                         <img src="{{ asset('static/student_avatar.png') }}" alt="image">
-                          
+
                                     </div>
                                 </div>
                                 <!--end::Pic-->
@@ -105,13 +105,13 @@
                                                     </i>رقم ولي الامر : {{ $student->parent_phone }}</a>
                                             </div>
                                             <!--end::Info-->
-                                                               <!-- زر فتح المودال -->
-                                <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal"
-                                    data-bs-target="#paymentModal">
-                                    دفع جديد
-                                </button>
+                                            <!-- زر فتح المودال -->
+                                            <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal"
+                                                data-bs-target="#paymentModal">
+                                                دفع جديد
+                                            </button>
                                         </div>
-                      
+
                                     </div>
                                     <!--end::Title-->
                                     <!--begin::Stats-->
@@ -142,7 +142,7 @@
                                                     </div>
                                                     <div class="fw-semibold fs-6 text-gray-400">مجموع المدفوعات
                                                     </div>
-                                                    
+
                                                 </div>
 
 
@@ -189,24 +189,24 @@
                     <div class="card-body p-lg-17">
                         <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill"
+                                <button class="nav-link {{ $tab==1 ?"active" : ' ' }}" id="pills-home-tab" data-bs-toggle="pill"
                                     data-bs-target="#pills-home" type="button" role="tab"
                                     aria-controls="pills-home" aria-selected="true">الحضور والغياب</button>
                             </li>
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill"
+                                <button class="nav-link {{ $tab==2 ?"active" : ' ' }}" id="pills-profile-tab" data-bs-toggle="pill"
                                     data-bs-target="#pills-profile" type="button" role="tab"
                                     aria-controls="pills-profile" aria-selected="false">المدفوعات</button>
                             </li>
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="pills-contact-tab" data-bs-toggle="pill"
+                                <button class="nav-link {{ $tab==3 ?"active" : ' ' }} " id="pills-contact-tab" data-bs-toggle="pill"
                                     data-bs-target="#pills-contact" type="button" role="tab"
                                     aria-controls="pills-contact" aria-selected="false">الدرجات</button>
                             </li>
 
                         </ul>
                         <div class="tab-content" id="pills-tabContent">
-                            <div class="tab-pane fade show active" id="pills-home" role="tabpanel"
+                            <div class="tab-pane fade {{ $tab==1 ?" show active" : ' ' }}" id="pills-home" role="tabpanel"
                                 aria-labelledby="pills-home-tab" tabindex="0">
 
                                 @php
@@ -228,6 +228,8 @@
 
                                 <!-- فلتر الشهر -->
                                 <form method="GET" action="">
+                                    <input type="hidden" name="tab" value="1">
+
                                     <div class="mb-3">
                                         <label for="month">اختر الشهر:</label>
                                         <select name="month" id="month" class="form-select"
@@ -288,12 +290,13 @@
 
                             </div>
 
-                            <div class="tab-pane fade" id="pills-profile" role="tabpanel"
+                            <div class="tab-pane fade {{ $tab==2 ?" show active" : ' ' }}" id="pills-profile" role="tabpanel"
                                 aria-labelledby="pills-profile-tab" tabindex="0">
-             
+
 
                                 <!-- فلتر الشهر -->
                                 <form method="GET" action="">
+                                    <input type="hidden" name="tab" value="2">
                                     <div class="mb-3">
                                         <label for="month">اختر الشهر:</label>
                                         <select name="month" id="month" class="form-select"
@@ -323,7 +326,7 @@
                                     </div>
                                 </form>
 
-                 
+
 
                                 <!-- جدول المدفوعات -->
                                 <div class="tab-pane fade show active" id="pills-profile" role="tabpanel"
@@ -357,10 +360,9 @@
                                 </div>
 
                             </div>
-                            <div class="tab-pane fade" id="pills-contact" role="tabpanel"
+                            <div class="tab-pane fade  {{ $tab==3 ?" show active" : ' ' }}" id="pills-contact" role="tabpanel"
                                 aria-labelledby="pills-contact-tab" tabindex="0">...</div>
-                            <div class="tab-pane fade" id="pills-disabled" role="tabpanel"
-                                aria-labelledby="pills-disabled-tab" tabindex="0">...</div>
+                        
                         </div>
                     </div>
                 </div>

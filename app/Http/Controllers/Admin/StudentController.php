@@ -73,7 +73,8 @@ class StudentController extends Controller
         $presentCount = $attendances->where('status', 1)->count();
         $absentCount = $attendances->where('status', 0)->count();
 
-        return view('admin.students.show', compact('student', 'attendances', 'presentCount', 'absentCount','availableMonths','month'));
+        $tab= $request->tab ?? 1;
+        return view('admin.students.show', compact('student', 'attendances','tab', 'presentCount', 'absentCount','availableMonths','month'));
     }
     public function store(Request $request)
     {
