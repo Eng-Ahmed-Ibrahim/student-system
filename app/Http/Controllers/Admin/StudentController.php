@@ -55,6 +55,19 @@ class StudentController extends Controller
                     $q->where('month', $month)->where('year', $year);
                 });
             }])
+            ->withCount([
+                'attendance as total_absent' => function ($query) {
+                    $query->where('status', false)
+                        ->whereYear('date', now()->year); // تأكد إن عندك عمود اسمه `date` أو غيّره حسب اسم العمود
+                }
+            ])
+            ->withCount([
+                'attendance as total_present' => function ($query) {
+                    $query->where('status', true)
+                        ->whereYear('date', now()->year); // تأكد إن عندك عمود اسمه `date` أو غيّره حسب اسم العمود
+                }
+            ])
+
             ->first();
 
         // لجلب كل الشهور التي فيها رسوم لهذا الطالب
@@ -67,11 +80,14 @@ class StudentController extends Controller
 
         $status = $request->status;
 
+
+
         $query = Attendance::query();
 
-        if (!is_null($status) ) {
+        if (!is_null($status)) {
             $query->where("status", $status);
         }
+
 
         $attendances = $query->where("student_id", $student->id)
             ->where("month", $month)

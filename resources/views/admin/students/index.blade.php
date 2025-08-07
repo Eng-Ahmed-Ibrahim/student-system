@@ -53,7 +53,7 @@
                                         <th>الرقم القومي</th>
                                         <th>المستحقات </th>
                                         <th>المدفوعات</th>
-                                        <th>العنوان</th>
+                                        <th>تاريخ التسجيل</th>
                                         <th>محظور؟</th>
                                         <th>الإجراء</th>
                                     </tr>
@@ -61,7 +61,7 @@
                                 <tbody>
                                     @foreach ($students as $student)
                                         <tr>
-                                            <td><a href="{{ route('admin.students.show',$student->id) }}">#{{ $student->student_code }}</a></td>
+                                            <td><a href="{{ route('admin.students.show',$student->id) }}">{{ $student->student_code }}</a></td>
                                             <td>
                                                 @if ($student->barcode)
                                                     <div class="barcode-wrapper text-center d-flex gap-1">
@@ -96,7 +96,7 @@
                                             <td>{{ $student->national_id }}</td>
                                             <td>{{ $student->total_fees - $student->total_paid }}</td>
                                             <td>{{ $student->total_paid ?? 0 }}</td>
-                                            <td>{{ Str::limit($student->address, 10) }}</td>
+                                            <td>{{ $student->created_at->format('Y-m-d ') }}</td>
                                             <td>
                                                 @if ($student->blocked)
                                                     نعم

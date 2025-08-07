@@ -44,7 +44,7 @@ $sub_title="الصلاحيات";
 <table class="table table-bordered table-striped" id="studentsTable">
     <thead>
         <tr>
-            <th>الرقم</th>
+            <th>كود الطالب</th>
             <th>الاسم</th>
             <th>الكود</th>
             <th>تلفون</th>
