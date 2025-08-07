@@ -14,6 +14,12 @@ class GroupController extends Controller
 
         return view('admin.groups.index', compact('groups'));
     }
+    public function show($id){
+        $group=Group::with(['students'])->first();
+        if(! $group)
+            abort(404);
+        return view('admin.groups.show',compact('group'));
+    }
 
     public function store(Request $request)
     {

@@ -169,7 +169,7 @@
                                                             {{ $student->total_absent }}</div>
                                                     </div>
                                                     <div class="fw-semibold fs-6 text-gray-400">
-                                                  مجموع الغياب الكلي</div>
+                                                        مجموع الغياب الكلي</div>
                                                 </div>
                                             </div>
                                             <!--end::Stats-->
@@ -219,7 +219,7 @@
 
 
                                 <form method="POST" action="{{ route('admin.students.update', $student->id) }} "
-                                    class="modal-content"  id="student-form">
+                                    class="modal-content" id="student-form">
                                     @csrf
                                     @method('PUT')
                                     <input type="hidden" name="tab" value="0">
@@ -257,19 +257,34 @@
                                 <form method="GET" action="">
                                     <input type="hidden" name="tab" value="1">
 
-                                    <div class="mb-3">
-                                        <label for="month">اختر الشهر:</label>
-                                        <select name="month" id="month" class="form-select"
-                                            onchange="this.form.submit()">
-                                            @foreach ($arabicMonths as $key => $name)
-                                                <option value="{{ $key }}"
-                                                    {{ request('month', now()->month) == $key ? 'selected' : '' }}>
-                                                    {{ $name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label for="month">اختر الشهر:</label>
+                                            <select name="month" id="month" class="form-select"
+                                                onchange="this.form.submit()">
+                                                @foreach ($arabicMonths as $key => $name)
+                                                    <option value="{{ $key }}"
+                                                        {{ request('month', now()->month) == $key ? 'selected' : '' }}>
+                                                        {{ $name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label for="status">اختر الحالة:</label>
+                                            <select name="status" id="status" class="form-select"
+                                                onchange="this.form.submit()">
+                                                <option value="">الكل</option>
+                                                <option value="1" {{ request('status') === '1' ? 'selected' : '' }}>
+                                                    حضور فقط</option>
+                                                <option value="0" {{ request('status') === '0' ? 'selected' : '' }}>
+                                                    غياب فقط</option>
+                                            </select>
+                                        </div>
                                     </div>
                                 </form>
+
 
 
                                 <!-- إحصائيات -->
@@ -455,12 +470,12 @@
         }
     </script>
     <script>
-    document.getElementById('student-form').addEventListener('submit', function (e) {
-        const tabInput = document.getElementById('tab-input');
-        if (tabInput) {
-            tabInput.remove(); // امسح العنصر من الفورم قبل الإرسال
-        }
-    });
-</script>
+        document.getElementById('student-form').addEventListener('submit', function(e) {
+            const tabInput = document.getElementById('tab-input');
+            if (tabInput) {
+                tabInput.remove(); // امسح العنصر من الفورم قبل الإرسال
+            }
+        });
+    </script>
 
 @endsection

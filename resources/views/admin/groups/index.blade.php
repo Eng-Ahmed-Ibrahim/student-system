@@ -72,7 +72,7 @@
                                 @endphp
                                 @foreach ($groups as $group)
                                     <tr>
-                                        <td>{{ $group->code }}</td>
+                                        <td><a href="{{ route('admin.groups.show',$group->id) }}">#{{ $group->code }}</a></td>
                                         <td>{{ $group->name }}</td>
                                         <td>{{ $grades[$group->grade_level] }}</td>
                                         <td>{{ $group->monthly_fee }}</td>

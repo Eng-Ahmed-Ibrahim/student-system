@@ -47,6 +47,7 @@
                                         <th>الكود</th>
                                         <th>الباركود</th>
                                         <th>الاسم</th>
+                                        <th>مجموعه</th>
                                         <th>التليفون</th>
                                         <th>تليفون ولي الأمر</th>
                                         <th>الرقم القومي</th>
@@ -84,6 +85,9 @@
 
                                             <td>
                                                 <div style="width:120px">{{ $student->name }}</div>
+                                            </td>
+                                            <td>
+                                                <div style="width:120px">{{ $student->group->name }}</div>
                                             </td>
                                             <td>{{ $student->phone }}</td>
                                             <td>

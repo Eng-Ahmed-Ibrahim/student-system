@@ -65,11 +65,21 @@ class StudentController extends Controller
 
 
 
-        $attendances = Attendance::where("student_id", $student->id)
+        $status = $request->status;
+
+        $query = Attendance::query();
+
+        if (!is_null($status) ) {
+            $query->where("status", $status);
+        }
+
+        $attendances = $query->where("student_id", $student->id)
             ->where("month", $month)
             ->where("year", $year)
+
             ->orderBy("id", "DESC")
             ->get();
+
         $presentCount = $attendances->where('status', 1)->count();
         $absentCount = $attendances->where('status', 0)->count();
 
