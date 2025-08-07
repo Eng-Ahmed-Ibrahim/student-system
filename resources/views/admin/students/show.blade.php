@@ -2,7 +2,9 @@
 @php
     $title = "الطالب : $student->name";
     $sub_title = 'الطلاب';
+
 @endphp
+
 @section('title', $title)
 @section('content')
     {{-- Block section --}}
@@ -167,7 +169,7 @@
                                                             {{ $student->total_absent }}</div>
                                                     </div>
                                                     <div class="fw-semibold fs-6 text-gray-400">
-                                                        مجموع الغياب الكلي</div>
+                                                  مجموع الغياب الكلي</div>
                                                 </div>
                                             </div>
                                             <!--end::Stats-->
@@ -189,25 +191,50 @@
                     <div class="card-body p-lg-17">
                         <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link {{ $tab==1 ?"active" : ' ' }}" id="pills-home-tab" data-bs-toggle="pill"
-                                    data-bs-target="#pills-home" type="button" role="tab"
+                                <button class="nav-link {{ $tab == 0 ? 'active' : ' ' }}" id="pills-general-tab"
+                                    data-bs-toggle="pill" data-bs-target="#pills-general" type="button" role="tab"
+                                    aria-controls="pills-general" aria-selected="true"> بيانات الطالب </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link {{ $tab == 1 ? 'active' : ' ' }}" id="pills-home-tab"
+                                    data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab"
                                     aria-controls="pills-home" aria-selected="true">الحضور والغياب</button>
                             </li>
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link {{ $tab==2 ?"active" : ' ' }}" id="pills-profile-tab" data-bs-toggle="pill"
-                                    data-bs-target="#pills-profile" type="button" role="tab"
+                                <button class="nav-link {{ $tab == 2 ? 'active' : ' ' }}" id="pills-profile-tab"
+                                    data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab"
                                     aria-controls="pills-profile" aria-selected="false">المدفوعات</button>
                             </li>
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link {{ $tab==3 ?"active" : ' ' }} " id="pills-contact-tab" data-bs-toggle="pill"
-                                    data-bs-target="#pills-contact" type="button" role="tab"
+                                <button class="nav-link {{ $tab == 3 ? 'active' : ' ' }} " id="pills-contact-tab"
+                                    data-bs-toggle="pill" data-bs-target="#pills-contact" type="button" role="tab"
                                     aria-controls="pills-contact" aria-selected="false">الدرجات</button>
                             </li>
 
                         </ul>
                         <div class="tab-content" id="pills-tabContent">
-                            <div class="tab-pane fade {{ $tab==1 ?" show active" : ' ' }}" id="pills-home" role="tabpanel"
-                                aria-labelledby="pills-home-tab" tabindex="0">
+                            <div class="tab-pane fade {{ $tab == 0 ? ' show active' : ' ' }}" id="pills-general"
+                                role="tabpanel" aria-labelledby="pills-general-tab" tabindex="0">
+
+
+
+                                <form method="POST" action="{{ route('admin.students.update', $student->id) }} "
+                                    class="modal-content"  id="student-form">
+                                    @csrf
+                                    @method('PUT')
+                                    <input type="hidden" name="tab" value="0">
+
+                                    <div class="modal-body">
+                                        @include('admin.students._form', ['student' => $student])
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button class="w-100 btn btn-primary">حفظ</button>
+                                    </div>
+                                </form>
+
+                            </div>
+                            <div class="tab-pane fade {{ $tab == 1 ? ' show active' : ' ' }}" id="pills-home"
+                                role="tabpanel" aria-labelledby="pills-home-tab" tabindex="0">
 
                                 @php
                                     $arabicMonths = [
@@ -290,8 +317,8 @@
 
                             </div>
 
-                            <div class="tab-pane fade {{ $tab==2 ?" show active" : ' ' }}" id="pills-profile" role="tabpanel"
-                                aria-labelledby="pills-profile-tab" tabindex="0">
+                            <div class="tab-pane fade {{ $tab == 2 ? ' show active' : ' ' }}" id="pills-profile"
+                                role="tabpanel" aria-labelledby="pills-profile-tab" tabindex="0">
 
 
                                 <!-- فلتر الشهر -->
@@ -360,9 +387,9 @@
                                 </div>
 
                             </div>
-                            <div class="tab-pane fade  {{ $tab==3 ?" show active" : ' ' }}" id="pills-contact" role="tabpanel"
-                                aria-labelledby="pills-contact-tab" tabindex="0">...</div>
-                        
+                            <div class="tab-pane fade  {{ $tab == 3 ? ' show active' : ' ' }}" id="pills-contact"
+                                role="tabpanel" aria-labelledby="pills-contact-tab" tabindex="0">...</div>
+
                         </div>
                     </div>
                 </div>
@@ -427,5 +454,13 @@
             return true;
         }
     </script>
+    <script>
+    document.getElementById('student-form').addEventListener('submit', function (e) {
+        const tabInput = document.getElementById('tab-input');
+        if (tabInput) {
+            tabInput.remove(); // امسح العنصر من الفورم قبل الإرسال
+        }
+    });
+</script>
 
 @endsection

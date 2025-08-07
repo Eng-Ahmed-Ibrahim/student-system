@@ -14,13 +14,13 @@ use App\Http\Controllers\Controller;
 class StudentController extends Controller
 {
     private $StudentService;
-    public function __construct(StudentService $StudentService )
+    public function __construct(StudentService $StudentService)
     {
         $this->StudentService = $StudentService;
     }
     public function index(Request $request)
     {
-        
+
         $students = Student::where("grade_level", $request->grade_level)
             ->with('group')
             ->withSum('fees as total_fees', 'amount')
@@ -42,11 +42,11 @@ class StudentController extends Controller
             ->with(['fees' => function ($query) use ($month, $year) {
                 $query->where('month', $month)->where('year', $year);
             }])
-            ->withSum(['fees as total_fees' => function ($query) use ( $year) {
+            ->withSum(['fees as total_fees' => function ($query) use ($year) {
                 $query->where('year', $year);
             }], 'amount')
-            ->withSum(['payments as total_paid' => function ($query) use ( $year) {
-                $query->whereHas('studentFee', function ($q) use ( $year) {
+            ->withSum(['payments as total_paid' => function ($query) use ($year) {
+                $query->whereHas('studentFee', function ($q) use ($year) {
                     $q->where('year', $year);
                 });
             }], 'amount')
@@ -73,8 +73,10 @@ class StudentController extends Controller
         $presentCount = $attendances->where('status', 1)->count();
         $absentCount = $attendances->where('status', 0)->count();
 
-        $tab= $request->tab ?? 1;
-        return view('admin.students.show', compact('student', 'attendances','tab', 'presentCount', 'absentCount','availableMonths','month'));
+        $tab = $request->tab ?? session('tab', 0);
+        session()->forget('tab');
+        $groups = Group::all();
+        return view('admin.students.show', compact('groups', 'student', 'attendances', 'tab', 'presentCount', 'absentCount', 'availableMonths', 'month'));
     }
     public function store(Request $request)
     {
@@ -136,6 +138,8 @@ class StudentController extends Controller
             'national_id' => 'required|string',
             'address' => 'required|string',
             'grade_level' => 'required|string',
+            'discount' => 'required|integer',
+            'discount_reason' => 'required|string',
 
         ]);
 
@@ -146,10 +150,14 @@ class StudentController extends Controller
             'parent_phone',
             'national_id',
             'address',
+            'discount',
+            'discount_reason',
             'grade_level'
         ]));
+        session(['tab' => 0]);
 
-        return redirect()->back()->with('success', 'تم تعديل الطالب بنجاح');
+        return redirect()->back()
+            ->with('success', 'تم تعديل الطالب بنجاح');
     }
     public function destroy($id)
     {

@@ -24,8 +24,7 @@
                 </div>
                 <div class="d-flex align-items-center gap-2 gap-lg-3">
 
-                    <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addGroupModal">Add
-                        Group</button>
+                    <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addGroupModal">اضافه مجموعه</button>
 
                 </div>
             </div>

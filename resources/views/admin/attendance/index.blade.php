@@ -80,7 +80,8 @@
                                             $attendance = $student->attendance->first();
                                         @endphp
                                         <tr>
-                                            <td>{{ $student->student_code }}</td>
+
+                                            <td><a href="{{ route('admin.students.show',$student->id) }}">#{{ $student->student_code }}</a></td>
                                             <td>{{ $student->name }}</td>
                                             <td>{{ $student->phone }}</td>
                                             <td>{{ $student->parent_phone }}</td>
