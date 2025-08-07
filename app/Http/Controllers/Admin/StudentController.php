@@ -41,11 +41,11 @@ class StudentController extends Controller
             ->with(['fees' => function ($query) use ($month, $year) {
                 $query->where('month', $month)->where('year', $year);
             }])
-            ->withSum(['fees as total_fees' => function ($query) use ($month, $year) {
+            ->withSum(['fees as total_fees' => function ($query) use ( $year) {
                 $query->where('year', $year);
             }], 'amount')
-            ->withSum(['payments as total_paid' => function ($query) use ($month, $year) {
-                $query->whereHas('studentFee', function ($q) use ($month, $year) {
+            ->withSum(['payments as total_paid' => function ($query) use ( $year) {
+                $query->whereHas('studentFee', function ($q) use ( $year) {
                     $q->where('year', $year);
                 });
             }], 'amount')
