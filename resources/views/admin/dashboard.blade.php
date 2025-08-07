@@ -33,6 +33,7 @@
                     <div class="card col-md-6 col-12 mb-5">
                         <div class="card-body">
                             <h3 class="mb-4">💰 عدد المدفوعات لكل شهر</h3>
+                            <h5>المجموع الكلي : {{ $total_payments }}</h5>
                             <canvas id="paymentsChart" height="100"></canvas>
                         </div>
                     </div>

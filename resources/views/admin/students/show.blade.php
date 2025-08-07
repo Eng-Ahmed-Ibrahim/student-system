@@ -421,8 +421,8 @@
             <form method="POST" action="{{ route('admin.payments.store') }}" onsubmit="return validatePayment()">
                 @csrf
                 <input type="hidden" name="student_id" value="{{ $student->id }}">
-                <input type="hidden" name="month" value="{{ $month }}">
-                <input type="hidden" name="year" value="{{ now()->year }}">
+                {{-- <input type="hidden" name="month" value="{{ $month }}">
+                <input type="hidden" name="year" value="{{ now()->year }}"> --}}
 
                 <div class="modal-content">
                     <div class="modal-header">

@@ -49,10 +49,11 @@ class DashboardController extends Controller
             ->whereYear('created_at', now()->year)
             ->groupBy(DB::raw('MONTH(created_at)'))
             ->pluck('total', 'month');
+        $total_payments = $monthlyPayments->sum();
 
-        // نضمن وجود كل الشهور من 1 لـ 12 حتى اللي مفيش فيها بيانات
         $monthlyPaymentsFormatted = [];
         for ($i = 1; $i <= 12; $i++) {
+            // نضمن وجود كل الشهور من 1 لـ 12 حتى اللي مفيش فيها بيانات
             $monthlyPaymentsFormatted[] = $monthlyPayments[$i] ?? 0;
         }
 
@@ -65,8 +66,9 @@ class DashboardController extends Controller
             'todayGroups' => $todayGroups,
             'labels' => $labels,
             'data' => $data,
-            'monthlyPaymentsFormatted'=>$monthlyPaymentsFormatted,
-             'monthNames'=>$monthNames
+            'monthlyPaymentsFormatted' => $monthlyPaymentsFormatted,
+            'monthNames' => $monthNames,
+            'total_payments' => $total_payments,
         ]);
     }
 }
