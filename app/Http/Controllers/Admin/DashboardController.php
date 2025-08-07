@@ -35,9 +35,8 @@ class DashboardController extends Controller
     }
 
         // عدد الطلاب لكل مجموعة (حتى المجموعات اللي مفيهاش طلاب)
-        $groupsWithStudentCount = Group::withCount('students')->get();
-
-        // جلب جدول الحصص لليوم الحالي
+        $groupsWithStudentCount = Group::select('id','name')->withCount('students')->orderBy('students_count',"DESC")->get();
+        // جلب جدول الحصص لليوم الحالي  
         $today = Carbon::now()->format('l'); // "Saturday", "Sunday", etc.
 
         $todayGroups = Group::whereJsonContains('days', $today)->get();

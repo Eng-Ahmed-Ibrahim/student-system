@@ -39,7 +39,7 @@
                     </div>
 
                     <div class="card col-md-6 col-12 mb-5">
-                        <div class="card-body py-2"  style="height: 150px;overflow-y: scroll;">
+                        <div class="card-body py-2" style="height: 150px;overflow-y: scroll;">
                             <h3 class="mb-4">👥 عدد الطلاب في كل مجموعة</h3>
                             <ul class="list-group">
                                 @foreach ($groupsWithStudentCount as $group)
@@ -55,10 +55,24 @@
 
                 <div class="card">
                     <div class="card-body">
-                        <h3 class="mb-4">📅 جدول الحصص اليوم ({{ \Carbon\Carbon::now()->translatedFormat('l') }})</h3>
+                        @php
+                            $daysAr = [
+                                'Saturday' => 'السبت',
+                                'Sunday' => 'الأحد',
+                                'Monday' => 'الاثنين',
+                                'Tuesday' => 'الثلاثاء',
+                                'Wednesday' => 'الأربعاء',
+                                'Thursday' => 'الخميس',
+                                'Friday' => 'الجمعة',
+                            ];
+                            $today=$daysAr[\Carbon\Carbon::now()->translatedFormat('l')]
+
+                        @endphp
+                        <h3 class="mb-4">📅 جدول الحصص اليوم ({{$today}})</h3>
                         <ul class="list-group">
                             @forelse($todayGroups as $group)
-                                <li class="list-group-item">{{ $group->name }} - {{   \Carbon\Carbon::parse($group->time)->format('h:i A')}} </li>
+                                <li class="list-group-item">{{ $group->name }} -
+                                    {{ \Carbon\Carbon::parse($group->time)->format('h:i A') }} </li>
                             @empty
                                 <li class="list-group-item text-muted">لا يوجد مجموعات اليوم</li>
                             @endforelse
