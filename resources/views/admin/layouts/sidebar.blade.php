@@ -2,7 +2,7 @@
     data-kt-drawer-activate="{default: true, lg: false}" data-kt-drawer-overlay="true" data-kt-drawer-width="225px"
     data-kt-drawer-direction="start" data-kt-drawer-toggle="#kt_app_sidebar_mobile_toggle">
     <div class="app-sidebar-logo px-6" id="kt_app_sidebar_logo">
-        <a href="/admin">
+        <a  href="{{ route('admin.dashboard') }}">
             <img alt="Logo" src="{{ asset('images/static/logo2.png') }}" class="h-55px app-sidebar-logo-default" />
             <img alt="Logo" src="{{ asset('images/static/logo2.png') }}" class="h-20px app-sidebar-logo-minimize" />
         </a>
@@ -27,7 +27,7 @@
                     data-kt-menu="true" data-kt-menu-expand="false">
 
                     <div class="menu-item">
-                        <a class="menu-link">
+                        <a  href="{{ route('admin.dashboard') }}" class="menu-link">
                             <span class="menu-icon">
                                 <i class="ki-duotone ki-calendar-8 fs-2">
                                     <span class="path1"></span>
