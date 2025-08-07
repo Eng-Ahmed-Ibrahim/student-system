@@ -42,11 +42,11 @@ class StudentController extends Controller
                 $query->where('month', $month)->where('year', $year);
             }])
             ->withSum(['fees as total_fees' => function ($query) use ($month, $year) {
-                $query->where('month', $month)->where('year', $year);
+                $query->where('year', $year);
             }], 'amount')
             ->withSum(['payments as total_paid' => function ($query) use ($month, $year) {
                 $query->whereHas('studentFee', function ($q) use ($month, $year) {
-                    $q->where('month', $month)->where('year', $year);
+                    $q->where('year', $year);
                 });
             }], 'amount')
             ->with(['payments' => function ($query) use ($month, $year) {
@@ -72,6 +72,7 @@ class StudentController extends Controller
         $presentCount = $attendances->where('status', 1)->count();
         $absentCount = $attendances->where('status', 0)->count();
 
+        
         return view('admin.students.show', compact('student', 'attendances', 'presentCount', 'absentCount','availableMonths','month'));
     }
     public function store(Request $request)
