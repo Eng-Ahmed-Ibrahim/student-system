@@ -30,11 +30,12 @@ class AttendanceService
 
         foreach ($groups as $group) {
             $studentIds = $group->students->pluck('id')->toArray();
-
+            
             // اجلب كل الحضور الموجودين مسبقًا لهؤلاء الطلاب في هذا اليوم والمجموعة
+            /** @var \App\Models\Group $group */
             $existingAttendances = Attendance::whereIn('student_id', $studentIds)
-                ->where('group_id', $group->id)
-                ->where('date', $todayDate)
+            ->where('group_id', $group->id)
+            ->where('date', $todayDate)
                 ->pluck('student_id')
                 ->toArray();
 
@@ -42,8 +43,8 @@ class AttendanceService
             $newStudents = $group->students->whereNotIn('id', $existingAttendances);
 
             $insertData = [];
-
             foreach ($newStudents as $student) {
+                /** @var \App\Models\Student $student */
                 $insertData[] = [
                     'student_id' => $student->id,
                     'group_id' => $group->id,

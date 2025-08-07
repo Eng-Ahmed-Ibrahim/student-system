@@ -31,11 +31,11 @@ class StudentService
                 if (in_array($student->id, $existingFees) || !$student->group) {
                     continue;
                 }
-
+                
                 $monthlyFee = $student->group->monthly_fee ?? 0;
-
                 $insertData[] = [
                     'student_id' => $student->id,
+                    // @phpstan-ignore-next-line
                     'group_id' => $student->group->id,
                     'amount' => $monthlyFee,
                     'status' => 'unpaid',
