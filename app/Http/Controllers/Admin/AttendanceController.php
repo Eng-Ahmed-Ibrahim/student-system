@@ -19,6 +19,7 @@ class AttendanceController extends Controller
     }
     public function index(Request $request)
     {
+        
         $group = Group::select('id', 'name', 'time', 'days')->findOrFail($request->group);
         $this->AttendanceService->generateAttendanceIfNotExists($group);
         $today = Carbon::today()->toDateString();

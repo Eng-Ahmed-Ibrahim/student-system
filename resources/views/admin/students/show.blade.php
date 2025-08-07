@@ -105,6 +105,11 @@
                                                     </i>رقم ولي الامر : {{ $student->parent_phone }}</a>
                                             </div>
                                             <!--end::Info-->
+                                                               <!-- زر فتح المودال -->
+                                <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal"
+                                    data-bs-target="#paymentModal">
+                                    دفع جديد
+                                </button>
                                         </div>
                       
                                     </div>
@@ -137,6 +142,7 @@
                                                     </div>
                                                     <div class="fw-semibold fs-6 text-gray-400">مجموع المدفوعات
                                                     </div>
+                                                    
                                                 </div>
 
 
@@ -284,11 +290,7 @@
 
                             <div class="tab-pane fade" id="pills-profile" role="tabpanel"
                                 aria-labelledby="pills-profile-tab" tabindex="0">
-                                <!-- زر فتح المودال -->
-                                <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal"
-                                    data-bs-target="#paymentModal">
-                                    دفع جديد
-                                </button>
+             
 
                                 <!-- فلتر الشهر -->
                                 <form method="GET" action="">
@@ -321,13 +323,7 @@
                                     </div>
                                 </form>
 
-                                <!-- المستحق والمدفوع -->
-                                <div class="mb-3">
-                                    <h5>إجمالي الرسوم المستحقة: <span
-                                            class="badge bg-primary">{{ $student->total_fees ?? 0 }} جنيه</span></h5>
-                                    <h5>إجمالي المدفوع: <span class="badge bg-success">{{ $student->total_paid ?? 0 }}
-                                            جنيه</span></h5>
-                                </div>
+                 
 
                                 <!-- جدول المدفوعات -->
                                 <div class="tab-pane fade show active" id="pills-profile" role="tabpanel"

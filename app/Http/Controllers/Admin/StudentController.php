@@ -14,12 +14,13 @@ use App\Http\Controllers\Controller;
 class StudentController extends Controller
 {
     private $StudentService;
-    public function __construct(StudentService $StudentService)
+    public function __construct(StudentService $StudentService )
     {
         $this->StudentService = $StudentService;
     }
     public function index(Request $request)
     {
+        
         $students = Student::where("grade_level", $request->grade_level)
             ->with('group')
             ->withSum('fees as total_fees', 'amount')
@@ -72,7 +73,6 @@ class StudentController extends Controller
         $presentCount = $attendances->where('status', 1)->count();
         $absentCount = $attendances->where('status', 0)->count();
 
-        
         return view('admin.students.show', compact('student', 'attendances', 'presentCount', 'absentCount','availableMonths','month'));
     }
     public function store(Request $request)

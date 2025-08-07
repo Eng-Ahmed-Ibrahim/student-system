@@ -10,46 +10,64 @@ class AttendanceService
 {
     public function generateAttendanceIfNotExists()
     {
-        $today = now()->toDateString();
+        // $today = now()->toDateString();
 
-        $alreadyGenerated = Attendance::whereDate('date', $today)->exists();
+        // $alreadyGenerated = Attendance::whereDate('date', $today)->exists();
 
-        if (!$alreadyGenerated) {
-            $this->generateDailyAttendance();
-        }
-        return false;
+        // if (!$alreadyGenerated) {
+        $this->generateDailyAttendance();
+        // }
+        return true;
     }
     private function generateDailyAttendance()
     {
-
-
-        $today = now()->format('l'); // اسم اليوم مثل "Saturday"
+        $today = now()->format('l'); // مثل "Saturday"
         $todayDate = now()->toDateString();
+        $currentYear = now()->year;
+        $currentMonth = now()->month;
 
         $groups = Group::whereJsonContains('days', $today)->with('students')->get();
 
         foreach ($groups as $group) {
-            /** @var \App\Models\Student $student */
-            foreach ($group->students as $student) {
-                // نستخدم firstOrCreate لتفادي التكرار
-                Attendance::firstOrCreate([
+            $studentIds = $group->students->pluck('id')->toArray();
+
+            // اجلب كل الحضور الموجودين مسبقًا لهؤلاء الطلاب في هذا اليوم والمجموعة
+            $existingAttendances = Attendance::whereIn('student_id', $studentIds)
+                ->where('group_id', $group->id)
+                ->where('date', $todayDate)
+                ->pluck('student_id')
+                ->toArray();
+
+            // فلترة الطلاب اللي لم يتم تسجيل حضورهم
+            $newStudents = $group->students->whereNotIn('id', $existingAttendances);
+
+            $insertData = [];
+
+            foreach ($newStudents as $student) {
+                $insertData[] = [
                     'student_id' => $student->id,
-                    'group_id'=>$group->id,
+                    'group_id' => $group->id,
                     'date' => $todayDate,
-                ], [
+                    'year' => $currentYear,
+                    'month' => $currentMonth,
                     'status' => false,
                     'class_start_at' => $group->time,
-                    'year'          => now()->year,
-                    'month'         => now()->month,
-                ]);
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+
+            // إدخال دفعة واحدة
+            if (!empty($insertData)) {
+                Attendance::insert($insertData);
             }
         }
     }
-    
-    public function changeStatusOfAttendance($studentId , $status)
+
+    public function changeStatusOfAttendance($studentId, $status)
     {
-        $check=Attendance::where("student_id",$studentId)->where('date',Carbon::today()->toDateString())->exists();
-        if(! $check )
+        $check = Attendance::where("student_id", $studentId)->where('date', Carbon::today()->toDateString())->exists();
+        if (! $check)
             return false;
         return Attendance::updateOrCreate(
             [
@@ -62,8 +80,5 @@ class AttendanceService
             ]
         );
     }
-    public function Check_if_all_student_attendance($group){
-        
-    }
-    
+    public function Check_if_all_student_attendance($group) {}
 }

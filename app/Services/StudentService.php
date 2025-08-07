@@ -9,14 +9,53 @@ use Illuminate\Support\Facades\Log;
 
 class StudentService
 {
-
     public function generate_genral_monthly_fee()
     {
-        $students = Student::with(['group'])->get();
-        foreach ($students as $student) {
-            $this->generateMonthlyFeeIfNotExists($student);
-        }
+        $today = Carbon::now();
+        $month = $today->month;
+        $year = $today->year;
+
+        Student::with('group')->chunk(500, function ($studentsChunk) use ($month, $year) {
+            $studentIds = $studentsChunk->pluck('id')->toArray();
+
+            $existingFees = StudentFee::whereIn('student_id', $studentIds)
+                ->where('month', $month)
+                ->where('year', $year)
+                ->pluck('student_id')
+                ->toArray();
+
+            $insertData = [];
+
+            foreach ($studentsChunk as $student) {
+                // استخدم نفس منطق generateMonthlyFeeIfNotExists
+                if (in_array($student->id, $existingFees) || !$student->group) {
+                    continue;
+                }
+
+                $monthlyFee = $student->group->monthly_fee ?? 0;
+
+                $insertData[] = [
+                    'student_id' => $student->id,
+                    'group_id' => $student->group->id,
+                    'amount' => $monthlyFee,
+                    'status' => 'unpaid',
+                    'month' => $month,
+                    'year' => $year,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+
+            if (!empty($insertData)) {
+                StudentFee::insert($insertData);
+                Log::info("Inserted " . count($insertData) . " monthly fees in chunk for $month/$year.");
+            }
+        });
+
+        Log::info("Finished generating all monthly fees for $month/$year.");
     }
+
+    // تفضل موجودة زي ما هي لمعالجة طالب واحد
     public function generateMonthlyFeeIfNotExists($student)
     {
         $today = Carbon::now();
@@ -28,10 +67,8 @@ class StudentService
             return false;
         }
 
-        // مثلاً نفرض رسوم الاشتراك 300
         $monthlyFee = $group->monthly_fee ?? 0;
 
-        // لو فيه سجل بالفعل ما تعملش حاجة
         $exists = StudentFee::where('student_id', $student->id)
             ->where('month', $month)
             ->where('year', $year)
@@ -48,6 +85,7 @@ class StudentService
             ]);
             Log::info("Created fee for student {$student->id} for $month/$year");
         }
+
         return true;
     }
 }
