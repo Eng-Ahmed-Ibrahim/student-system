@@ -34,15 +34,18 @@ class AttendanceService
                 // نستخدم firstOrCreate لتفادي التكرار
                 Attendance::firstOrCreate([
                     'student_id' => $student->id,
+                    'group_id'=>$group->id,
                     'date' => $todayDate,
                 ], [
                     'status' => false,
                     'class_start_at' => $group->time,
-
+                    'year'          => now()->year,
+                    'month'         => now()->month,
                 ]);
             }
         }
     }
+    
     public function changeStatusOfAttendance($studentId , $status)
     {
         $check=Attendance::where("student_id",$studentId)->where('date',Carbon::today()->toDateString())->exists();
@@ -58,6 +61,9 @@ class AttendanceService
                 'time' => $status == 0 ? null : now()->format('H:i:s'),
             ]
         );
+    }
+    public function Check_if_all_student_attendance($group){
+        
     }
     
 }

@@ -3,10 +3,14 @@
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
+use App\Console\Commands\GenerateMonthly;
 use App\Console\Commands\GenerateDailyAttendance;
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
-Schedule::command(GenerateDailyAttendance::class)->everyMinute();
+
+
+Schedule::command(GenerateDailyAttendance::class)->everySecond();
+Schedule::command(GenerateMonthly::class)->everySecond();
 

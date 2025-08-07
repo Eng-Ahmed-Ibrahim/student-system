@@ -38,6 +38,15 @@
     @yield('css')
 
     <style>
+        html{
+            direction: rtl;
+        }
+        *{
+            text-align: right;
+        }
+        td,th{
+            text-align: center !important;
+        }
         .image-input.image-input-outline .image-input-wrapper {
             border: 3px solid var(--bs-body-bg);
             box-shadow: var(--bs-box-shadow);

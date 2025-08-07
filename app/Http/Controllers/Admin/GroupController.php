@@ -23,6 +23,7 @@ class GroupController extends Controller
             'limit' => 'required|integer',
             'days' => 'required|array',
             'time' => 'required',
+            'monthly_fee' => 'required|numeric|min:0',
             'grade_level' => 'required|string',
 
         ]);
@@ -33,6 +34,7 @@ class GroupController extends Controller
             'limit' => $request->limit,
             'days' => ($request->days),
             'time' => $request->time,
+            'monthly_fee' => $request->monthly_fee,
             'grade_level' => $request->grade_level,
         ]);
 
@@ -47,6 +49,7 @@ class GroupController extends Controller
             'limit' => 'required|integer',
             'days' => 'required|array',
             'time' => 'required',
+            'monthly_fee' => 'required|numeric|min:0',
             'grade_level' => 'required|string',
 
         ]);
@@ -57,6 +60,7 @@ class GroupController extends Controller
             'limit' => $request->limit,
             'days' => ($request->days),
             'time' => $request->time,
+            'monthly_fee' => $request->monthly_fee,
             'grade_level' => $request->grade_level,
 
         ]);

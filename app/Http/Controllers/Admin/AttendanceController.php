@@ -19,9 +19,9 @@ class AttendanceController extends Controller
     }
     public function index(Request $request)
     {
-        $this->AttendanceService->generateAttendanceIfNotExists();
+        $group = Group::select('id', 'name', 'time', 'days')->findOrFail($request->group);
+        $this->AttendanceService->generateAttendanceIfNotExists($group);
         $today = Carbon::today()->toDateString();
-        $group = Group::select('id', 'name', 'time')->findOrFail($request->group);
 
         $students = Student::whereHas('attendance', function ($query) use ($today) {
             $query->where('date', $today);
@@ -35,8 +35,8 @@ class AttendanceController extends Controller
         $absentCount = 0;
 
         foreach ($students as $student) {
-            $attendance = $student->attendance;
-            
+            $attendance = $student->attendance->first();
+
             /** @phpstan-ignore-next-line */
             if ($attendance && $attendance->status == 1) {
                 $presentCount++;

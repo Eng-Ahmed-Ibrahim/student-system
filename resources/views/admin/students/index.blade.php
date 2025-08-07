@@ -38,18 +38,20 @@
 
                         <!-- جدول الطلاب -->
                         <div class="table-responsive">
-<button class="btn btn-primary mb-3" onclick="downloadAllBarcodes()">📥 تحميل كل الباركودات</button>
+                            <button class="btn btn-primary mb-3" onclick="downloadAllBarcodes()">📥 تحميل كل
+                                الباركودات</button>
 
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>
                                         <th>الكود</th>
                                         <th>الباركود</th>
-
                                         <th>الاسم</th>
                                         <th>التليفون</th>
                                         <th>تليفون ولي الأمر</th>
                                         <th>الرقم القومي</th>
+                                        <th>المستحقات </th>
+                                        <th>المدفوعات</th>
                                         <th>العنوان</th>
                                         <th>محظور؟</th>
                                         <th>الإجراء</th>
@@ -58,7 +60,7 @@
                                 <tbody>
                                     @foreach ($students as $student)
                                         <tr>
-                                            <td>{{ $student->student_code }}</td>
+                                            <td><a href="{{ route('admin.students.show',$student->id) }}">#{{ $student->student_code }}</a></td>
                                             <td>
                                                 @if ($student->barcode)
                                                     <div class="barcode-wrapper text-center d-flex gap-1">
@@ -88,6 +90,8 @@
                                                 <div style="width:120px">{{ $student->parent_phone }}</div>
                                             </td>
                                             <td>{{ $student->national_id }}</td>
+                                            <td>{{ $student->total_fees - $student->total_paid }}</td>
+                                            <td>{{ $student->total_paid ?? 0 }}</td>
                                             <td>{{ Str::limit($student->address, 10) }}</td>
                                             <td>
                                                 @if ($student->blocked)
@@ -290,21 +294,21 @@
 
 @endsection
 @section('js')
-<script>
-    function downloadAllBarcodes() {
-        // حدد كل روابط التحميل اللي تحتوي على base64 للباركود
-        const links = document.querySelectorAll('a[href^="data:image/png;base64,"]');
+    <script>
+        function downloadAllBarcodes() {
+            // حدد كل روابط التحميل اللي تحتوي على base64 للباركود
+            const links = document.querySelectorAll('a[href^="data:image/png;base64,"]');
 
-        links.forEach((link, index) => {
-            const downloadLink = document.createElement('a');
-            downloadLink.href = link.href;
-            downloadLink.download = link.download || `barcode-${index + 1}.png`;
-            document.body.appendChild(downloadLink);
-            downloadLink.click();
-            document.body.removeChild(downloadLink);
-        });
-    }
-</script>
+            links.forEach((link, index) => {
+                const downloadLink = document.createElement('a');
+                downloadLink.href = link.href;
+                downloadLink.download = link.download || `barcode-${index + 1}.png`;
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+            });
+        }
+    </script>
 
 
 

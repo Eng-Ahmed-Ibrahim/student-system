@@ -77,14 +77,14 @@
                                 @if (count($students) > 0)
                                     @foreach ($students as $student)
                                         @php
-                                            $attendance = $student->attendance;
+                                            $attendance = $student->attendance->first();
                                         @endphp
                                         <tr>
                                             <td>{{ $student->student_code }}</td>
                                             <td>{{ $student->name }}</td>
                                             <td>{{ $student->phone }}</td>
                                             <td>{{ $student->parent_phone }}</td>
-                                            <td>{{ $attendance->time ? \Carbon\Carbon::parse($attendance->time)->format('h:i A') : ' ' }}
+                                            <td>{{ $attendance->time ? \Carbon\Carbon::parse($attendance->time)->format('h:i A') : ' لم يحضر ' }}
                                             </td>
                                             <td>{{ \Carbon\Carbon::parse($attendance->date)->format('Y-m-d') }}</td>
 

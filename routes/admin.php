@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\GroupController;
 use App\Http\Controllers\Admin\RolesController;
+use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\AttendanceController;
 
@@ -24,3 +25,5 @@ Route::post('/attendance/mark-barcode', [AttendanceController::class, 'markByBar
     ->name('attendance.mark-barcode');
 
 Route::get('/groups/by-grade', [GroupController::class, 'getByGrade']);
+
+Route::post('/payments/store', [PaymentController::class, 'store'])->name('payments.store');

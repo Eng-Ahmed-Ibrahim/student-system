@@ -44,6 +44,7 @@
                                     <th>الكود</th>
                                     <th>الاسم</th>
                                     <th>الصف</th>
+                                    <th>السعر</th>
                                     <th>الحد الأقصى</th>
                                     <th>الأيام</th>
                                     <th>الوقت</th>
@@ -64,17 +65,18 @@
                                 @endphp
 
                                 @php
-                                $grades=[
-                                    "1"=>"الصف الاول الثانوي",
-                                    "2"=>"الصف الثاني الثانوي",
-                                    "3"=>"الصف الثالث الثانوي"
-                                ]
+                                    $grades = [
+                                        '1' => 'الصف الاول الثانوي',
+                                        '2' => 'الصف الثاني الثانوي',
+                                        '3' => 'الصف الثالث الثانوي',
+                                    ];
                                 @endphp
                                 @foreach ($groups as $group)
                                     <tr>
                                         <td>{{ $group->code }}</td>
                                         <td>{{ $group->name }}</td>
                                         <td>{{ $grades[$group->grade_level] }}</td>
+                                        <td>{{ $group->monthly_fee }}</td>
                                         <td>{{ $group->limit }}</td>
 
                                         {{-- عرض الأيام بالعربية --}}
@@ -90,18 +92,22 @@
                                         </td>
 
                                         <td>
-                                            
+
                                             <div class="d-flex gap-1">
 
-                                                <button class="btn btn-sm btn-warning edit-btn" data-id="{{ $group->id }}"
-                                                    data-name="{{ $group->name }}" data-code="{{ $group->code }}"
-                                                    data-limit="{{ $group->limit }}" data-days='@json($group->days)'
+                                                <button class="btn btn-sm btn-warning edit-btn"
+                                                    data-id="{{ $group->id }}" data-name="{{ $group->name }}"
+                                                    data-code="{{ $group->code }}" data-limit="{{ $group->limit }}"
+                                                    data-days='@json($group->days)'
                                                     data-time="{{ $group->time }}"
+                                                    data-monthly_fee="{{ $group->monthly_fee }}"
                                                     data-grade_level="{{ $group->grade_level }}" data-bs-toggle="modal"
                                                     data-bs-target="#editGroupModal">
                                                     تعديل
                                                 </button>
-                                                <a class="btn btn-sm btn-primary" href="{{ route('admin.attendance.index',['group'=>$group->id]) }}">الحضور والغياب</a>
+                                                <a class="btn btn-sm btn-primary"
+                                                    href="{{ route('admin.attendance.index', ['group' => $group->id]) }}">الحضور
+                                                    والغياب</a>
                                             </div>
                                         </td>
 
@@ -125,34 +131,51 @@
                     <h5 class="modal-title">إضافة مجموعة</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
                 </div>
-
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="grade_level" class="form-label">الصف الدراسي</label>
                         <select name="grade_level" id="grade_level" class="form-select" required>
                             <option value="" disabled selected>اختر الصف الدراسي</option>
                             <option value="1"
-                                {{ old('grade_level', $student->grade_level ?? '') == 1 ? 'selected' : '' }}>الصف الأول
-                                الثانوي</option>
+                                {{ old('grade_level', $student->grade_level ?? '') == 1 ? 'selected' : '' }}>
+                                الصف الأول الثانوي
+                            </option>
                             <option value="2"
-                                {{ old('grade_level', $student->grade_level ?? '') == 2 ? 'selected' : '' }}>الصف الثاني
-                                الثانوي</option>
+                                {{ old('grade_level', $student->grade_level ?? '') == 2 ? 'selected' : '' }}>
+                                الصف الثاني الثانوي
+                            </option>
                             <option value="3"
-                                {{ old('grade_level', $student->grade_level ?? '') == 3 ? 'selected' : '' }}>الصف الثالث
-                                الثانوي</option>
+                                {{ old('grade_level', $student->grade_level ?? '') == 3 ? 'selected' : '' }}>
+                                الصف الثالث الثانوي
+                            </option>
                         </select>
                     </div>
 
                     <div class="mb-3">
-                        <input type="text" name="name" class="form-control" placeholder="اسم المجموعة" required>
+                        <label for="name" class="form-label">اسم المجموعة</label>
+                        <input type="text" name="name" id="name" class="form-control" placeholder="اسم المجموعة"
+                            required>
                     </div>
 
                     <div class="mb-3">
-                        <input type="text" name="code" class="form-control" placeholder="كود المجموعة" required>
+                        <label for="monthly_fee" class="form-label">الرسوم الشهرية</label>
+                        <input type="number" name="monthly_fee" id="monthly_fee" class="form-control" placeholder="السعر"
+                            required>
                     </div>
 
-                    <div class="mb-3">
-                        <input type="number" name="limit" class="form-control" placeholder="الحد الأقصى للطلاب" required>
+                    <div class="row">
+
+                        <div class="mb-3 col">
+                            <label for="code" class="form-label">كود المجموعة</label>
+                            <input type="text" name="code" id="code" class="form-control" placeholder="كود المجموعة"
+                            required>
+                        </div>
+                        
+                        <div class="mb-3 col">
+                            <label for="limit" class="form-label">الحد الأقصى للطلاب</label>
+                            <input type="number" name="limit" id="limit" class="form-control"
+                            placeholder="الحد الأقصى للطلاب" required>
+                        </div>
                     </div>
 
                     <div class="mb-3">
@@ -170,9 +193,11 @@
                     </div>
 
                     <div class="mb-3">
-                        <input type="time" name="time" class="form-control" placeholder="وقت المجموعة" required>
+                        <label for="time" class="form-label">وقت المجموعة</label>
+                        <input type="time" name="time" id="time" class="form-control" required>
                     </div>
                 </div>
+
 
                 <div class="modal-footer">
                     <button class="btn btn-success">إضافة</button>
@@ -203,17 +228,29 @@
                         </select>
                     </div>
 
-                    <div class="mb-3">
-                        <input type="text" name="name" class="form-control" id="editName"
+                    <div class="row">
+
+                        <div class="mb-3 col">
+                            <label for="editName" class="form-label">اسم المجموعة</label>
+                            <input type="text" name="name" class="form-control" id="editName"
                             placeholder="اسم المجموعة" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <input type="text" name="code" class="form-control" id="editCode"
+                        </div>
+                        
+                        <div class="mb-3 col">
+                            <label for="editCode" class="form-label">كود المجموعة</label>
+                            <input type="text" name="code" class="form-control" id="editCode"
                             placeholder="كود المجموعة" required>
+                        </div>
                     </div>
 
                     <div class="mb-3">
+                        <label for="editMonthlyFee" class="form-label">الرسوم الشهرية</label>
+                        <input type="number" id="editMonthlyFee" name="monthly_fee" class="form-control"
+                            placeholder="السعر" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editLimit" class="form-label">الحد الأقصى للطلاب</label>
                         <input type="number" name="limit" class="form-control" id="editLimit"
                             placeholder="الحد الأقصى" required>
                     </div>
@@ -233,9 +270,11 @@
                     </div>
 
                     <div class="mb-3">
+                        <label for="editTime" class="form-label">موعد الحصة</label>
                         <input type="time" name="time" class="form-control" id="editTime" required>
                     </div>
                 </div>
+
 
                 <div class="modal-footer">
                     <button class="btn btn-primary">تحديث</button>
@@ -261,6 +300,7 @@
                 document.getElementById('editCode').value = this.dataset.code;
                 document.getElementById('editLimit').value = this.dataset.limit;
                 document.getElementById('editTime').value = this.dataset.time;
+                document.getElementById('editMonthlyFee').value = this.dataset.monthly_fee;
                 document.getElementById('editGradeLevel').value = this.dataset.grade_level;
 
                 // معالجة الأيام

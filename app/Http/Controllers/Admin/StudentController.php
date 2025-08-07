@@ -6,18 +6,74 @@ use Carbon\Carbon;
 use App\Models\Group;
 use App\Models\Student;
 use Milon\Barcode\DNS1D;
+use App\Models\Attendance;
 use Illuminate\Http\Request;
+use App\Services\StudentService;
 use App\Http\Controllers\Controller;
 
 class StudentController extends Controller
 {
+    private $StudentService;
+    public function __construct(StudentService $StudentService)
+    {
+        $this->StudentService = $StudentService;
+    }
     public function index(Request $request)
     {
-        $students = Student::where("grade_level",$request->grade_level)->with('group')->paginate(15)->appends(request()->query());
+        $students = Student::where("grade_level", $request->grade_level)
+            ->with('group')
+            ->withSum('fees as total_fees', 'amount')
+            ->withSum('payments as total_paid', 'amount')
+            ->paginate(15)->appends(request()->query());
         $groups = Group::all();
         return view('admin.students.index', compact('students', 'groups'));
     }
 
+    public function show(Request $request, $id)
+    {
+        $today = now()->format('l');
+        $todayDate = now()->toDateString();
+
+        $month = $request->month ?? now()->month; // لو فاضي، استخدم الشهر الحالي
+        $year = $request->year ?? now()->year;    // لو فاضي، استخدم السنة الحالية
+
+        $student = Student::with(['group'])
+            ->with(['fees' => function ($query) use ($month, $year) {
+                $query->where('month', $month)->where('year', $year);
+            }])
+            ->withSum(['fees as total_fees' => function ($query) use ($month, $year) {
+                $query->where('month', $month)->where('year', $year);
+            }], 'amount')
+            ->withSum(['payments as total_paid' => function ($query) use ($month, $year) {
+                $query->whereHas('studentFee', function ($q) use ($month, $year) {
+                    $q->where('month', $month)->where('year', $year);
+                });
+            }], 'amount')
+            ->with(['payments' => function ($query) use ($month, $year) {
+                $query->whereHas('studentFee', function ($q) use ($month, $year) {
+                    $q->where('month', $month)->where('year', $year);
+                });
+            }])
+            ->first();
+
+        // لجلب كل الشهور التي فيها رسوم لهذا الطالب
+        $availableMonths = $student->fees()->select('month')->distinct()->pluck('month');
+
+        if (! $student)
+            abort(404);
+
+
+
+        $attendances = Attendance::where("student_id", $student->id)
+            ->where("month", $month)
+            ->where("year", $year)
+            ->orderBy("id", "DESC")
+            ->get();
+        $presentCount = $attendances->where('status', 1)->count();
+        $absentCount = $attendances->where('status', 0)->count();
+
+        return view('admin.students.show', compact('student', 'attendances', 'presentCount', 'absentCount','availableMonths','month'));
+    }
     public function store(Request $request)
     {
         $request->validate([
@@ -62,6 +118,7 @@ class StudentController extends Controller
             'discount_reason' => $request->discount_reason,
             'barcode' => $barcodeImage,
         ]);
+        $this->StudentService->generateMonthlyFeeIfNotExists($student);
 
         return redirect()->back()->with('success', 'تم إضافة الطالب بنجاح');
     }
@@ -76,7 +133,7 @@ class StudentController extends Controller
             'parent_phone' => 'required|string',
             'national_id' => 'required|string',
             'address' => 'required|string',
-                        'grade_level' => 'required|string',
+            'grade_level' => 'required|string',
 
         ]);
 
@@ -92,8 +149,9 @@ class StudentController extends Controller
 
         return redirect()->back()->with('success', 'تم تعديل الطالب بنجاح');
     }
-    public function destroy($id){
-        $student=Student::findOrFail($id);
+    public function destroy($id)
+    {
+        $student = Student::findOrFail($id);
         $student->delete();
         return redirect()->back()->with('success', 'تم الحذف الطالب بنجاح');
     }
