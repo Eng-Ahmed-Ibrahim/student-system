@@ -30,6 +30,12 @@
         <div id="kt_app_content" class="app-content flex-column-fluid">
             <div id="kt_app_content_container" class="app-container container-xxl">
                 <div class="row">
+                    <div class="card col-md-6 col-12 mb-5">
+                        <div class="card-body">
+                            <h3 class="mb-4">💰 عدد المدفوعات لكل شهر</h3>
+                            <canvas id="paymentsChart" height="100"></canvas>
+                        </div>
+                    </div>
 
                     <div class="card col-md-6 col-12 mb-5">
                         <div class="card-body  ">
@@ -50,35 +56,37 @@
                                 @endforeach
                             </ul>
                         </div>
+
+                    </div>
+
+                    <div class="card col-md-6 col-12 mb-5">
+                        <div class="card-body">
+                            @php
+                                $daysAr = [
+                                    'Saturday' => 'السبت',
+                                    'Sunday' => 'الأحد',
+                                    'Monday' => 'الاثنين',
+                                    'Tuesday' => 'الثلاثاء',
+                                    'Wednesday' => 'الأربعاء',
+                                    'Thursday' => 'الخميس',
+                                    'Friday' => 'الجمعة',
+                                ];
+                                $today = $daysAr[\Carbon\Carbon::now()->translatedFormat('l')];
+
+                            @endphp
+                            <h3 class="mb-4">📅 جدول الحصص اليوم ({{ $today }})</h3>
+                            <ul class="list-group">
+                                @forelse($todayGroups as $group)
+                                    <li class="list-group-item">{{ $group->name }} -
+                                        {{ \Carbon\Carbon::parse($group->time)->format('h:i A') }} </li>
+                                @empty
+                                    <li class="list-group-item text-muted">لا يوجد مجموعات اليوم</li>
+                                @endforelse
+                            </ul>
+                        </div>
                     </div>
                 </div>
 
-                <div class="card">
-                    <div class="card-body">
-                        @php
-                            $daysAr = [
-                                'Saturday' => 'السبت',
-                                'Sunday' => 'الأحد',
-                                'Monday' => 'الاثنين',
-                                'Tuesday' => 'الثلاثاء',
-                                'Wednesday' => 'الأربعاء',
-                                'Thursday' => 'الخميس',
-                                'Friday' => 'الجمعة',
-                            ];
-                            $today=$daysAr[\Carbon\Carbon::now()->translatedFormat('l')]
-
-                        @endphp
-                        <h3 class="mb-4">📅 جدول الحصص اليوم ({{$today}})</h3>
-                        <ul class="list-group">
-                            @forelse($todayGroups as $group)
-                                <li class="list-group-item">{{ $group->name }} -
-                                    {{ \Carbon\Carbon::parse($group->time)->format('h:i A') }} </li>
-                            @empty
-                                <li class="list-group-item text-muted">لا يوجد مجموعات اليوم</li>
-                            @endforelse
-                        </ul>
-                    </div>
-                </div>
 
             </div>
         </div>
@@ -88,6 +96,34 @@
 @section('js')
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const paymentCtx = document.getElementById('paymentsChart').getContext('2d');
+
+        new Chart(paymentCtx, {
+            type: 'line',
+            data: {
+                labels: @json($monthNames),
+                datasets: [{
+                    label: 'عدد المدفوعات',
+                    data: @json($monthlyPaymentsFormatted),
+                    borderWidth: 1,
+                    borderColor: '#4caf50', // لون الخط (اختياري)
+                    backgroundColor: 'rgba(76, 175, 80, 0.1)', // تعبئة خفيفة (اختياري)
+                    tension: 0.4 // ✅ هذا يجعل الخط منحني
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        stepSize: 1
+                    }
+                }
+            }
+        });
+    </script>
+
     <script>
         const ctx = document.getElementById('gradeChart');
 
