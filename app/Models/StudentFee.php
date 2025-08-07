@@ -18,7 +18,7 @@ class StudentFee extends Model
         return $this->belongsTo(Student::class);
     }
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function payments()
     {
