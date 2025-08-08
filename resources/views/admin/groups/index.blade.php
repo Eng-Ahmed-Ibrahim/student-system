@@ -132,7 +132,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="grade_level" class="form-label">الصف الدراسي</label>
+                        {{-- <label for="grade_level" class="form-label">الصف الدراسي</label>
                         <select name="grade_level" id="grade_level" class="form-select" required>
                             <option value="" disabled selected>اختر الصف الدراسي</option>
                             <option value="1"
@@ -147,7 +147,9 @@
                                 {{ old('grade_level', $student->grade_level ?? '') == 3 ? 'selected' : '' }}>
                                 الصف الثالث الثانوي
                             </option>
-                        </select>
+                        </select> --}}
+                                                <input type="hidden" value="{{ request('grade_level') }}" name="grade_level">
+
                     </div>
 
                     <div class="mb-3">
@@ -219,12 +221,13 @@
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="editGradeLevel" class="form-label">الصف الدراسي</label>
+                        {{-- <label for="editGradeLevel" class="form-label">الصف الدراسي</label>
                         <select name="grade_level" id="editGradeLevel" class="form-select" required>
                             <option value="1">الصف الأول الثانوي</option>
                             <option value="2">الصف الثاني الثانوي</option>
                             <option value="3">الصف الثالث الثانوي</option>
-                        </select>
+                        </select> --}}
+                        <input type="hidden" value="{{ request('grade_level') }}" name="grade_level">
                     </div>
 
                     <div class="row">
