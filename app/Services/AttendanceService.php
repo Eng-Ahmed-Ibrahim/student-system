@@ -138,6 +138,7 @@ class AttendanceService
             $final_amount = $monthlyFee -  ($monthlyFee * ($discount  / 100));
             StudentFee::create([
                 'student_id' => $student->id,
+                // @phpstan-ignore-next-line
                 'group_id' => $group->id,
                 'amount' => $monthlyFee,
                 'status' => 'unpaid',

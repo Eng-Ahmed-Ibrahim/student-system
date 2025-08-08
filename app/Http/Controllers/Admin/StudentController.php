@@ -13,11 +13,7 @@ use App\Http\Controllers\Controller;
 
 class StudentController extends Controller
 {
-    private $StudentService;
-    public function __construct(StudentService $StudentService)
-    {
-        $this->StudentService = $StudentService;
-    }
+
     public function index(Request $request)
     {
 
