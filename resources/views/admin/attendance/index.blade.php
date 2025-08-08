@@ -71,6 +71,7 @@
                                     <th>الاسم</th>
                                     <th> الخصم </th>
                                     <th> المستحقات </th>
+                                    <th> دفع </th>
                                     <th>رقم التلفون</th>
                                     <th>رقم تلفون ولي الامر</th>
                                     <th>وقت الحضور</th>
@@ -92,7 +93,17 @@
                                             </td>
                                             <td>{{ $student->name }}</td>
                                             <td>{{ $student->discount }}%</td>
-                                            <td>{{ $student->total_fees  > 0 ? ($student->total_fees - $student->total_paid) : 0  }}</td>
+                                            @php 
+                                            $dueAmount= $student->total_fees > 0 ? $student->total_fees - $student->total_paid : 0;
+                                            @endphp
+                                            <td>{{ $dueAmount }}
+                                            </td>
+                                            <td>
+                                                <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal"
+                                                    data-bs-target="#paymentModal" onclick="document.getElementById('dueAmount').value='{{ $dueAmount }}';document.getElementById('studentId').value='{{ $student->id }}'">
+                                                    دفع 
+                                                </button>
+                                            </td>
                                             <td>{{ $student->phone }}</td>
                                             <td>{{ $student->parent_phone }}</td>
                                             <td>{{ $attendance->time ? \Carbon\Carbon::parse($attendance->time)->format('h:i A') : ' لم يحضر ' }}
@@ -152,11 +163,61 @@
         </div>
     </div>
 
+
+    <!-- Modal -->
+    <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form method="POST" action="{{ route('admin.payments.store') }}" onsubmit="return validatePayment()">
+                @csrf
+                <input type="hidden" name="student_id" id="studentId">
+                {{-- <input type="hidden" name="month" value="{{ $month }}">
+                <input type="hidden" name="year" value="{{ now()->year }}"> --}}
+
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="paymentModalLabel">إضافة دفعة جديدة</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">المبلغ المستحق:</label>
+                            <input type="text" class="form-control"
+                                 readonly id="dueAmount">
+                        </div>
+                        <div class="mb-3">
+                            <label for="amount" class="form-label">المبلغ المدفوع:</label>
+                            <input type="number" name="amount" id="paidAmount" class="form-control" required
+                                min="1">
+                            <small id="errorMsg" class="text-danger d-none">المبلغ أكبر من المستحق!</small>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">تأكيد الدفع</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
 @endsection
 
 @section('js')
     <script src="https://unpkg.com/html5-qrcode"></script>
+    <script>
+        function validatePayment() {
+            const due = parseFloat(document.getElementById('dueAmount').value);
+            const paid = parseFloat(document.getElementById('paidAmount').value);
+            const errorMsg = document.getElementById('errorMsg');
 
+            if (paid > due) {
+                errorMsg.classList.remove('d-none');
+                return false;
+            }
+
+            errorMsg.classList.add('d-none');
+            return true;
+        }
+    </script>
     <script>
         // دالة الحضور (نفس اللي كتبته بالضبط)
         function markAttendance(code) {

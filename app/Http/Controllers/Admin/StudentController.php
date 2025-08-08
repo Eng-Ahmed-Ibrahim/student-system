@@ -137,7 +137,7 @@ class StudentController extends Controller
             'national_id' => $request->national_id,
             'address' => $request->address,
             'blocked' => false,
-            'discount' => $request->discount,
+            'discount' => $request->discount ?? 0,
             'discount_reason' => $request->discount_reason,
             'barcode' => $barcodeImage,
         ]);
