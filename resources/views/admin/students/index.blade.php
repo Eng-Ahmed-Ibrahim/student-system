@@ -61,7 +61,9 @@
                                 <tbody>
                                     @foreach ($students as $student)
                                         <tr>
-                                            <td><a href="{{ route('admin.students.show',$student->id) }}">{{ $student->student_code }}</a></td>
+                                            <td><a
+                                                    href="{{ route('admin.students.show', $student->id) }}">{{ $student->student_code }}</a>
+                                            </td>
                                             <td>
                                                 @if ($student->barcode)
                                                     <div class="barcode-wrapper text-center d-flex gap-1">
@@ -112,11 +114,7 @@
                                             </td>
 
                                             <td class="d-flex gap-1">
-                                                <button class="btn btn-sm btn-warning edit-btn"
-                                                    data-student='@json($student)' data-bs-toggle="modal"
-                                                    data-bs-target="#editStudentModal">
-                                                    تعديل
-                                                </button>
+                                               
                                                 <button
                                                     class="btn btn-sm {{ $student->blocked ? 'btn-success' : 'btn-danger' }} toggle-block-btn"
                                                     data-id="{{ $student->id }}"
@@ -195,20 +193,15 @@
                                             <label for="grade_level" class="form-label">الصف الدراسي</label>
                                             <select name="grade_level" id="grade_level" class="form-select" required>
                                                 <option value="" disabled selected>اختر الصف الدراسي</option>
-                                                <option value="1">
-                                                    الصف الأول
-                                                    الثانوي</option>
-                                                <option value="2">
-                                                    الصف الثاني
-                                                    الثانوي</option>
-                                                <option value="3">
-                                                    الصف الثالث
-                                                    الثانوي</option>
+                                                <option value="1">الصف الأول الثانوي</option>
+                                                <option value="2">الصف الثاني الثانوي</option>
+                                                <option value="3">الصف الثالث الثانوي</option>
                                             </select>
                                         </div>
+
                                         <div class="mb-3">
-                                            <option value="">اختر المجموعة</option>
-                                            <select name="group_id" class="form-select" required>
+                                            <label for="group_id" class="form-label">المجموعة</label>
+                                            <select name="group_id" id="group_id" class="form-select" required>
                                                 <option value="" disabled selected>اختر المجموعة</option>
                                                 @foreach ($groups as $group)
                                                     <option value="{{ $group->id }}">{{ $group->name }}</option>
@@ -216,18 +209,56 @@
                                             </select>
                                         </div>
 
-                                        <input type="text" name="name" class="form-control mb-2"
-                                            placeholder="اسم الطالب" required>
-                                        <input type="text" name="phone" class="form-control mb-2"
-                                            placeholder="تليفون الطالب" required>
-                                        <input type="text" name="parent_phone" class="form-control mb-2"
-                                            placeholder="تليفون ولي الأمر" required>
-                                        <input type="text" name="national_id" class="form-control mb-2"
-                                            placeholder="الرقم القومي" required>
-                                        <textarea name="address" class="form-control mb-2" placeholder="العنوان" required></textarea>
-                                        <input type="text" name="discount" class="form-control mb-2"
-                                            placeholder="الخصم">
-                                        <textarea name="discount_reason" class="form-control mb-2" placeholder="سبب الخصم"></textarea>
+                                        <div class="mb-3">
+                                            <label for="name" class="form-label">اسم الطالب</label>
+                                            <input type="text" name="name" id="name" class="form-control"
+                                                placeholder="اسم الطالب" required>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="phone" class="form-label">تليفون الطالب</label>
+                                            <input type="text" name="phone" id="phone" class="form-control"
+                                                placeholder="تليفون الطالب" pattern="\d{11}" maxlength="11"
+                                                minlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                                required title="رقم الهاتف يجب أن يتكون من 11 رقم">
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="parent_phone" class="form-label">تليفون ولي الأمر</label>
+                                            <input type="text" name="parent_phone" id="parent_phone"
+                                                class="form-control" placeholder="تليفون ولي الأمر" pattern="\d{11}"
+                                                maxlength="11" minlength="11"
+                                                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                                title="رقم الهاتف يجب أن يتكون من 11 رقم" required>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="national_id" class="form-label">الرقم القومي</label>
+                                            <input type="text" name="national_id" id="national_id"
+                                                class="form-control" placeholder="الرقم القومي" pattern="\d{14}"
+                                                maxlength="14" minlength="14"
+                                                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                                title="رقم قومي يجب أن يتكون من 14 رقم" required>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="address" class="form-label">العنوان</label>
+                                            <textarea name="address" id="address" class="form-control" placeholder="العنوان" required></textarea>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="discount" class="form-label">الخصم</label>
+                                            <input type="number" name="discount" id="discount" class="form-control"
+                                                placeholder="الخصم" min="0" max="100"
+                                                oninput="this.value = this.value.replace(/[^0-9]/g, ''); 
+                                                        if (this.value > 100) this.value = 100; 
+                                                        if (this.value < 0) this.value = 0;">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="discount_reason" class="form-label">سبب الخصم</label>
+                                            <textarea name="discount_reason" id="discount_reason" class="form-control" placeholder="سبب الخصم"></textarea>
+                                        </div>
+
                                     </div>
                                     <div class="modal-footer">
                                         <button class="btn btn-primary">حفظ</button>

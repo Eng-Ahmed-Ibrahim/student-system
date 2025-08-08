@@ -19,16 +19,25 @@ class AttendanceController extends Controller
     }
     public function index(Request $request)
     {
-        
-        $group = Group::select('id', 'name', 'time', 'days')->findOrFail($request->group);
+
+        $group = Group::select('id', 'name', 'time', 'days', 'monthly_fee')->findOrFail($request->group);
         $this->AttendanceService->generateAttendanceIfNotExists($group);
         $today = Carbon::today()->toDateString();
 
+        $year = now()->year;
         $students = Student::whereHas('attendance', function ($query) use ($today) {
             $query->where('date', $today);
         })->with(['attendance' => function ($query) use ($today) {
             $query->where('date', $today);
         }])
+            ->withSum(['fees as total_fees' => function ($query) use ($year) {
+                $query->where('year', $year);
+            }], 'final_amount')
+            ->withSum(['payments as total_paid' => function ($query) use ($year) {
+                $query->whereHas('studentFee', function ($q) use ($year) {
+                    $q->where('year', $year);
+                });
+            }], 'amount')
             ->where("group_id", $request->group)
             ->get();
 
@@ -48,10 +57,6 @@ class AttendanceController extends Controller
 
         return view('admin.attendance.index', compact('students', 'today', 'group', 'presentCount', 'absentCount'));
     }
-
-
-
-
 
     public function mark(Request $request, $studentId, $status)
     {

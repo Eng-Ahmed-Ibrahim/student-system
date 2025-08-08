@@ -44,7 +44,7 @@ class StudentController extends Controller
             }])
             ->withSum(['fees as total_fees' => function ($query) use ($year) {
                 $query->where('year', $year);
-            }], 'amount')
+            }], 'final_amount')
             ->withSum(['payments as total_paid' => function ($query) use ($year) {
                 $query->whereHas('studentFee', function ($q) use ($year) {
                     $q->where('year', $year);
@@ -58,13 +58,13 @@ class StudentController extends Controller
             ->withCount([
                 'attendance as total_absent' => function ($query) {
                     $query->where('status', false)
-                        ->whereYear('date', now()->year); // تأكد إن عندك عمود اسمه `date` أو غيّره حسب اسم العمود
+                        ->whereYear('date', now()->year); 
                 }
             ])
             ->withCount([
                 'attendance as total_present' => function ($query) {
                     $query->where('status', true)
-                        ->whereYear('date', now()->year); // تأكد إن عندك عمود اسمه `date` أو غيّره حسب اسم العمود
+                        ->whereYear('date', now()->year); 
                 }
             ])
 
@@ -145,7 +145,7 @@ class StudentController extends Controller
             'discount_reason' => $request->discount_reason,
             'barcode' => $barcodeImage,
         ]);
-        $this->StudentService->generateMonthlyFeeIfNotExists($student);
+        // $this->StudentService->generateMonthlyFeeIfNotExists($student);
 
         return redirect()->back()->with('success', 'تم إضافة الطالب بنجاح');
     }

@@ -4,7 +4,10 @@ namespace App\Services;
 
 use Carbon\Carbon;
 use App\Models\Group;
+use App\Models\Student;
 use App\Models\Attendance;
+use App\Models\StudentFee;
+use Illuminate\Support\Facades\Log;
 
 class AttendanceService
 {
@@ -30,12 +33,12 @@ class AttendanceService
 
         foreach ($groups as $group) {
             $studentIds = $group->students->pluck('id')->toArray();
-            
+
             // اجلب كل الحضور الموجودين مسبقًا لهؤلاء الطلاب في هذا اليوم والمجموعة
             /** @var \App\Models\Group $group */
             $existingAttendances = Attendance::whereIn('student_id', $studentIds)
-            ->where('group_id', $group->id)
-            ->where('date', $todayDate)
+                ->where('group_id', $group->id)
+                ->where('date', $todayDate)
                 ->pluck('student_id')
                 ->toArray();
 
@@ -70,7 +73,7 @@ class AttendanceService
         $check = Attendance::where("student_id", $studentId)->where('date', Carbon::today()->toDateString())->exists();
         if (! $check)
             return false;
-        return Attendance::updateOrCreate(
+        $attendance = Attendance::updateOrCreate(
             [
                 'student_id' => $studentId,
                 'date' => Carbon::today()->toDateString(),
@@ -80,6 +83,74 @@ class AttendanceService
                 'time' => $status == 0 ? null : now()->format('H:i:s'),
             ]
         );
+        if ($attendance->status)
+            $this->add_fees($attendance->id, $studentId);
+        else
+            $this->delete_fees($attendance->id, $studentId);
+
+        return $attendance;
     }
-    public function Check_if_all_student_attendance($group) {}
+    public function delete_fees($attendance_id, $studentId)
+    {
+        $today = Carbon::now();
+        $month = $today->month;
+        $year = $today->year;
+        $date = Carbon::today()->toDateString();
+
+
+
+        $fee = StudentFee::where('student_id', $studentId)
+            ->where('month', $month)
+            ->where('year', $year)
+            ->where('date', $date)
+            ->where('attendance_id', $attendance_id)
+            ->first();
+        if ($fee)
+            $fee->delete();
+    }
+
+    public function add_fees($attendance_id, $studentId)
+    {
+        $today = Carbon::now();
+        $month = $today->month;
+        $year = $today->year;
+        $date = Carbon::today()->toDateString();
+
+        $student = Student::with('group')->findOrFail($studentId);
+        $group = $student->group;
+        if (!$group) {
+            return false;
+        }
+
+        $monthlyFee = $group->monthly_fee ?? 0;
+
+        $exists = StudentFee::where('student_id', $student->id)
+            ->where('month', $month)
+            ->where('year', $year)
+            ->where('date', $date)
+            ->where('attendance_id', $attendance_id)
+            ->exists();
+
+
+        if (!$exists) {
+            $discount = is_numeric($student->discount) ? min(max($student->discount, 0), 100) : 0;
+
+            $final_amount = $monthlyFee -  ($monthlyFee * ($discount  / 100));
+            StudentFee::create([
+                'student_id' => $student->id,
+                'group_id' => $group->id,
+                'amount' => $monthlyFee,
+                'status' => 'unpaid',
+                'month' => $month,
+                'year' => $year,
+                'date' => $date,
+                'discount' => $discount,
+                "attendance_id" => $attendance_id,
+                'final_amount' => $final_amount,
+            ]);
+            Log::info("Created fee for student {$student->id} for $month/$year");
+        }
+
+        return true;
+    }
 }

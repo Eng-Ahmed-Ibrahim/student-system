@@ -3,7 +3,6 @@
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
-use App\Console\Commands\GenerateMonthly;
 use App\Console\Commands\GenerateDailyAttendance;
 
 Artisan::command('inspire', function () {
@@ -12,5 +11,4 @@ Artisan::command('inspire', function () {
 
 
 Schedule::command(GenerateDailyAttendance::class)->everySecond();
-Schedule::command(GenerateMonthly::class)->everySecond();
 

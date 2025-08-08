@@ -50,6 +50,10 @@
                                 <span
                                     class="badge bg-light text-dark">{{ \Carbon\Carbon::parse($group->time)->format('h:i A') }}</span>
                             </h5>
+
+                            <h5 class="mb-1">سعر الحصه:
+                                <span class="badge bg-success total-present">{{ $group->monthly_fee }} جنيه</span>
+                            </h5>
                         </div>
 
                         <form id="barcode-form">
@@ -65,6 +69,8 @@
                                 <tr>
                                     <th>الكود</th>
                                     <th>الاسم</th>
+                                    <th> الخصم </th>
+                                    <th> المستحقات </th>
                                     <th>رقم التلفون</th>
                                     <th>رقم تلفون ولي الامر</th>
                                     <th>وقت الحضور</th>
@@ -81,8 +87,12 @@
                                         @endphp
                                         <tr>
 
-                                            <td><a href="{{ route('admin.students.show',$student->id) }}">#{{ $student->student_code }}</a></td>
+                                            <td><a
+                                                    href="{{ route('admin.students.show', $student->id) }}">#{{ $student->student_code }}</a>
+                                            </td>
                                             <td>{{ $student->name }}</td>
+                                            <td>{{ $student->discount }}%</td>
+                                            <td>{{ $student->total_fees  > 0 ? ($student->total_fees - $student->total_paid) : 0  }}</td>
                                             <td>{{ $student->phone }}</td>
                                             <td>{{ $student->parent_phone }}</td>
                                             <td>{{ $attendance->time ? \Carbon\Carbon::parse($attendance->time)->format('h:i A') : ' لم يحضر ' }}
@@ -201,7 +211,7 @@
                             `;
                             }
                         });
-     
+
 
 
 
