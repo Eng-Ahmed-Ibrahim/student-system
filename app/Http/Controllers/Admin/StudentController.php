@@ -68,13 +68,10 @@ class StudentController extends Controller
                 }
             ])
 
-            ->first();
+            ->findOrFail($id);
 
         // لجلب كل الشهور التي فيها رسوم لهذا الطالب
         $availableMonths = $student->fees()->select('month')->distinct()->pluck('month');
-
-        if (! $student)
-            abort(404);
 
 
 
