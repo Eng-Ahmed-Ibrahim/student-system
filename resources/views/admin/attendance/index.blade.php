@@ -143,7 +143,7 @@
                                     @endforeach
                                 @else
                                     <tr>
-                                        <td colspan="8" class="text-center text-muted py-4">
+                                        <td colspan="11" class="text-center text-muted py-4">
                                             <div class="alert alert-info mb-0" role="alert">
                                                 لا يوجد حصه اليوم
                                             </div>

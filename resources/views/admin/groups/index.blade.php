@@ -227,7 +227,7 @@
                             <option value="2">الصف الثاني الثانوي</option>
                             <option value="3">الصف الثالث الثانوي</option>
                         </select> --}}
-                        <input type="hidden" value="{{ request('grade_level') }}" name="grade_level">
+                        <input type="hidden" value="{{ request('grade_level') }}" id="editGradeLevel" name="grade_level">
                     </div>
 
                     <div class="row">
