@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Group;
+use App\Helpers\Helpers;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -41,6 +42,7 @@ class GroupController extends Controller
             'monthly_fee' => $request->monthly_fee,
             'grade_level' => $request->grade_level,
         ]);
+         Helpers::recache_groups();
 
         return redirect()->back()->with('success', 'Group added successfully.');
     }
@@ -68,6 +70,7 @@ class GroupController extends Controller
             'grade_level' => $request->grade_level,
 
         ]);
+         Helpers::recache_groups();
 
         return redirect()->back()->with('success', 'Group updated successfully.');
     }
@@ -75,6 +78,7 @@ class GroupController extends Controller
     public function getByGrade(Request $request)
 {
     $groups = Group::where('grade_level', $request->grade_level)->get(['id', 'name']);
+    
     return response()->json($groups);
 }
 

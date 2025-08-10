@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Models\Exam;
 use App\Models\Group;
 use App\Models\Student;
+use App\Helpers\Helpers;
 use App\Models\ExamResult;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -14,7 +15,7 @@ class ExamController extends Controller
 {
     public function index()
     {
-        $groups = Group::all();
+        $groups = Helpers::get_groups();
         $exams = Exam::with('group')->latest()->get();
         return view('admin.exams.index', compact('groups', 'exams'));
     }

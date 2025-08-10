@@ -206,9 +206,9 @@
                                     aria-controls="pills-profile" aria-selected="false">المدفوعات</button>
                             </li>
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link {{ $tab == 3 ? 'active' : ' ' }} " id="pills-contact-tab"
-                                    data-bs-toggle="pill" data-bs-target="#pills-contact" type="button" role="tab"
-                                    aria-controls="pills-contact" aria-selected="false">الدرجات</button>
+                                <button class="nav-link {{ $tab == 3 ? 'active' : ' ' }} " id="pills-scores-tab"
+                                    data-bs-toggle="pill" data-bs-target="#pills-scores" type="button" role="tab"
+                                    aria-controls="pills-scores" aria-selected="false">الدرجات</button>
                             </li>
 
                         </ul>
@@ -402,8 +402,25 @@
                                 </div>
 
                             </div>
-                            <div class="tab-pane fade  {{ $tab == 3 ? ' show active' : ' ' }}" id="pills-contact"
-                                role="tabpanel" aria-labelledby="pills-contact-tab" tabindex="0">...</div>
+                            <div class="tab-pane fade  {{ $tab == 3 ? ' show active' : ' ' }}" id="pills-scores"
+                                role="tabpanel" aria-labelledby="pills-scores-tab" tabindex="0">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <th>تاريخ الامتحان</th>
+                                        <th>الدرجه </th>
+                                        <th>من</th>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($student->exams_results as $result)
+                                        <tr>
+                                            <td>{{ $result->exam->exam_date }}</td>
+                                            <td>{{ $result->score }}</td>
+                                            <td>{{ $result->exam->total_score }}</td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
 
                         </div>
                     </div>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use Carbon\Carbon;
 use App\Models\Group;
 use App\Models\Student;
+use App\Helpers\Helpers;
 use Milon\Barcode\DNS1D;
 use App\Models\Attendance;
 use Illuminate\Http\Request;
@@ -33,37 +34,45 @@ class StudentController extends Controller
 
         $month = $request->month ?? now()->month; // لو فاضي، استخدم الشهر الحالي
         $year = $request->year ?? now()->year;    // لو فاضي، استخدم السنة الحالية
-
-        $student = Student::with(['group'])
+        $student = Student::with('group')
+            // جلب الرسوم لفترة معينة (الشهر والسنة)
             ->with(['fees' => function ($query) use ($month, $year) {
-                $query->where('month', $month)->where('year', $year);
+                $query->where('month', $month)
+                    ->where('year', $year);
             }])
+            // جلب المدفوعات في الشهر والسنة المطلوبة مرتبطة برسوم نفس الفترة
+            ->with(['payments' => function ($query) use ($month, $year) {
+                $query->whereHas('studentFee', function ($q) use ($month, $year) {
+                    $q->where('month', $month)
+                        ->where('year', $year);
+                });
+            }])
+            // جلب نتائج الامتحانات مع الامتحانات المرتبطة (select فقط الأعمدة المطلوبة)
+            ->with([
+                'exams_results:id,student_id,score,exam_id',
+                'exams_results.exam:id,total_score,exam_date',
+            ])
+            // حساب مجموع الرسوم للسنة المحددة دفعة واحدة (بدون alias ثان)
             ->withSum(['fees as total_fees' => function ($query) use ($year) {
                 $query->where('year', $year);
             }], 'final_amount')
+            // حساب مجموع المدفوعات للسنة المحددة
             ->withSum(['payments as total_paid' => function ($query) use ($year) {
                 $query->whereHas('studentFee', function ($q) use ($year) {
                     $q->where('year', $year);
                 });
             }], 'amount')
-            ->with(['payments' => function ($query) use ($month, $year) {
-                $query->whereHas('studentFee', function ($q) use ($month, $year) {
-                    $q->where('month', $month)->where('year', $year);
-                });
-            }])
+            // حساب عدد الحضور والغياب دفعة واحدة بدل استدعاء withCount مرتين
             ->withCount([
-                'attendance as total_absent' => function ($query) {
+                'attendance as total_absent' => function ($query) use ($year) {
                     $query->where('status', false)
-                        ->whereYear('date', now()->year); 
-                }
-            ])
-            ->withCount([
-                'attendance as total_present' => function ($query) {
+                        ->whereYear('date', $year);
+                },
+                'attendance as total_present' => function ($query) use ($year) {
                     $query->where('status', true)
-                        ->whereYear('date', now()->year); 
+                        ->whereYear('date', $year);
                 }
             ])
-
             ->findOrFail($id);
 
         // لجلب كل الشهور التي فيها رسوم لهذا الطالب
@@ -94,7 +103,7 @@ class StudentController extends Controller
 
         $tab = $request->tab ?? session('tab', 0);
         session()->forget('tab');
-        $groups = Group::all();
+        $groups = Helpers::get_groups();
         return view('admin.students.show', compact('groups', 'student', 'attendances', 'tab', 'presentCount', 'absentCount', 'availableMonths', 'month'));
     }
     public function store(Request $request)

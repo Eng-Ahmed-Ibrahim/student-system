@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Group;
 use App\Models\Payment;
 use App\Models\Attendance;
+use App\Models\ExamResult;
 use App\Models\StudentFee;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -25,6 +26,13 @@ class Student extends Model
     public function attendance()
     {
         return $this->hasMany(Attendance::class, 'student_id');
+    }
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function exams_results()
+    {
+        return $this->hasMany(ExamResult::class, 'student_id');
     }
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
