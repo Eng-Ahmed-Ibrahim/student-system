@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\ExamController;
 use App\Http\Controllers\Admin\GroupController;
 use App\Http\Controllers\Admin\RolesController;
 use App\Http\Controllers\Admin\PaymentController;
@@ -28,3 +29,5 @@ Route::post('/attendance/mark-barcode', [AttendanceController::class, 'markByBar
 Route::get('/groups/by-grade', [GroupController::class, 'getByGrade']);
 
 Route::post('/payments/store', [PaymentController::class, 'store'])->name('payments.store');
+Route::resource('exams', ExamController::class);
+Route::patch('exams/update-student-score/{id}',[ExamController::class,'update_score'])->name('exams.update_student_score');
