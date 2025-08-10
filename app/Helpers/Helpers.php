@@ -9,7 +9,7 @@ class Helpers
 {
     public static function  get_groups()
     {
-        Cache::rememberForever('groups', function () {
+        return Cache::rememberForever('groups', function () {
             return Group::all();
         });
     }
