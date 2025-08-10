@@ -25,23 +25,7 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        $allowedDomains = [
-            'myclient.com',
-            'www.myclient.com',
-            // 'localhost',
-            // '127.0.0.1',
-        ];
 
-
-        if (app()->runningInConsole()) {
-            return;
-        }
-
-        $currentDomain = request()->getHost();
-
-        if (!in_array($currentDomain, $allowedDomains)) {
-            abort(403, 'Unauthorized.');
-        }
 
 
 
@@ -64,5 +48,7 @@ class AppServiceProvider extends ServiceProvider
             'groupCounts' => $groupCounts,
             'studentCounts' => $studentCounts,
         ]);
+
+
     }
 }
