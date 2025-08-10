@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\Group;
 use App\Models\Student;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
@@ -24,6 +25,27 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        $allowedDomains = [
+            'myclient.com',
+            'www.myclient.com',
+            // 'localhost',
+            // '127.0.0.1',
+        ];
+
+
+        if (app()->runningInConsole()) {
+            return;
+        }
+
+        $currentDomain = request()->getHost();
+
+        if (!in_array($currentDomain, $allowedDomains)) {
+            abort(403, 'Unauthorized.');
+        }
+
+
+
+
         if (!Schema::hasTable('groups') || !Schema::hasTable('students')) {
             return;
         }
