@@ -70,7 +70,9 @@ class AttendanceService
 
     public function changeStatusOfAttendance($studentId, $status)
     {
-        $check = Attendance::where("student_id", $studentId)->where('date', Carbon::today()->toDateString())->exists();
+        $check = Attendance::where("student_id", $studentId)->where('date', Carbon::today()->toDateString())->first();
+        if($check->status == $status)
+            return true;
         if (! $check)
             return false;
         $attendance = Attendance::updateOrCreate(
