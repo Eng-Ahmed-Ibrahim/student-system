@@ -1,6 +1,6 @@
 @extends('admin.app')
 @php
-    $title = $exam->name ;
+    $title = $exam->name;
     $sub_title = 'الامتحانات';
 @endphp
 @section('title', $title)
@@ -40,11 +40,16 @@
                         <h2>العنوان: {{ $exam->name }} (Group: {{ $exam->group->name }})</h2>
                         <p> التارخ: {{ $exam->exam_date }}</p>
                         <p> درجع الامتحان: {{ $exam->total_score }}</p>
-
-                        <table class="table table-bordered">
+                        <div class="input-group my-3" style="max-width: 300px;">
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <input id="searchInput" type="text" class="form-control"
+                                placeholder="البحث بالاسم او كود الطالب">
+                        </div>
+                        <table id="studentsTable" class="table table-bordered">
                             <thead>
                                 <tr>
                                     <th>#</th>
+                                    <th>كود الطالب</th>
                                     <th>اسم الطالب</th>
                                     <th>الدرجه</th>
                                     <th>من</th>
@@ -54,15 +59,19 @@
                             <tbody>
                                 @foreach ($exam->results as $index => $result)
                                     <tr>
-                                        <td># {{ $index+1 }}</td>
-                                        <td><a href="{{ route('admin.students.show', $result->student->id ) }}">{{ $result->student->name }}</a></td>
+                                        <td># {{ $index + 1 }}</td>
+                                        <td class="student-code"><a
+                                                href="{{ route('admin.students.show', $result->student->id) }}">{{ $result->student->student_code }}</a>
+                                        </td>
+                                        <td class="student-name">{{ $result->student->name }}</td>
                                         <td>
                                             {{ $result->score }}
                                         </td>
                                         <td>{{ $exam->total_score }}</td>
                                         <td>
-                                            <form 
-                                                method="POST" action="{{ route('admin.exams.update_student_score',$result->id) }}" class="d-flex align-items-center gap-2">
+                                            <form method="POST"
+                                                action="{{ route('admin.exams.update_student_score', $result->id) }}"
+                                                class="d-flex align-items-center gap-2">
                                                 @csrf
                                                 @method('PATCH')
                                                 <input type="number" name="score" step="0.01" min="0"
@@ -82,4 +91,38 @@
         </div>
     </div>
 
+@endsection
+
+@section('js')
+
+    <script>
+        // عند تحميل الصفحة
+
+        function filterFunction(filter) {
+            let rows = document.querySelectorAll('#studentsTable tbody tr');
+
+            rows.forEach(row => {
+                let code = row.querySelector('.student-code')?.textContent.toLowerCase() || '';
+                let name = row.querySelector('.student-name')?.textContent.toLowerCase() || '';
+
+                if (code.includes(filter) || name.includes(filter)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            let filter = document.getElementById('searchInput').value.trim().toLowerCase();
+
+            input.focus();
+
+            filterFunction(filter)
+
+        });
+        document.getElementById('searchInput').addEventListener('input', function() {
+            let filter = this.value.trim().toLowerCase();
+            filterFunction(filter)
+        });
+    </script>
 @endsection

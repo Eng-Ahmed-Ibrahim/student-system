@@ -86,22 +86,29 @@
                                         @php
                                             $attendance = $student->attendance->first();
                                         @endphp
-                                        <tr>
+                                        @php
+                                            $dueAmount =
+                                                $student->total_fees > 0
+                                                    ? $student->total_fees - $student->total_paid
+                                                    : 0;
+                                        @endphp
+                                        <tr data-due-amount="{{ $dueAmount }}" data-student-id="{{ $student->id }}"
+                                            data-student-code="{{ $student->student_code }}"
+                                            data-discount="{{ $student->discount }}"
+                                            data-status="{{ $attendance->status }}"
+                                            >
 
                                             <td><a
                                                     href="{{ route('admin.students.show', $student->id) }}">#{{ $student->student_code }}</a>
                                             </td>
                                             <td>{{ $student->name }}</td>
                                             <td>{{ $student->discount }}%</td>
-                                            @php 
-                                            $dueAmount= $student->total_fees > 0 ? $student->total_fees - $student->total_paid : 0;
-                                            @endphp
-                                            <td>{{ $dueAmount }}
-                                            </td>
+                                            <td class="Fees">{{ $dueAmount }}</td>
                                             <td>
                                                 <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal"
-                                                    data-bs-target="#paymentModal" onclick="document.getElementById('dueAmount').value='{{ $dueAmount }}';document.getElementById('studentId').value='{{ $student->id }}'">
-                                                    دفع 
+                                                    data-bs-target="#paymentModal"
+                                                    onclick="document.getElementById('dueAmount').value='{{ $dueAmount }}';document.getElementById('studentId').value='{{ $student->id }}'">
+                                                    دفع
                                                 </button>
                                             </td>
                                             <td>{{ $student->phone }}</td>
@@ -110,7 +117,7 @@
                                             </td>
                                             <td>{{ \Carbon\Carbon::parse($attendance->date)->format('Y-m-d') }}</td>
 
-                                            <td>
+                                            <td class="formStatus">
                                                 @if ($attendance)
                                                     <span
                                                         class="badge {{ $attendance->status ? 'bg-success' : 'bg-danger' }}">
@@ -120,7 +127,7 @@
                                                     <span class="badge bg-secondary">غير محدد</span>
                                                 @endif
                                             </td>
-                                            <td>
+                                            <td class="formAttendance">
                                                 @if (!$attendance || !$attendance->status)
                                                     <form
                                                         action="{{ route('admin.attendance.mark', ['student' => $student->id, 'status' => 1]) }}"
@@ -181,8 +188,7 @@
                     <div class="modal-body">
                         <div class="mb-3">
                             <label class="form-label">المبلغ المستحق:</label>
-                            <input type="text" class="form-control"
-                                 readonly id="dueAmount">
+                            <input type="text" class="form-control" readonly id="dueAmount">
                         </div>
                         <div class="mb-3">
                             <label for="amount" class="form-label">المبلغ المدفوع:</label>
@@ -219,11 +225,38 @@
         }
     </script>
     <script>
+        function attendanceAbsentForm(studentId) {
+            return `
+                    <form
+                        action="/admin/attendance/mark/${studentId}/0"
+                        method="POST" class="d-inline">
+                        @csrf
+                        <button class="btn btn-danger btn-sm">تسجيل غياب</button>
+                    </form>
+            `;
+        }
+
+        function attendancePresentForm(studentId) {
+            return `
+                    <form
+                        action="/admin/attendance/mark/${studentId}/1"
+                        method="POST" class="d-inline">
+                        @csrf
+                        <button class="btn btn-danger btn-sm">تسجيل حضور</button>
+                    </form>
+            `;
+        }
         // دالة الحضور (نفس اللي كتبته بالضبط)
         function markAttendance(code) {
             const input = document.getElementById('barcode-input');
             const result = document.getElementById('barcode-result');
-
+            let row = document.querySelector(`tr[data-student-code="${code}"]`);
+            let AttendanceStatus = parseInt(row.dataset.status);
+            
+            if(AttendanceStatus == 1){
+                alert('تم تحضير هذا الطالب من قبل')
+                return ;
+            }
             if (!code) return;
 
             input.disabled = true;
@@ -247,32 +280,26 @@
                     input.value = '';
 
                     if (data.success) {
-                        const rows = document.querySelectorAll("tbody tr");
+                        let studentId = row.dataset.studentId;
+                        let studentDiscount = parseFloat(row.dataset.discount) || 0;
+                        let studentDueAmount = parseFloat(row.dataset.dueAmount) || 0;
 
-                        rows.forEach(row => {
-                            const studentCode = row.cells[0].textContent.trim();
+                        let formAttendanceCell = row.querySelector('td.formAttendance');
+                        let formStatusCell = row.querySelector('td.formStatus');
+                        let formFees = row.querySelector('td.Fees');
 
-                            if (studentCode === code) {
-                                // تحديث الحالة
-                                row.cells[6].innerHTML = '<span class="badge bg-success">حاضر</span>';
+                        let sessionPrice = parseFloat("{{ $group->monthly_fee }}") || 0;
+                        let price = sessionPrice - (sessionPrice * studentDiscount / 100);
+                        let dueAmount = price + studentDueAmount;
+                        formFees.textContent = dueAmount.toFixed(2);
 
-                                // تحديث الوقت
-                                const now = new Date();
-                                const hours = now.getHours() % 12 || 12;
-                                const minutes = now.getMinutes().toString().padStart(2, '0');
-                                const ampm = now.getHours() >= 12 ? 'PM' : 'AM';
-                                row.cells[4].textContent = `${hours}:${minutes} ${ampm}`;
-
-                                // تحديث زر الإجراء
-                                row.cells[7].innerHTML = `
-                                <form action="/admin/attendance/mark/${code}/0" method="POST" class="d-inline">
-                                    @csrf
-                                    <button class="btn btn-danger btn-sm">تسجيل غياب</button>
-                                </form>
-                            `;
-                            }
-                        });
-
+                        formStatusCell.innerHTML = `
+                           <span
+                                class="badge bg-success">
+                                حاضر
+                                </span>
+                        `
+                        formAttendanceCell.innerHTML = attendanceAbsentForm(studentId)
 
 
 

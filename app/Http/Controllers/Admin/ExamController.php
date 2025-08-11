@@ -25,7 +25,7 @@ class ExamController extends Controller
                 'results' => function ($query) {
                     $query->orderBy('score', 'DESC')->select('id', 'exam_id', 'student_id', 'score');
                 },
-                'results.student:id,name',
+                'results.student:id,name,student_code',
                 'group:id,name'
             ])
             ->select('id', 'group_id', 'name', 'exam_date', 'total_score')
