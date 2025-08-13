@@ -54,18 +54,17 @@
 
 
                                     <div class="d-flex">
-
+                                    {{ $grade_level }}
                                         <select style="    border-top-left-radius: 0;border-bottom-left-radius: 0;"
                                             name="group_id" onchange="document.getElementById('FilterForm').submit()"
                                             name="grade_level" id="grade_level" class="form-select">
 
-                                            <option value="" disabled
-                                                {{ old('grade_level', $student->grade_level ?? '') == '' ? 'selected' : '' }}>
+                                            <option value="" disabled>
                                                 اختر مجموعه
                                             </option>
                                             @foreach ($groups as $group)
                                                 @if ($group->grade_level == $grade_level)
-                                                    <option value="{{ $group->id }}">{{ $group->name }}</option>
+                                                    <option value="{{ $group->id }}">{{ $group->grade_level }}--{{ $group->name }}</option>
                                                 @endif
                                             @endforeach
 
