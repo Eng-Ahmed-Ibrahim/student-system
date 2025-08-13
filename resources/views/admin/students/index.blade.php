@@ -61,9 +61,10 @@
                                             <option value="" disabled>
                                                 اختر مجموعه
                                             </option>
+                                            <option value="all">الكل</option>
                                             @foreach ($groups as $group)
                                                 @if ($group->grade_level == $grade_level)
-                                                    <option value="{{ $group->id }}">{{ $group->name }}</option>
+                                                    <option {{ request('group_id') == $group->id ? 'selected' : ' ' }} value="{{ $group->id }}">{{ $group->name }}</option>
                                                 @endif
                                             @endforeach
 
