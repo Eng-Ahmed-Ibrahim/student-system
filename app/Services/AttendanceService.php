@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use Carbon\Carbon;
 use App\Models\Group;
 use App\Models\Student;
 use App\Models\Attendance;
@@ -79,14 +78,14 @@ class AttendanceService
         $attendance = Attendance::updateOrCreate(
             [
                 'student_id' => $studentId,
-                'date' => Carbon::today()->toDateString(),
+                'date' => now()->toDateString(),
             ],
             [
                 'status' => $status,
                 'time' => $status == 0 ? null : now()->format('H:i:s'),
             ]
         );
-        if ($attendance->status)
+        if ($attendance->status )
             $this->add_fees($attendance->id, $studentId);
         else
             $this->delete_fees($attendance->id, $studentId);
@@ -95,10 +94,10 @@ class AttendanceService
     }
     public function delete_fees($attendance_id, $studentId)
     {
-        $today = Carbon::now();
-        $month = $today->month;
-        $year = $today->year;
-        $date = Carbon::today()->toDateString();
+        $date = now()->toDateString();
+        $year = now()->year;
+        $month = now()->month;
+
 
 
 
@@ -114,10 +113,9 @@ class AttendanceService
 
     public function add_fees($attendance_id, $studentId)
     {
-        $today = Carbon::now();
-        $month = $today->month;
-        $year = $today->year;
-        $date = Carbon::today()->toDateString();
+        $date = now()->toDateString();
+        $year = now()->year;
+        $month = now()->month;
 
         $student = Student::with('group')->findOrFail($studentId);
         $group = $student->group;
