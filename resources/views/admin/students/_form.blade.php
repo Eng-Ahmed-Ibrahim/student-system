@@ -78,3 +78,29 @@
     <label for="discount_reason" class="form-label">سبب الخصم</label>
     <textarea name="discount_reason" id="discount_reason" class="form-control" placeholder="سبب الخصم">{{ old('discount_reason', $student->discount_reason ?? '') }}</textarea>
 </div>
+
+    <script>
+        // كل بيانات الجروبات من السيرفر بصيغة JSON
+        const allGroups = @json($groups);
+
+        // عناصر الـ select
+        const gradeSelects = document.querySelectorAll('select[name="grade_level"]');
+        const groupSelects = document.querySelectorAll('select[name="group_id"]');
+
+        // لما المستخدم يغير الصف
+        gradeSelects.forEach((gradeSelect, index) => {
+            gradeSelect.addEventListener('change', function() {
+                const selectedGrade = this.value;
+
+                const filteredGroups = allGroups.filter(group => group.grade_level == selectedGrade);
+
+                // حدث قائمة الجروبات المقابلة لهذا الصف
+                const groupSelect = groupSelects[index];
+                groupSelect.innerHTML = `<option value="" disabled selected>اختر المجموعة</option>`;
+
+                filteredGroups.forEach(group => {
+                    groupSelect.innerHTML += `<option value="${group.id}">${group.name}</option>`;
+                });
+            });
+        });
+    </script>

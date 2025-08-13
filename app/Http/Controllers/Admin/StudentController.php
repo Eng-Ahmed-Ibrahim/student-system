@@ -166,8 +166,8 @@ class StudentController extends Controller
             'national_id' => 'required|string',
             'address' => 'required|string',
             'grade_level' => 'required|string',
-            'discount' => 'required|integer',
-            'discount_reason' => 'required|string',
+            'discount' => 'nullable|integer',
+            'discount_reason' => 'nullable|string',
 
         ]);
 
