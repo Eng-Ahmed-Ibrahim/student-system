@@ -283,7 +283,7 @@
                                             <div class="mb-3 col">
                                                 <label for="group_id" class="form-label">المجموعة</label>
                                                 <select name="group_id" id="group_id" class="form-select" required>
-                                                    <option value="" disabled>اختر المجموعة</option>
+                                                    <option value="" selected disabled>اختر المجموعة</option>
                                                     @php
                                                         $selectedGrade = $student->grade_level;
                                                         $groups_of_grade = $groups->where(
