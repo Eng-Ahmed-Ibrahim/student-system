@@ -32,11 +32,11 @@
         <select name="grade_level" id="grade_level" class="form-select" required>
             <option value="" disabled
                 {{ old('grade_level', $student->grade_level ?? '') == '' ? 'selected' : '' }}>اختر الصف الدراسي</option>
-            <option value="1" {{ old('grade_level', $student->grade_level ?? '') == 1 ? 'selected' : '' }}>الصف
+            <option value="1" {{  $student->grade_level  == 1 ? 'selected' : '' }}>الصف
                 الأول الثانوي</option>
-            <option value="2" {{ old('grade_level', $student->grade_level ?? '') == 2 ? 'selected' : '' }}>الصف
+            <option value="2" {{  $student->grade_level  == 2 ? 'selected' : '' }}>الصف
                 الثاني الثانوي</option>
-            <option value="3" {{ old('grade_level', $student->grade_level ?? '') == 3 ? 'selected' : '' }}>الصف
+            <option value="3" {{  $student->grade_level  == 3 ? 'selected' : '' }}>الصف
                 الثالث الثانوي</option>
         </select>
     </div>
