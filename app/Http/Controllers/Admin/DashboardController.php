@@ -6,15 +6,20 @@ use Carbon\Carbon;
 use App\Models\Group;
 use App\Models\Student;
 use Illuminate\Http\Request;
-
+use App\Services\GroupService;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 
 class DashboardController extends Controller
 {
-
+    private $GroupService;
+    public function __construct(GroupService $GroupService)
+    {
+          $this->GroupService= $GroupService; 
+    }
     public function index()
     {
+        $this->GroupService->update_code_of_students();
         // عدد الطلاب لكل صف (1، 2، 3)
 
         $studentsByGrade = Student::whereIn('grade_level', [1, 2, 3])
