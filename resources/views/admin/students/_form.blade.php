@@ -47,12 +47,12 @@
             <option value="" disabled {{ old('group_id', $student->group_id ?? '') == '' ? 'selected' : '' }}>اختر
                 المجموعة</option>
             @php
-                $selectedGrade = old('grade_level', $student->grade_level ?? '');
+                $selectedGrade = $student->grade_level ;
                 $groups_of_grade = $groups->where('grade_level', $selectedGrade);
             @endphp
             @foreach ($groups_of_grade as $group)
                 <option value="{{ $group->id }}"
-                    {{ old('group_id', $student->group_id ?? '') == $group->id ? 'selected' : '' }}>
+                    {{  $student->group_id  == $group->id ? 'selected' : '' }}>
                     {{ $group->name }}
                 </option>
             @endforeach
