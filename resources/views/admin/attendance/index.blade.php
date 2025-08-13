@@ -95,8 +95,7 @@
                                         <tr data-due-amount="{{ $dueAmount }}" data-student-id="{{ $student->id }}"
                                             data-student-code="{{ $student->student_code }}"
                                             data-discount="{{ $student->discount }}"
-                                            data-status="{{ $attendance->status }}"
-                                            >
+                                            data-status="{{ $attendance->status }}">
 
                                             <td><a
                                                     href="{{ route('admin.students.show', $student->id) }}">#{{ $student->student_code }}</a>
@@ -252,10 +251,10 @@
             const result = document.getElementById('barcode-result');
             let row = document.querySelector(`tr[data-student-code="${code}"]`);
             let AttendanceStatus = parseInt(row.dataset.status);
-            
-            if(AttendanceStatus == 1){
+
+            if (AttendanceStatus == 1) {
                 alert('تم تحضير هذا الطالب من قبل')
-                return ;
+                return;
             }
             if (!code) return;
 
@@ -331,6 +330,20 @@
                 const code = input.value.trim();
                 markAttendance(code);
             });
+
+            // البحث أثناء الكتابة
+            input.addEventListener('keyup', function() {
+                const search = input.value.trim().toLowerCase();
+                document.querySelectorAll('table tbody tr').forEach(row => {
+                    const code = row.dataset.studentCode.toLowerCase();
+                    if (code.includes(search) || search === '') {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            });
+
         });
     </script>
 
