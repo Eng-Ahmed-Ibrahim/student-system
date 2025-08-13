@@ -148,7 +148,7 @@ class StudentController extends Controller
             return back()->with("error", 'لقد تم الوصول إلى الحد الأقصى للطلاب في هذه المجموعة.');
         }
 
-        $lastStudent = Student::where('group_id', $group->id)->orderBy('id', 'desc')->first();
+        $lastStudent = Student::where('group_id', $group->id)->orderBy('student_code', 'desc')->first();
         $nextNumber = $lastStudent ? intval($lastStudent->student_code) + 1  : intval($group->code) + 1;
         $student_code = $nextNumber;
 
@@ -216,7 +216,7 @@ class StudentController extends Controller
         if ($student->group_id != $request->group_id) {
 
             $group = Group::findOrFail($request->group_id);
-            $lastStudent = Student::where('group_id', $group->id)->orderBy('id', 'desc')->first();
+            $lastStudent = Student::where('group_id', $group->id)->orderBy('student_code', 'desc')->first();
             $nextNumber = $lastStudent ? intval($lastStudent->student_code) + 1  : intval($group->code) + 1;
             $updateData['student_code'] = $nextNumber;
 
