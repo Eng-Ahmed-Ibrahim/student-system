@@ -29,7 +29,7 @@ class StudentController extends Controller
         $students = Student::where("grade_level", $request->grade_level)
             ->with('group')
             ->when($group_id, function ($q) use ($group_id) {
-                if($group_id != 'all')
+                if ($group_id != 'all')
                     $q->where("group_id", $group_id);
             })
             ->when($search, function ($q) use ($search) {
@@ -41,7 +41,7 @@ class StudentController extends Controller
             })
             ->withSum('fees as total_fees', 'amount')
             ->withSum('payments as total_paid', 'amount')
-            ->orderBy("id","DESC")
+            ->orderBy("id", "DESC")
             ->paginate(30)->appends(request()->query());
         $groups = Helpers::get_groups();
         return view('admin.students.index', compact('students', 'groups'));
@@ -94,7 +94,7 @@ class StudentController extends Controller
                 }
             ])
             ->findOrFail($id);
-            // return $student;
+        // return $student;
 
         // لجلب كل الشهور التي فيها رسوم لهذا الطالب
         $availableMonths = $student->fees()->select('month')->distinct()->pluck('month');
@@ -148,7 +148,7 @@ class StudentController extends Controller
             return back()->with("error", 'لقد تم الوصول إلى الحد الأقصى للطلاب في هذه المجموعة.');
         }
 
-           $lastStudent = Student::where('group_id', $group->id)->orderBy('id', 'desc')->first();
+        $lastStudent = Student::where('group_id', $group->id)->orderBy('id', 'desc')->first();
         $nextNumber = $lastStudent ? intval($lastStudent->student_code) + 1  : intval($group->code) + 1;
         $student_code = $nextNumber;
 
@@ -201,8 +201,7 @@ class StudentController extends Controller
             'discount_reason' => 'nullable|string',
 
         ]);
-
-        $student->update($request->only([
+        $updateData = $request->only([
             'group_id',
             'name',
             'phone',
@@ -212,7 +211,18 @@ class StudentController extends Controller
             'discount',
             'discount_reason',
             'grade_level'
-        ]));
+        ]);
+
+        if ($student->group_id != $request->group_id) {
+
+            $group = Group::findOrFail($request->group_id);
+            $lastStudent = Student::where('group_id', $group->id)->orderBy('id', 'desc')->first();
+            $nextNumber = $lastStudent ? intval($lastStudent->student_code) + 1  : intval($group->code) + 1;
+            $updateData['student_code'] = $nextNumber;
+
+        }
+
+        $student->update($updateData);
         session(['tab' => 0]);
 
         return redirect()->back()

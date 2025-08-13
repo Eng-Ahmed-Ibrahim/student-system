@@ -14,7 +14,7 @@ class Group extends Model
      */
         public function students()
     {
-        return $this->hasMany(Student::class,'group_id');
+        return $this->hasMany(Student::class,'group_id')->orderBy('student_code');
     }
         /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
