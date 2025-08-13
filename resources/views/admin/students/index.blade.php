@@ -2,6 +2,7 @@
 @php
     $title = 'الطلاب';
     $sub_title = 'الطلاب';
+    $grade_level= request('grade_level');
 @endphp
 @section('title', $title)
 @section('content')
@@ -38,8 +39,28 @@
 
                         <!-- جدول الطلاب -->
                         <div class="table-responsive">
+
+                            <div class="d-flex gap-2">
+
+                                <form action="" id="FilterForm" method="get">
+                                    <input type="hidden" name="page" value="{{ request('page') }}">
+                                    <input type="hidden" name="grade_level" value="{{ request('grade_level') }}">
+                                    <select name="group_id" onchange="document.getElementById('FilterForm').submit()" name="grade_level" id="grade_level" class="form-select" required>
+                                        
+                                        <option value="" disabled
+                                        {{ old('grade_level', $student->grade_level ?? '') == '' ? 'selected' : '' }}>اختر مجموعه
+                                    </option>
+                                    @foreach($groups as $group)
+                                    @if($group->grade_level == $grade_level)
+                                    <option value="{{ $group->id }}" >{{ $group->name }}</option>
+                                    @endif
+                                    @endforeach
+                                    
+                                </select>
+                            </form>
                             <button class="btn btn-primary mb-3" onclick="downloadAllBarcodes()">📥 تحميل كل
                                 الباركودات</button>
+                            </div>
 
                             <table class="table table-bordered">
                                 <thead>
@@ -114,7 +135,7 @@
                                             </td>
 
                                             <td class="d-flex gap-1">
-                                               
+
                                                 <button
                                                     class="btn btn-sm {{ $student->blocked ? 'btn-success' : 'btn-danger' }} toggle-block-btn"
                                                     data-id="{{ $student->id }}"

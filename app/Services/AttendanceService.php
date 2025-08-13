@@ -85,10 +85,11 @@ class AttendanceService
                 'time' => $status == 0 ? null : now()->format('H:i:s'),
             ]
         );
-        if ($attendance->status )
-            $this->add_fees($attendance->id, $studentId);
-        else
-            $this->delete_fees($attendance->id, $studentId);
+        // for daily fees
+        // if ($attendance->status )
+        //     $this->add_fees($attendance->id, $studentId);
+        // else
+        //     $this->delete_fees($attendance->id, $studentId);
 
         return $attendance;
     }

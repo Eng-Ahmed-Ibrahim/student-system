@@ -15,11 +15,21 @@ use App\Http\Controllers\Controller;
 class StudentController extends Controller
 {
 
+    private $StudentService;
+    function __construct(StudentService $StudentService)
+    {
+        $this->StudentService=$StudentService;
+    }
+
     public function index(Request $request)
     {
 
+        $group_id=$request->group_id;
         $students = Student::where("grade_level", $request->grade_level)
             ->with('group')
+            ->when($group_id,function ($q) use ($group_id){
+                $q->where("group_id",$group_id);
+            })
             ->withSum('fees as total_fees', 'amount')
             ->withSum('payments as total_paid', 'amount')
             ->paginate(15)->appends(request()->query());
@@ -129,13 +139,22 @@ class StudentController extends Controller
 
         $lastStudent = Student::where('group_id', $group->id)->orderBy('id', 'desc')->first();
         $nextNumber = $lastStudent ? intval(str_replace($group->code, '', $lastStudent->student_code)) + 1 : 1;
-        $student_code = $group->code . $nextNumber;
+        $student_code = $group->code + $nextNumber;
 
         // Create barcode image as base64
         $barcode = new DNS1D();
         $barcode->setStorPath(__DIR__ . "/cache/");
         $barcodeImage = $barcode->getBarcodePNG($student_code, 'C39');
 
+        
+        // Check if phone or national_id already exists
+        $exists = Student::where('phone', $request->phone)
+            ->orWhere('national_id', $request->national_id)
+            ->exists();
+
+        if ($exists) {
+            return back()->with('error','هذا الطالب موجود بالفعل');
+        }
         $student = Student::create([
             'group_id' => $group->id,
             'student_code' => $student_code,
@@ -150,7 +169,7 @@ class StudentController extends Controller
             'discount_reason' => $request->discount_reason,
             'barcode' => $barcodeImage,
         ]);
-        // $this->StudentService->generateMonthlyFeeIfNotExists($student);
+        $this->StudentService->generateMonthlyFeeIfNotExists($student);
 
         return redirect()->back()->with('success', 'تم إضافة الطالب بنجاح');
     }
