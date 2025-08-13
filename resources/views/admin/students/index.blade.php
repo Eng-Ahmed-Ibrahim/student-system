@@ -44,7 +44,6 @@
                                 <button class="btn btn-primary mb-3" onclick="downloadAllBarcodes()">📥 تحميل كل
                                     الباركودات</button>
                                 <form action="" id="FilterForm" class="d-flex gap-2" method="get">
-                                    <input type="hidden" name="page" value="{{ request('page') }}">
                                     <input type="hidden" name="grade_level" value="{{ request('grade_level') }}">
                                     <!-- بحث بالاسم أو الهاتف أو الرقم القومي -->
                                     <div class="mb-2">
