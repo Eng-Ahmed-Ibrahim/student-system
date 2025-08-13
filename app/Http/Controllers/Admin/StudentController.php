@@ -41,7 +41,8 @@ class StudentController extends Controller
             })
             ->withSum('fees as total_fees', 'amount')
             ->withSum('payments as total_paid', 'amount')
-            ->paginate(15)->appends(request()->query());
+            ->orderBy("id","DESC")
+            ->paginate(30)->appends(request()->query());
         $groups = Helpers::get_groups();
         return view('admin.students.index', compact('students', 'groups'));
     }
