@@ -146,9 +146,10 @@ class StudentController extends Controller
             return back()->with("error", 'لقد تم الوصول إلى الحد الأقصى للطلاب في هذه المجموعة.');
         }
 
-        $lastStudent = Student::where('group_id', $group->id)->orderBy('id', 'desc')->first();
-        $nextNumber = $lastStudent ? intval(str_replace($group->code, '', $lastStudent->student_code)) + 1 : 1;
-        $student_code = intval($group->code) + $nextNumber;
+           $lastStudent = Student::where('group_id', $group->id)->orderBy('id', 'desc')->first();
+        $nextNumber = $lastStudent ? intval($lastStudent->student_code) + 1  : intval($group->code) + 1;
+        $student_code = $nextNumber;
+
 
         // Create barcode image as base64
         $barcode = new DNS1D();
