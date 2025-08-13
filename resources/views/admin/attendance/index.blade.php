@@ -291,7 +291,7 @@
                         let sessionPrice = parseFloat("{{ $group->monthly_fee }}") || 0;
                         let price = sessionPrice - (sessionPrice * studentDiscount / 100);
                         let dueAmount = price + studentDueAmount;
-                        formFees.textContent = dueAmount.toFixed(2);
+                        // formFees.textContent = dueAmount.toFixed(2);
 
                         formStatusCell.innerHTML = `
                            <span
