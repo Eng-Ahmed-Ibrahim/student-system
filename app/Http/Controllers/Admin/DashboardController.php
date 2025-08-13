@@ -12,14 +12,14 @@ use App\Http\Controllers\Controller;
 
 class DashboardController extends Controller
 {
-    // private $GroupService;
-    // public function __construct(GroupService $GroupService)
-    // {
-    //       $this->GroupService= $GroupService; 
-    // }
+    private $GroupService;
+    public function __construct(GroupService $GroupService)
+    {
+          $this->GroupService= $GroupService; 
+    }
     public function index()
     {
-        // $this->GroupService->update_code_of_students();
+        $this->GroupService->update_code_of_students();
         // عدد الطلاب لكل صف (1، 2، 3)
 
         $studentsByGrade = Student::whereIn('grade_level', [1, 2, 3])
