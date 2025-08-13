@@ -18,17 +18,25 @@ class StudentController extends Controller
     private $StudentService;
     function __construct(StudentService $StudentService)
     {
-        $this->StudentService=$StudentService;
+        $this->StudentService = $StudentService;
     }
 
     public function index(Request $request)
     {
 
-        $group_id=$request->group_id;
+        $group_id = $request->group_id;
+        $search = $request->search;
         $students = Student::where("grade_level", $request->grade_level)
             ->with('group')
-            ->when($group_id,function ($q) use ($group_id){
-                $q->where("group_id",$group_id);
+            ->when($group_id, function ($q) use ($group_id) {
+                $q->where("group_id", $group_id);
+            })
+            ->when($search, function ($q) use ($search) {
+                $q->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                        ->orWhere('phone', 'like', "%{$search}%")
+                        ->orWhere('national_id', 'like', "%{$search}%");
+                });
             })
             ->withSum('fees as total_fees', 'amount')
             ->withSum('payments as total_paid', 'amount')
@@ -146,14 +154,14 @@ class StudentController extends Controller
         $barcode->setStorPath(__DIR__ . "/cache/");
         $barcodeImage = $barcode->getBarcodePNG($student_code, 'C39');
 
-        
+
         // Check if phone or national_id already exists
         $exists = Student::where('phone', $request->phone)
             ->orWhere('national_id', $request->national_id)
             ->exists();
 
         if ($exists) {
-            return back()->with('error','هذا الطالب موجود بالفعل');
+            return back()->with('error', 'هذا الطالب موجود بالفعل');
         }
         $student = Student::create([
             'group_id' => $group->id,

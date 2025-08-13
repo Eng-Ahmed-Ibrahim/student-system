@@ -2,7 +2,7 @@
 @php
     $title = 'الطلاب';
     $sub_title = 'الطلاب';
-    $grade_level= request('grade_level');
+    $grade_level = request('grade_level');
 @endphp
 @section('title', $title)
 @section('content')
@@ -41,25 +41,45 @@
                         <div class="table-responsive">
 
                             <div class="d-flex gap-2">
-
-                                <form action="" id="FilterForm" method="get">
+                                <button class="btn btn-primary mb-3" onclick="downloadAllBarcodes()">📥 تحميل كل
+                                    الباركودات</button>
+                                <form action="" id="FilterForm" class="d-flex gap-2" method="get">
                                     <input type="hidden" name="page" value="{{ request('page') }}">
                                     <input type="hidden" name="grade_level" value="{{ request('grade_level') }}">
-                                    <select name="group_id" onchange="document.getElementById('FilterForm').submit()" name="grade_level" id="grade_level" class="form-select" required>
-                                        
-                                        <option value="" disabled
-                                        {{ old('grade_level', $student->grade_level ?? '') == '' ? 'selected' : '' }}>اختر مجموعه
-                                    </option>
-                                    @foreach($groups as $group)
-                                    @if($group->grade_level == $grade_level)
-                                    <option value="{{ $group->id }}" >{{ $group->name }}</option>
-                                    @endif
-                                    @endforeach
-                                    
-                                </select>
-                            </form>
-                            <button class="btn btn-primary mb-3" onclick="downloadAllBarcodes()">📥 تحميل كل
-                                الباركودات</button>
+                                    <!-- بحث بالاسم أو الهاتف أو الرقم القومي -->
+                                    <div class="mb-2">
+                                        <input type="text" name="search" value="{{ request('search') }}"
+                                            class="form-control" placeholder="ابحث بالاسم أو الهاتف أو الرقم القومي">
+                                    </div>
+
+
+                                    <div class="d-flex">
+
+                                        <select style="    border-top-left-radius: 0;border-bottom-left-radius: 0;"
+                                            name="group_id" onchange="document.getElementById('FilterForm').submit()"
+                                            name="grade_level" id="grade_level" class="form-select">
+
+                                            <option value="" disabled
+                                                {{ old('grade_level', $student->grade_level ?? '') == '' ? 'selected' : '' }}>
+                                                اختر مجموعه
+                                            </option>
+                                            @foreach ($groups as $group)
+                                                @if ($group->grade_level == $grade_level)
+                                                    <option value="{{ $group->id }}">{{ $group->name }}</option>
+                                                @endif
+                                            @endforeach
+
+                                        </select>
+                                        <button
+                                            style="    border-top-right-radius: 0;
+                                            border-bottom-right-radius: 0;"
+                                            type="submit" class="btn btn-primary">
+                                            بحث
+                                        </button>
+                                    </div>
+
+                                </form>
+
                             </div>
 
                             <table class="table table-bordered">
