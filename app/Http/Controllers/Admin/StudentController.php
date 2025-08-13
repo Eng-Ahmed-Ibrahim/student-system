@@ -29,7 +29,8 @@ class StudentController extends Controller
         $students = Student::where("grade_level", $request->grade_level)
             ->with('group')
             ->when($group_id, function ($q) use ($group_id) {
-                $q->where("group_id", $group_id);
+                if($group_id != 'all')
+                    $q->where("group_id", $group_id);
             })
             ->when($search, function ($q) use ($search) {
                 $q->where(function ($q) use ($search) {
