@@ -267,9 +267,7 @@
                                             <div class="mb-3 col">
                                                 <label for="grade_level" class="form-label">الصف الدراسي</label>
                                                 <select name="grade_level" id="grade_level" class="form-select" required>
-                                                    <option value="" disabled
-                                                        {{ old('grade_level', $student->grade_level ?? '') == '' ? 'selected' : '' }}>
-                                                        اختر الصف الدراسي</option>
+                                                    <option value="" disabled>اختر الصف الدراسي</option>
                                                     <option value="1"
                                                         {{ $student->grade_level == 1 ? 'selected' : '' }}>الصف
                                                         الأول الثانوي</option>
@@ -285,15 +283,12 @@
                                             <div class="mb-3 col">
                                                 <label for="group_id" class="form-label">المجموعة</label>
                                                 <select name="group_id" id="group_id" class="form-select" required>
-                                                    <option value="" disabled
-                                                        {{ old('group_id', $student->group_id ?? '') == '' ? 'selected' : '' }}>
-                                                        اختر
-                                                        المجموعة</option>
+                                                    <option value="" disabled>اختر المجموعة</option>
                                                     @php
                                                         $selectedGrade = $student->grade_level;
                                                         $groups_of_grade = $groups->where(
                                                             'grade_level',
-                                                            $selectedGrade,
+                                                            $selectedGrade
                                                         );
                                                     @endphp
                                                     @foreach ($groups_of_grade as $group)
