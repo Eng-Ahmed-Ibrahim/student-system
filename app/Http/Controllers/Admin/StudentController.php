@@ -139,7 +139,7 @@ class StudentController extends Controller
 
         $lastStudent = Student::where('group_id', $group->id)->orderBy('id', 'desc')->first();
         $nextNumber = $lastStudent ? intval(str_replace($group->code, '', $lastStudent->student_code)) + 1 : 1;
-        $student_code = $group->code + $nextNumber;
+        $student_code = intval($group->code) + $nextNumber;
 
         // Create barcode image as base64
         $barcode = new DNS1D();
