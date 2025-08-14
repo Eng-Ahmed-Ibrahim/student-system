@@ -228,22 +228,16 @@
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                     </div>
                                     <div class="modal-body">
-                                        <div class="mb-3">
-                                            <label for="grade_level" class="form-label">الصف الدراسي</label>
-                                            <select name="grade_level" id="grade_level" class="form-select" required>
-                                                <option value="" disabled selected>اختر الصف الدراسي</option>
-                                                <option value="1">الصف الأول الثانوي</option>
-                                                <option value="2">الصف الثاني الثانوي</option>
-                                                <option value="3">الصف الثالث الثانوي</option>
-                                            </select>
-                                        </div>
+                                        <input type="hidden" name="grade_level" value="{{ request('grade_level') }}">
 
                                         <div class="mb-3">
                                             <label for="group_id" class="form-label">المجموعة</label>
                                             <select name="group_id" id="group_id" class="form-select" required>
                                                 <option value="" disabled selected>اختر المجموعة</option>
                                                 @foreach ($groups as $group)
-                                                    <option value="{{ $group->id }}">{{ $group->name }}</option>
+                                                @if(request('grade_level') == $group->grade_level)
+                                                    <option value="{{ $group->id }}" >{{ $group->name }}</option>
+                                                    @endif
                                                 @endforeach
                                             </select>
                                         </div>

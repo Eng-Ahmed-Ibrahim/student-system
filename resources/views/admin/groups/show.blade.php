@@ -23,9 +23,8 @@
                     </ul>
                 </div>
                 <div class="d-flex align-items-center gap-2 gap-lg-3">
-
-                    <a href="#" class="btn btn-sm fw-bold btn-primary" data-bs-toggle="modal"
-                        data-bs-target="#kt_modal_create_app">Create</a>
+                    <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addStudentModal">إضافة
+                        طالب</button>
                 </div>
             </div>
         </div>
@@ -101,6 +100,74 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+    <!-- مودال الإضافة -->
+    <div class="modal fade" id="addStudentModal" tabindex="-1">
+        <div class="modal-dialog">
+            <form method="POST" action="{{ route('admin.students.store') }}" class="modal-content">
+                <input type="hidden" name="grade_level" value="{{ $group->grade_level }}">
+                <input type="hidden" name="group_id" value="{{ $group->id }}">
+                @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title">إضافة طالب</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+      
+                    <div class="mb-3">
+                        <label for="name" class="form-label">اسم الطالب</label>
+                        <input type="text" name="name" id="name" class="form-control" placeholder="اسم الطالب"
+                            required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">تليفون الطالب</label>
+                        <input type="text" name="phone" id="phone" class="form-control" placeholder="تليفون الطالب"
+                            pattern="\d{11}" maxlength="11" minlength="11"
+                            oninput="this.value = this.value.replace(/[^0-9]/g, '')" required
+                            title="رقم الهاتف يجب أن يتكون من 11 رقم">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="parent_phone" class="form-label">تليفون ولي الأمر</label>
+                        <input type="text" name="parent_phone" id="parent_phone" class="form-control"
+                            placeholder="تليفون ولي الأمر" pattern="\d{11}" maxlength="11" minlength="11"
+                            oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                            title="رقم الهاتف يجب أن يتكون من 11 رقم" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="national_id" class="form-label">الرقم القومي</label>
+                        <input type="text" name="national_id" id="national_id" class="form-control"
+                            placeholder="الرقم القومي" pattern="\d{14}" maxlength="14" minlength="14"
+                            oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                            title="رقم قومي يجب أن يتكون من 14 رقم" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="address" class="form-label">العنوان</label>
+                        <textarea name="address" id="address" class="form-control" placeholder="العنوان" required></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="discount" class="form-label">الخصم</label>
+                        <input type="number" name="discount" id="discount" class="form-control" placeholder="الخصم"
+                            min="0" max="100"
+                            oninput="this.value = this.value.replace(/[^0-9]/g, ''); 
+                                                        if (this.value > 100) this.value = 100; 
+                                                        if (this.value < 0) this.value = 0;">
+                    </div>
+                    <div class="mb-3">
+                        <label for="discount_reason" class="form-label">سبب الخصم</label>
+                        <textarea name="discount_reason" id="discount_reason" class="form-control" placeholder="سبب الخصم"></textarea>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary">حفظ</button>
+                </div>
+            </form>
         </div>
     </div>
 
