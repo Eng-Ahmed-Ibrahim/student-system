@@ -1,8 +1,9 @@
 @extends('admin.app')
 @php
-    $title = 'الطلاب';
-    $sub_title = 'الطلاب';
+    $grades = ['الصف الاول الثانوي', 'الصف الثاني الثانوي', 'الصف الثالث الثانوي'];
     $grade_level = request('grade_level');
+    $title = $grades[$grade_level - 1];
+    $sub_title = 'الطلاب';
 @endphp
 @section('title', $title)
 @section('content')
@@ -63,7 +64,8 @@
                                             <option value="all">الكل</option>
                                             @foreach ($groups as $group)
                                                 @if ($group->grade_level == $grade_level)
-                                                    <option {{ request('group_id') == $group->id ? 'selected' : ' ' }} value="{{ $group->id }}">{{ $group->name }}</option>
+                                                    <option {{ request('group_id') == $group->id ? 'selected' : ' ' }}
+                                                        value="{{ $group->id }}">{{ $group->name }}</option>
                                                 @endif
                                             @endforeach
 
@@ -235,8 +237,8 @@
                                             <select name="group_id" id="group_id" class="form-select" required>
                                                 <option value="" disabled selected>اختر المجموعة</option>
                                                 @foreach ($groups as $group)
-                                                @if(request('grade_level') == $group->grade_level)
-                                                    <option value="{{ $group->id }}" >{{ $group->name }}</option>
+                                                    @if (request('grade_level') == $group->grade_level)
+                                                        <option value="{{ $group->id }}">{{ $group->name }}</option>
                                                     @endif
                                                 @endforeach
                                             </select>
