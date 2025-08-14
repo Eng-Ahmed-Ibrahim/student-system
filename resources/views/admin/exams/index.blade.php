@@ -147,7 +147,6 @@
             btn.addEventListener('click', function() {
                 let form = document.getElementById('editExamForm');
                 form.action = `/admin/exams/${this.dataset.id}`;
-                form.querySelector('#grade_level').value = this.dataset.grade;
                 form.querySelector('#group_id').value = this.dataset.group;
                 form.querySelector('#name').value = this.dataset.name;
                 form.querySelector('#exam_date').value = this.dataset.date;
