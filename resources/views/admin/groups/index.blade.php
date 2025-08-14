@@ -50,6 +50,7 @@
                                     <th>الصف</th>
                                     <th>السعر</th>
                                     <th>الحد الأقصى</th>
+                                    <th>المتبقي</th>
                                     <th>الأيام</th>
                                     <th>الوقت</th>
                                     <th>الإجراءات</th>
@@ -82,6 +83,7 @@
                                         <td>{{ $grades[$group->grade_level] }}</td>
                                         <td>{{ $group->monthly_fee }}</td>
                                         <td>{{ $group->limit }}</td>
+                                        <td>{{ $group->limit - $group->students_count }}</td>
 
                                         {{-- عرض الأيام بالعربية --}}
                                         <td>

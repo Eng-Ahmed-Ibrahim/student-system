@@ -11,8 +11,11 @@ class GroupController extends Controller
 {
     public function index(Request $request)
     {
-        $groups = Group::where("grade_level",$request->grade_level)->paginate(15)->appends(request()->query());
-
+        $groups = Group::
+        where("grade_level",$request->grade_level)
+        ->withCount('students')
+        ->paginate(15)
+        ->appends(request()->query());
         return view('admin.groups.index', compact('groups'));
     }
     public function show($id){
