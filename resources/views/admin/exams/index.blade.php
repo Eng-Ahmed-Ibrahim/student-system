@@ -1,6 +1,8 @@
 @extends('admin.app')
 @php
-    $title = 'الامتحانات';
+    $grades = ['الصف الاول الثانوي', 'الصف الثاني الثانوي', 'الصف الثالث الثانوي'];
+    $grade_level = request('grade_level');
+    $title = $grades[$grade_level - 1];
     $sub_title = 'الصفحات';
 @endphp
 @section('title', $title)

@@ -250,30 +250,33 @@
                                                 placeholder="اسم الطالب" required>
                                         </div>
 
-                                        <div class="mb-3">
-                                            <label for="phone" class="form-label">تليفون الطالب</label>
-                                            <input type="text" name="phone" id="phone" class="form-control"
-                                                placeholder="تليفون الطالب" pattern="\d{11}" maxlength="11"
-                                                minlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                                                required title="رقم الهاتف يجب أن يتكون من 11 رقم">
-                                        </div>
+                                        
+                                        <div class="row">
+                                            <div class="mb-3 col">
+                                                <label for="phone" class="form-label">تليفون الطالب</label>
+                                                <input type="text" name="phone" id="phone" class="form-control"
+                                                    placeholder="تليفون الطالب" pattern="\d{11}" maxlength="11"
+                                                    minlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                                    required title="رقم الهاتف يجب أن يتكون من 11 رقم">
+                                            </div>
 
-                                        <div class="mb-3">
-                                            <label for="parent_phone" class="form-label">تليفون ولي الأمر</label>
-                                            <input type="text" name="parent_phone" id="parent_phone"
+                                            <div class="mb-3 col">
+                                                <label for="parent_phone" class="form-label">تليفون ولي الأمر</label>
+                                                <input type="text" name="parent_phone" id="parent_phone"
                                                 class="form-control" placeholder="تليفون ولي الأمر" pattern="\d{11}"
                                                 maxlength="11" minlength="11"
                                                 oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                                                 title="رقم الهاتف يجب أن يتكون من 11 رقم" required>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label for="national_id" class="form-label">الرقم القومي</label>
-                                            <input type="text" name="national_id" id="national_id"
+                                            </div>
+                                            
+                                            <div class="mb-3 col-12">
+                                                <label for="national_id" class="form-label">الرقم القومي</label>
+                                                <input type="text" name="national_id" id="national_id"
                                                 class="form-control" placeholder="الرقم القومي" pattern="\d{14}"
                                                 maxlength="14" minlength="14"
                                                 oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                                                 title="رقم قومي يجب أن يتكون من 14 رقم" required>
+                                            </div>
                                         </div>
 
                                         <div class="mb-3">
