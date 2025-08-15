@@ -196,6 +196,15 @@
 
                                 </a>
                             </div>
+                            <div class="menu-item">
+                                <a href="{{ route('admin.students.blocked') }}"class="menu-link">
+                                    <span class="menu-bullet">
+                                        <span class="bullet bullet-dot"></span>
+                                    </span>
+                                    <span class="menu-title">المحظورين</span>
+
+                                </a>
+                            </div>
 
                         </div>
                     </div>
@@ -247,6 +256,48 @@
 
                                 </a>
                             </div>
+
+                        </div>
+                    </div>
+                    {{-- Reports --}}
+                    <div class="menu-item pt-5">
+                        <div class="menu-content">
+                            <span class="menu-heading fw-bold text-uppercase fs-7">التقارير</span>
+                        </div>
+                    </div>
+
+                    <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
+                        <span class="menu-link">
+                            <span class="menu-icon">
+                                <i class="ki-duotone ki-address-book fs-2">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                    <span class="path3"></span>
+                                </i>
+                            </span>
+                            <span class="menu-title">التقارير</span>
+                            <span class="menu-arrow"></span>
+                        </span>
+                        <div class="menu-sub menu-sub-accordion">
+                            <div class="menu-item">
+                                <a href="{{ route('admin.reports.financial') }}"class="menu-link">
+                                    <span class="menu-bullet">
+                                        <span class="bullet bullet-dot"></span>
+                                    </span>
+                                    <span class="menu-title"> الماليات </span>
+
+                                </a>
+                            </div>
+                            <div class="menu-item">
+                                <a href="{{ route('admin.reports.attendance') }}"class="menu-link">
+                                    <span class="menu-bullet">
+                                        <span class="bullet bullet-dot"></span>
+                                    </span>
+                                    <span class="menu-title"> الحضور والغياب </span>
+
+                                </a>
+                            </div>
+               
 
                         </div>
                     </div>

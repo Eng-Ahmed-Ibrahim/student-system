@@ -41,6 +41,7 @@ class AppServiceProvider extends ServiceProvider
 
         $studentCounts = Student::whereIn('grade_level', [1, 2, 3])
             ->selectRaw('grade_level, COUNT(*) as count')
+            ->where('blocked', 0) // Only count non-blocked students
             ->groupBy('grade_level')
             ->pluck('count', 'grade_level');
 

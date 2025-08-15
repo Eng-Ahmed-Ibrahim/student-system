@@ -51,7 +51,7 @@
                                     class="badge bg-light text-dark">{{ \Carbon\Carbon::parse($group->time)->format('h:i A') }}</span>
                             </h5>
 
-                            <h5 class="mb-1">سعر الحصه:
+                            <h5 class="mb-1"> الرسوم الشهريه:
                                 <span class="badge bg-success total-present">{{ $group->monthly_fee }} جنيه</span>
                             </h5>
                         </div>

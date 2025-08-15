@@ -38,6 +38,7 @@ class AttendanceController extends Controller
                     $q->where('year', $year);
                 });
             }], 'amount')
+            ->orderBy('student_code', 'ASC')
             ->where("group_id", $request->group)
             ->get();
 

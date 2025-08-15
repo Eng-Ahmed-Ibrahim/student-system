@@ -39,5 +39,8 @@ php artisan migrate --force
 echo "[7/8] Seed Data "
 php artisan db:seed
 
+echo "[8/8] Seed Data "
+php artisan custom:refresh-cache
+
 
 echo "✅ The app has been built successfully !"

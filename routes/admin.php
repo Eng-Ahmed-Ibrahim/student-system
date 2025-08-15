@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\ExamController;
 use App\Http\Controllers\Admin\GroupController;
 use App\Http\Controllers\Admin\RolesController;
 use App\Http\Controllers\Admin\PaymentController;
+use App\Http\Controllers\Admin\ReportsController;
 use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\AttendanceController;
@@ -18,7 +19,8 @@ Route::resource('groups', GroupController::class);
 
 Route::resource('students', StudentController::class);
 Route::post('/students/block', [StudentController::class, 'block'])->name('students.block');
-Route::post('/students/unblock', [StudentController::class, 'unblock'])->name('students.unblock');
+Route::post('/unblock', [StudentController::class, 'unblock'])->name('students.unblock');
+Route::get('/blocked-list', [StudentController::class, 'blockedList'])->name('students.blocked');
 
 
 Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance.index');
@@ -31,3 +33,8 @@ Route::get('/groups/by-grade', [GroupController::class, 'getByGrade']);
 Route::post('/payments/store', [PaymentController::class, 'store'])->name('payments.store');
 Route::resource('exams', ExamController::class);
 Route::patch('exams/update-student-score/{id}',[ExamController::class,'update_score'])->name('exams.update_student_score');
+
+Route::name("reports.")->prefix("/reports/")->controller(ReportsController::class)->group(function () {
+    Route::get('/financial','financial')->name('financial');
+    Route::get('/attendance','attendance')->name('attendance');
+});

@@ -46,18 +46,23 @@ class AttendanceService
 
             $insertData = [];
             foreach ($newStudents as $student) {
-                /** @var \App\Models\Student $student */
-                $insertData[] = [
-                    'student_id' => $student->id,
-                    'group_id' => $group->id,
-                    'date' => $todayDate,
-                    'year' => $currentYear,
-                    'month' => $currentMonth,
-                    'status' => false,
-                    'class_start_at' => $group->time,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
+                
+                // @phpstan-ignore-next-line
+                if ($student->blocked != 1) {
+
+                    /** @var \App\Models\Student $student */
+                    $insertData[] = [
+                        'student_id' => $student->id,
+                        'group_id' => $group->id,
+                        'date' => $todayDate,
+                        'year' => $currentYear,
+                        'month' => $currentMonth,
+                        'status' => false,
+                        'class_start_at' => $group->time,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+                }
             }
 
             // إدخال دفعة واحدة
@@ -70,8 +75,8 @@ class AttendanceService
     public function changeStatusOfAttendance($studentId, $status)
     {
         $check = Attendance::where("student_id", $studentId)
-        ->where('date', now()->toDateString())->first();
-        if($check->status == $status)
+            ->where('date', now()->toDateString())->first();
+        if ($check->status == $status)
             return true;
         if (! $check)
             return false;

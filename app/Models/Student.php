@@ -8,6 +8,7 @@ use App\Models\Attendance;
 use App\Models\ExamResult;
 use App\Models\StudentFee;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Student extends Model
@@ -39,7 +40,7 @@ class Student extends Model
      */
     public function fees()
     {
-        return $this->hasMany(StudentFee::class);
+        return $this->hasMany(StudentFee::class, 'student_id');
     }
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
@@ -54,5 +55,22 @@ class Student extends Model
         $totalPaid = $this->payments()->sum('amount');
 
         return max(0, $totalFees - $totalPaid);
+    }
+
+    protected static function booted()
+    {
+        static::addGlobalScope('notBlocked', function (Builder $builder) {
+            $builder->where('blocked', 0);
+        });
+    }
+    public static function blockedStudents()
+    {
+        return static::withoutGlobalScope('notBlocked')
+            ->where('blocked', 1)
+            ->get();
+    }
+    public static function allStudents()
+    {
+        return static::withoutGlobalScope('notBlocked')->get();
     }
 }

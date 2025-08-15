@@ -31,8 +31,10 @@ class StudentService
                 if (in_array($student->id, $existingFees) || !$student->group) {
                     continue;
                 }
-                
                 $monthlyFee = $student->group->monthly_fee ?? 0;
+                $discount = is_numeric($student->discount) ? min(max($student->discount, 0), 100) : 0;
+                $final_amount = $monthlyFee -  ($monthlyFee * ($discount  / 100));
+
                 $insertData[] = [
                     'student_id' => $student->id,
                     // @phpstan-ignore-next-line
@@ -41,8 +43,11 @@ class StudentService
                     'status' => 'unpaid',
                     'month' => $month,
                     'year' => $year,
+                    'final_amount' => $final_amount,    
+                    'discount' => $discount,
                     'created_at' => now(),
                     'updated_at' => now(),
+                    'date' => now()->toDateString(),
                 ];
             }
 

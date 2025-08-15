@@ -47,6 +47,16 @@ class StudentController extends Controller
         $groups = Helpers::get_groups();
         return view('admin.students.index', compact('students', 'groups'));
     }
+    public function blockedList()
+{
+    $blockedStudents = Student::withoutGlobalScope('notBlocked')
+        ->where('blocked', 1)
+        ->with("group")
+        ->get();
+
+    return view('admin.students.blocked', compact('blockedStudents'));
+}
+
 
     public function show(Request $request, $id)
     {
@@ -55,7 +65,7 @@ class StudentController extends Controller
 
         $month = $request->month ?? now()->month; // لو فاضي، استخدم الشهر الحالي
         $year = $request->year ?? now()->year;    // لو فاضي، استخدم السنة الحالية
-        $student = Student::with('group')
+        $student = Student::withoutGlobalScopes()->with('group')
             // جلب الرسوم لفترة معينة (الشهر والسنة)
             ->with(['fees' => function ($query) use ($month, $year) {
                 $query->where('month', $month)
@@ -95,7 +105,6 @@ class StudentController extends Controller
                 }
             ])
             ->findOrFail($id);
-        // return $student;
 
         // لجلب كل الشهور التي فيها رسوم لهذا الطالب
         $availableMonths = $student->fees()->select('month')->distinct()->pluck('month');
@@ -183,7 +192,7 @@ class StudentController extends Controller
             'barcode' => $barcodeImage,
         ]);
         $this->StudentService->generateMonthlyFeeIfNotExists($student);
-
+        Helpers::recache_students();
         return redirect()->back()->with('success', 'تم إضافة الطالب بنجاح');
     }
 
@@ -225,6 +234,7 @@ class StudentController extends Controller
 
         $student->update($updateData);
         session(['tab' => 0]);
+        Helpers::recache_students();
 
         return redirect()->back()
             ->with('success', 'تم تعديل الطالب بنجاح');
@@ -247,6 +257,7 @@ class StudentController extends Controller
         $student->blocked = true;
         $student->block_reason = $request->reason;
         $student->save();
+        Helpers::recache_students();
 
         return back();
     }
@@ -257,10 +268,12 @@ class StudentController extends Controller
             'student_id' => 'required|exists:students,id',
         ]);
 
-        $student = Student::findOrFail($request->student_id);
+        $student = Student::withoutGlobalScopes()->findOrFail($request->student_id);
+        
         $student->blocked = false;
         $student->block_reason = null;
         $student->save();
+        Helpers::recache_students();
 
         return response()->json(['success' => true]);
     }
