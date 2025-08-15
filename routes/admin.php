@@ -29,6 +29,7 @@ Route::post('/attendance/mark-barcode', [AttendanceController::class, 'markByBar
     ->name('attendance.mark-barcode');
 
 Route::get('/groups/by-grade', [GroupController::class, 'getByGrade']);
+Route::get('/groups/exports/group-students/{id}', [GroupController::class, 'exportGroupStudents'])->name('groups.export');
 
 Route::post('/payments/store', [PaymentController::class, 'store'])->name('payments.store');
 Route::resource('exams', ExamController::class);
@@ -37,4 +38,5 @@ Route::patch('exams/update-student-score/{id}',[ExamController::class,'update_sc
 Route::name("reports.")->prefix("/reports/")->controller(ReportsController::class)->group(function () {
     Route::get('/financial','financial')->name('financial');
     Route::get('/attendance','attendance')->name('attendance');
+    Route::get('/examResults','examResults')->name('examResults');
 });

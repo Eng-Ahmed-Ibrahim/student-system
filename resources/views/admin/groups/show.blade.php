@@ -25,6 +25,10 @@
                 <div class="d-flex align-items-center gap-2 gap-lg-3">
                     <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addStudentModal">إضافة
                         طالب</button>
+                        <a href="{{ route('admin.groups.export', $group->id) }}" class="btn btn-success mb-3">
+   تحميل اكسيل
+</a>
+
                 </div>
             </div>
         </div>
@@ -47,7 +51,7 @@
                                 <tr>
                                     <th>كود الطالب</th>
                                     <th>الاسم</th>
-                                    <th>الكود</th>
+                                    <th>رقم القومي</th>
                                     <th>تلفون</th>
                                     <th>تلفون ولي الامر</th>
                                     <th>صف دراسي</th>
@@ -62,7 +66,7 @@
                                                 href="{{ route('admin.students.show', $student->id) }}">{{ $student->student_code }}</a>
                                         </td>
                                         <td class="student-name">{{ $student->name }}</td>
-                                        <td>{{ $student->student_code }}</td>
+                                        <td>{{ $student->national_id }}</td>
                                         <td>{{ $student->phone }}</td>
                                         <td>{{ $student->parent_phone }}</td>
                                         <td>
@@ -83,13 +87,19 @@
                                                     غير معروف
                                             @endswitch
                                         </td>
-                                        <td>
+                                        <td class="d-flex align-items-center justify-content-center gap-2">
                                             <form action="{{ route('admin.students.destroy', $student->id) }}"
                                                 method="post" onsubmit="return confirm('هل أنت متأكد أنك تريد الحذف؟');">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button class="btn btn-sm btn-danger">حذف</button>
                                             </form>
+                                                         <button
+                                                    class="btn btn-sm {{ $student->blocked ? 'btn-success' : 'btn-info' }} toggle-block-btn"
+                                                    data-id="{{ $student->id }}"
+                                                    data-blocked="{{ $student->blocked ? 1 : 0 }}">
+                                                    {{ $student->blocked ? 'إلغاء الحظر' : 'حظر' }}
+                                                </button>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -170,7 +180,29 @@
             </form>
         </div>
     </div>
-
+               <!-- Modal: سبب الحظر -->
+                        <div class="modal fade" id="blockModal" tabindex="-1" aria-labelledby="blockModalLabel"
+                            aria-hidden="true">
+                            <div class="modal-dialog">
+                                <form id="blockForm" method="POST" action="{{ route('admin.students.block') }}">
+                                    @csrf
+                                    <input type="hidden" name="student_id" id="modal_student_id">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">سبب الحظر</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <textarea name="reason" id="block_reason" class="form-control" placeholder="اكتب سبب الحظر..." required></textarea>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="submit" class="btn btn-danger">تأكيد الحظر</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
 @endsection
 @section('js')
     <script>
@@ -183,6 +215,31 @@
                 var name = nameCell.textContent.toLowerCase();
                 row.style.display = name.includes(searchValue) ? '' : 'none';
             });
+        });
+                $(document).on('click', '.toggle-block-btn', function() {
+            const studentId = $(this).data('id');
+            const isBlocked = $(this).data('blocked');
+
+            if (isBlocked) {
+                // إلغاء الحظر مباشرة
+                $.ajax({
+                    url: '{{ route('admin.students.unblock') }}',
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        student_id: studentId
+                    },
+                    success: function() {
+                        location.reload();
+                    }
+                });
+            } else {
+                // فتح المودال لإدخال سبب الحظر
+                $('#modal_student_id').val(studentId);
+                $('#block_reason').val('');
+                const blockModal = new bootstrap.Modal(document.getElementById('blockModal'));
+                blockModal.show();
+            }
         });
     </script>
 @endsection

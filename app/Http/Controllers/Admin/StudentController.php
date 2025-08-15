@@ -9,6 +9,7 @@ use App\Helpers\Helpers;
 use Milon\Barcode\DNS1D;
 use App\Models\Attendance;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use App\Services\StudentService;
 use App\Exports\StudentExamsExport;
 use App\Http\Controllers\Controller;
@@ -167,7 +168,7 @@ class StudentController extends Controller
                 // إنشاء ملفات Excel مؤقتة في الذاكرة
                 $attendanceContent = Excel::raw(new StudentAttendanceExport($attendances), \Maatwebsite\Excel\Excel::XLSX);
                 $examsContent = Excel::raw(new StudentExamsExport($student->exams_results, $student), \Maatwebsite\Excel\Excel::XLSX);
-                $studentPayment =     Excel::raw(new StudentPaymentsExport($student->payments, $student),\Maatwebsite\Excel\Excel::XLSX);
+                $studentPayment =     Excel::raw(new StudentPaymentsExport($student->payments, $student), \Maatwebsite\Excel\Excel::XLSX);
                 // إضافة الملفات للـ ZIP
                 $zip->addFromString('حضور وغياب.xlsx', $attendanceContent);
                 $zip->addFromString('امتحانات.xlsx', $examsContent);
@@ -263,9 +264,17 @@ class StudentController extends Controller
             'national_id' => 'required|string',
             'address' => 'required|string',
             'grade_level' => 'required|string',
-            'discount' => 'nullable|integer',
-            'discount_reason' => 'nullable|string',
-
+            'discount' => 'nullable|integer|min:0|max:100',
+            'discount_reason' => [
+                'nullable',
+                'string',
+                Rule::requiredIf(function () use ($request) {
+                    return $request->discount > 0;
+                }),
+            ],
+        ], [
+            'discount_reason.required' => 'يجب كتابة سبب الخصم .',
+            'discount_reason.string' => 'سبب الخصم يجب أن يكون نصاً.',
         ]);
         $updateData = $request->only([
             'group_id',

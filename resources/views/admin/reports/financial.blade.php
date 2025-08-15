@@ -40,9 +40,9 @@
                 <div class="d-flex align-items-center gap-2 gap-lg-3">
 
 
-      <a href="{{ request()->fullUrlWithQuery(['download' => 'excel']) }}" class="btn btn-success mb-3">
-    تحميل Excel 📥
-</a>
+                    <a href="{{ request()->fullUrlWithQuery(['download' => 'excel']) }}" class="btn btn-success mb-3">
+                        تحميل Excel 📥
+                    </a>
 
                 </div>
             </div>
@@ -134,6 +134,7 @@
                                     @endforelse
                                 </tbody>
                             </table>
+{{ $payments->links('vendor.pagination.custom', ['pageName' => 'payments_page']) }}
 
                             <h4>📌 المستحقات</h4>
                             <table class="table table-bordered">
@@ -168,6 +169,8 @@
                                     @endforelse
                                 </tbody>
                             </table>
+{{ $studentFees->links('vendor.pagination.custom', ['pageName' => 'fees_page']) }}
+
                         </div>
 
 

@@ -5,24 +5,34 @@ namespace App\Http\Controllers\Admin;
 use App\Models\Group;
 use App\Helpers\Helpers;
 use Illuminate\Http\Request;
+use App\Exports\GroupStudentsExport;
 use App\Http\Controllers\Controller;
+use Maatwebsite\Excel\Facades\Excel;
 
 class GroupController extends Controller
 {
     public function index(Request $request)
     {
-        $groups = Group::
-        where("grade_level",$request->grade_level)
-        ->withCount('students')
-        ->paginate(15)
-        ->appends(request()->query());
+        $groups = Group::where("grade_level", $request->grade_level)
+            ->withCount('students')
+            ->paginate(15)
+            ->appends(request()->query());
         return view('admin.groups.index', compact('groups'));
     }
-    public function show($id){
-        $group=Group::with(['students'])->findOrFail($id);
-        return view('admin.groups.show',compact('group'));
+    public function show($id)
+    {
+        $group = Group::with(['students'])->findOrFail($id);
+        return view('admin.groups.show', compact('group'));
     }
+    public function exportGroupStudents($id)
+    {
+        $group = Group::with('students')->findOrFail($id);
+        $students = $group->students;
 
+        $fileName = "مجموعة_{$group->name}_الطلاب.xlsx";
+        // return $students;
+        return Excel::download(new GroupStudentsExport($students,$group->name), $fileName);
+    }
     public function store(Request $request)
     {
         $request->validate([
@@ -45,7 +55,7 @@ class GroupController extends Controller
             'monthly_fee' => $request->monthly_fee,
             'grade_level' => $request->grade_level,
         ]);
-         Helpers::recache_groups();
+        Helpers::recache_groups();
 
         return redirect()->back()->with('success', 'Group added successfully.');
     }
@@ -73,16 +83,15 @@ class GroupController extends Controller
             'grade_level' => $request->grade_level,
 
         ]);
-         Helpers::recache_groups();
+        Helpers::recache_groups();
 
         return redirect()->back()->with('success', 'Group updated successfully.');
     }
 
     public function getByGrade(Request $request)
-{
-    $groups = Group::where('grade_level', $request->grade_level)->get(['id', 'name']);
-    
-    return response()->json($groups);
-}
+    {
+        $groups = Group::where('grade_level', $request->grade_level)->get(['id', 'name']);
 
+        return response()->json($groups);
+    }
 }

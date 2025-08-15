@@ -26,9 +26,9 @@
                 </div>
                 <div class="d-flex align-items-center gap-2 gap-lg-3">
 
-      <a href="{{ request()->fullUrlWithQuery(['download' => 'excel']) }}" class="btn btn-success mb-3">
-    تحميل Excel 📥
-</a>
+                    <a href="{{ request()->fullUrlWithQuery(['download' => 'excel']) }}" class="btn btn-success mb-3">
+                        تحميل Excel 📥
+                    </a>
 
                 </div>
             </div>
@@ -154,6 +154,8 @@
                                     @endforelse
                                 </tbody>
                             </table>
+                            {{ $attendances->links('vendor.pagination.custom') }}
+
                         </div>
 
 

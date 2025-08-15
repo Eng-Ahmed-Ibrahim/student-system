@@ -41,26 +41,27 @@
     color: #ddd;
 }
 </style>
+@props(['paginator'])
 
 @php
-    $queryString = http_build_query(request()->except('page'));
+    $queryString = http_build_query(request()->except($paginator->getPageName()));
 @endphp
 
 @if ($paginator->lastPage() > 1)
     <div class="pagination">
-        {{-- Previous Page Link --}}
+        {{-- Previous --}}
         @if ($paginator->onFirstPage())
             <div class="pagination-link disabled"><i class="fa-solid fa-angle-left"></i></div>
         @else
-            <a href="{{ $paginator->previousPageUrl() }}&{{ $queryString }}" class="pagination-link">
+            <a href="{{ $paginator->previousPageUrl() . (strlen($queryString) ? '&'.$queryString : '') }}" class="pagination-link">
                 <i class="fa-solid fa-angle-left"></i>
             </a>
         @endif
 
-        {{-- Pagination Elements --}}
+        {{-- Pages --}}
         @for ($i = 1; $i <= $paginator->lastPage(); $i++)
             @php
-                $url = $paginator->url($i) . '&' . $queryString;
+                $url = $paginator->url($i) . (strlen($queryString) ? '&'.$queryString : '');
             @endphp
 
             @if ($i == $paginator->currentPage())
@@ -70,9 +71,9 @@
             @endif
         @endfor
 
-        {{-- Next Page Link --}}
+        {{-- Next --}}
         @if ($paginator->hasMorePages())
-            <a href="{{ $paginator->nextPageUrl() }}&{{ $queryString }}" class="pagination-link">
+            <a href="{{ $paginator->nextPageUrl() . (strlen($queryString) ? '&'.$queryString : '') }}" class="pagination-link">
                 <i class="fa-solid fa-angle-right"></i>
             </a>
         @else
