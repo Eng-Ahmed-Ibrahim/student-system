@@ -80,6 +80,9 @@ class StudentService
             ->exists();
 
         if (!$exists) {
+                $discount = is_numeric($student->discount) ? min(max($student->discount, 0), 100) : 0;
+                $final_amount = $monthlyFee -  ($monthlyFee * ($discount  / 100));
+
             StudentFee::create([
                 'student_id' => $student->id,
                 'group_id' => $group->id,
@@ -87,6 +90,9 @@ class StudentService
                 'status' => 'unpaid',
                 'month' => $month,
                 'year' => $year,
+                'discount'=>$discount,
+                'final_amount'=>$final_amount,
+                'date' => now()->toDateString(),
             ]);
             Log::info("Created fee for student {$student->id} for $month/$year");
         }

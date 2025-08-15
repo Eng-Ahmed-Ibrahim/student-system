@@ -48,7 +48,7 @@ class AttendanceService
             foreach ($newStudents as $student) {
                 
                 // @phpstan-ignore-next-line
-                if ($student->blocked != 1) {
+                if ($student->blocked == 0) {
 
                     /** @var \App\Models\Student $student */
                     $insertData[] = [
