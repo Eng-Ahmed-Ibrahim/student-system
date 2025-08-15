@@ -10,8 +10,10 @@ use Milon\Barcode\DNS1D;
 use App\Models\Attendance;
 use Illuminate\Http\Request;
 use App\Services\StudentService;
+use App\Exports\StudentExamsExport;
 use App\Http\Controllers\Controller;
-
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\StudentAttendanceExport;
 class StudentController extends Controller
 {
 
@@ -48,95 +50,101 @@ class StudentController extends Controller
         return view('admin.students.index', compact('students', 'groups'));
     }
     public function blockedList()
-{
-    $blockedStudents = Student::withoutGlobalScope('notBlocked')
-        ->where('blocked', 1)
-        ->with("group")
-        ->get();
-
-    return view('admin.students.blocked', compact('blockedStudents'));
-}
-
-
-    public function show(Request $request, $id)
     {
-        $today = now()->format('l');
-        $todayDate = now()->toDateString();
-
-        $month = $request->month ?? now()->month; // لو فاضي، استخدم الشهر الحالي
-        $year = $request->year ?? now()->year;    // لو فاضي، استخدم السنة الحالية
-        $student = Student::withoutGlobalScopes()->with('group')
-            // جلب الرسوم لفترة معينة (الشهر والسنة)
-            ->with(['fees' => function ($query) use ($month, $year) {
-                $query->where('month', $month)
-                    ->where('year', $year);
-            }])
-            // جلب المدفوعات في الشهر والسنة المطلوبة مرتبطة برسوم نفس الفترة
-            ->with(['payments' => function ($query) use ($month, $year) {
-                $query->whereHas('studentFee', function ($q) use ($month, $year) {
-                    $q->where('month', $month)
-                        ->where('year', $year);
-                });
-            }])
-            // جلب نتائج الامتحانات مع الامتحانات المرتبطة (select فقط الأعمدة المطلوبة)
-            ->with([
-                'exams_results:id,student_id,score,exam_id',
-                'exams_results.exam:id,total_score,exam_date',
-            ])
-            // حساب مجموع الرسوم للسنة المحددة دفعة واحدة (بدون alias ثان)
-            ->withSum(['fees as total_fees' => function ($query) use ($year) {
-                $query->where('year', $year);
-            }], 'final_amount')
-            // حساب مجموع المدفوعات للسنة المحددة
-            ->withSum(['payments as total_paid' => function ($query) use ($year) {
-                $query->whereHas('studentFee', function ($q) use ($year) {
-                    $q->where('year', $year);
-                });
-            }], 'amount')
-            // حساب عدد الحضور والغياب دفعة واحدة بدل استدعاء withCount مرتين
-            ->withCount([
-                'attendance as total_absent' => function ($query) use ($year) {
-                    $query->where('status', false)
-                        ->whereYear('date', $year);
-                },
-                'attendance as total_present' => function ($query) use ($year) {
-                    $query->where('status', true)
-                        ->whereYear('date', $year);
-                }
-            ])
-            ->findOrFail($id);
-
-        // لجلب كل الشهور التي فيها رسوم لهذا الطالب
-        $availableMonths = $student->fees()->select('month')->distinct()->pluck('month');
-
-
-
-        $status = $request->status;
-
-
-
-        $query = Attendance::query();
-
-        if (!is_null($status)) {
-            $query->where("status", $status);
-        }
-
-
-        $attendances = $query->where("student_id", $student->id)
-            ->where("month", $month)
-            ->where("year", $year)
-
-            ->orderBy("id", "DESC")
+        $blockedStudents = Student::withoutGlobalScope('notBlocked')
+            ->where('blocked', 1)
+            ->with("group")
             ->get();
 
-        $presentCount = $attendances->where('status', 1)->count();
-        $absentCount = $attendances->where('status', 0)->count();
-
-        $tab = $request->tab ?? session('tab', 0);
-        session()->forget('tab');
-        $groups = Helpers::get_groups();
-        return view('admin.students.show', compact('groups', 'student', 'attendances', 'tab', 'presentCount', 'absentCount', 'availableMonths', 'month'));
+        return view('admin.students.blocked', compact('blockedStudents'));
     }
+
+
+
+public function show(Request $request, $id)
+{
+    $today = now()->format('l');
+    $todayDate = now()->toDateString();
+
+    $month = $request->month ?? now()->month;
+    $year = $request->year ?? now()->year;
+    $exam_month=$request->exam_month ?? null;
+    $student = Student::withoutGlobalScopes()->with('group')
+        ->with(['fees' => function ($query) use ($month, $year) {
+            $query->where('month', $month)->where('year', $year);
+        }])
+        ->with(['payments' => function ($query) use ($month, $year) {
+            $query->whereHas('studentFee', function ($q) use ($month, $year) {
+                $q->where('month', $month)->where('year', $year);
+            });
+        }])
+        ->with([
+            'exams_results' => function ($query) use ($exam_month) {
+                $query->whereHas('exam', function ($q) use ($exam_month, ) {
+                    $q->where('month', $exam_month);
+                });
+            },
+            'exams_results.exam:id,total_score,exam_date',
+        ])
+        ->withSum(['fees as total_fees' => function ($query) use ($year) {
+            $query->where('year', $year);
+        }], 'final_amount')
+        ->withSum(['payments as total_paid' => function ($query) use ($year) {
+            $query->whereHas('studentFee', function ($q) use ($year) {
+                $q->where('year', $year);
+            });
+        }], 'amount')
+        ->withCount([
+            'attendance as total_absent' => function ($query) use ($year) {
+                $query->where('status', false)->whereYear('date', $year);
+            },
+            'attendance as total_present' => function ($query) use ($year) {
+                $query->where('status', true)->whereYear('date', $year);
+            }
+        ])
+        ->findOrFail($id);
+
+    $availableMonths = $student->fees()->select('month')->distinct()->pluck('month');
+
+    $status = $request->status;
+
+    $query = Attendance::query();
+    if (!is_null($status)) {
+        $query->where("status", $status);
+    }
+
+    $attendances = $query->where("student_id", $student->id)
+        ->where("month", $month)
+        ->where("year", $year)
+        ->orderBy("id", "DESC")
+        ->get();
+
+    $presentCount = $attendances->where('status', 1)->count();
+    $absentCount = $attendances->where('status', 0)->count();
+
+    $tab = $request->tab ?? session('tab', 0);
+    session()->forget('tab');
+    $groups = Helpers::get_groups();
+
+    // تحميل الحضور
+    if ($request->has('download') && $request->download === 'attendance_excel') {
+                $excel_name= 'حضور وغياب_' . $student->name  .'.xlsx'; 
+
+        return Excel::download(new StudentAttendanceExport($attendances), $excel_name);
+    }
+
+    // تحميل الدرجات
+    if ($request->has('download') && $request->download === 'exams_excel') {
+        $excel_name= 'امتحانات_' . $student->name  .'.xlsx'; 
+        return Excel::download(new StudentExamsExport($student->exams_results,$student), $excel_name);
+    }
+
+    return view('admin.students.show', compact(
+        'groups', 'student', 'attendances', 'tab', 'presentCount', 'absentCount',
+        'availableMonths', 'month'
+    ));
+}
+
     public function store(Request $request)
     {
         $request->validate([
@@ -229,7 +237,6 @@ class StudentController extends Controller
             $lastStudent = Student::where('group_id', $group->id)->orderBy('student_code', 'desc')->first();
             $nextNumber = $lastStudent ? intval($lastStudent->student_code) + 1  : intval($group->code) + 1;
             $updateData['student_code'] = $nextNumber;
-
         }
 
         $student->update($updateData);
@@ -269,7 +276,7 @@ class StudentController extends Controller
         ]);
 
         $student = Student::withoutGlobalScopes()->findOrFail($request->student_id);
-        
+
         $student->blocked = false;
         $student->block_reason = null;
         $student->save();

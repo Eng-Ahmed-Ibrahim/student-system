@@ -46,6 +46,9 @@ class ExamController extends Controller
         DB::beginTransaction();
         try {
             $exam = Exam::create($request->all());
+            $examMonth = \Carbon\Carbon::parse($request->exam_date)->month;
+            $examYear  = \Carbon\Carbon::parse($request->exam_date)->year;
+
             $students = Student::where("group_id", $request->group_id)->select('id')->get();
             $data = [];
             foreach ($students as $student) {
@@ -53,6 +56,8 @@ class ExamController extends Controller
                     "student_id" => $student->id,
                     "exam_id" => $exam->id,
                     "score" => 0,
+                    'month' => $examMonth,
+                    'year' => $examYear ,
                     "created_at" => now(),
                 ];
             }

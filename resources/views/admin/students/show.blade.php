@@ -288,7 +288,7 @@
                                                         $selectedGrade = $student->grade_level;
                                                         $groups_of_grade = $groups->where(
                                                             'grade_level',
-                                                            $selectedGrade
+                                                            $selectedGrade,
                                                         );
                                                     @endphp
                                                     @foreach ($groups_of_grade as $group)
@@ -372,6 +372,13 @@
                                         12 => 'ديسمبر',
                                     ];
                                 @endphp
+                                <a href="{{ route('admin.students.show', $student->id) }}?{{ http_build_query(array_merge(request()->all(), ['download' => 'attendance_excel'])) }}"
+                                    class="btn btn-success mb-3">
+                                    تحميل ملف إكسل
+                                </a>
+
+
+
 
                                 <!-- فلتر الشهر -->
                                 <form method="GET" action="">
@@ -524,6 +531,46 @@
                             </div>
                             <div class="tab-pane fade  {{ $tab == 3 ? ' show active' : ' ' }}" id="pills-scores"
                                 role="tabpanel" aria-labelledby="pills-scores-tab" tabindex="0">
+                                
+                                                 <a href="{{ route('admin.students.show', $student->id) }}?{{ http_build_query(array_merge(request()->all(), ['download' => 'exams_excel'])) }}"
+                                    class="btn btn-success mb-3">
+                                    تحميل ملف إكسل
+                                </a>
+
+                                @php
+                                    $arabicMonths = [
+                                        1 => 'يناير',
+                                        2 => 'فبراير',
+                                        3 => 'مارس',
+                                        4 => 'أبريل',
+                                        5 => 'مايو',
+                                        6 => 'يونيو',
+                                        7 => 'يوليو',
+                                        8 => 'أغسطس',
+                                        9 => 'سبتمبر',
+                                        10 => 'أكتوبر',
+                                        11 => 'نوفمبر',
+                                        12 => 'ديسمبر',
+                                    ];
+                                @endphp
+
+                                <form method="GET" action="">
+                                    <input type="hidden" name="tab" value="3">
+                                    <div class="mb-3">
+                                        <label for="exam_month">اختر الشهر:</label>
+                                        <select name="exam_month" id="exam_month" class="form-select"
+                                            onchange="this.form.submit()">
+                                            <option value="">الكل</option>
+                                            @foreach ($arabicMonths as $key => $name)
+                                                <option value="{{ $key }}"
+                                                    {{ request('exam_month') == $key ? 'selected' : '' }}>
+                                                    {{ $name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </form>
+
                                 <table class="table table-bordered">
                                     <thead>
                                         <th>تاريخ الامتحان</th>

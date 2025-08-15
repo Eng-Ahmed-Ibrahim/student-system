@@ -39,8 +39,11 @@
                 </div>
                 <div class="d-flex align-items-center gap-2 gap-lg-3">
 
-                    <a href="#" class="btn btn-sm fw-bold btn-primary" data-bs-toggle="modal"
-                        data-bs-target="#kt_modal_create_app">Create</a>
+
+      <a href="{{ request()->fullUrlWithQuery(['download' => 'excel']) }}" class="btn btn-success mb-3">
+    تحميل Excel 📥
+</a>
+
                 </div>
             </div>
         </div>

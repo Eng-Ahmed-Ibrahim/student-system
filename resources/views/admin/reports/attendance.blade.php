@@ -26,8 +26,10 @@
                 </div>
                 <div class="d-flex align-items-center gap-2 gap-lg-3">
 
-                    <a href="#" class="btn btn-sm fw-bold btn-primary" data-bs-toggle="modal"
-                        data-bs-target="#kt_modal_create_app">Create</a>
+      <a href="{{ request()->fullUrlWithQuery(['download' => 'excel']) }}" class="btn btn-success mb-3">
+    تحميل Excel 📥
+</a>
+
                 </div>
             </div>
         </div>
@@ -46,7 +48,7 @@
 
                                     <label class="form-label">الطالب</label>
                                     <select name="student_id" id="studentSelect" class="form-select">
-                                        <option value="">الكل</option>
+                                        <option value="all">الكل</option>
                                         @foreach ($students as $student)
                                             <option value="{{ $student->id }}"
                                                 {{ request('student_id') == $student->id ? 'selected' : '' }}>
@@ -55,11 +57,32 @@
                                         @endforeach
                                     </select>
                                 </div>
+                                <div class="col-md-3">
+                                    <label>المجموعه</label>
+
+                                    <select style="    border-top-left-radius: 0;border-bottom-left-radius: 0;"
+                                        name="group_id" onchange="document.getElementById('FilterForm').submit()"
+                                        name="group_id" id="grade_level" class="form-select">
+
+                                        <option value="" disabled>
+                                            اختر مجموعه
+                                        </option>
+                                        <option value="all">الكل</option>
+                                        @foreach ($groups as $group)
+                                            <option {{ request('group_id') == $group->id ? 'selected' : ' ' }}
+                                                value="{{ $group->id }}">{{ $group->name }} --
+                                                {{ $grades[$group->grade_level - 1] }}</option>
+                                        @endforeach
+
+                                    </select>
+                                </div>
 
                                 <div class="col-md-3">
                                     <label>نوع التقرير</label>
                                     <select name="type" class="form-select" onchange="toggleCustomDates(this.value)">
                                         <option value="">اختر</option>
+                                        <option value="daily" {{ request('type') == 'daily' ? 'selected' : '' }}>يومي
+                                        </option>
                                         <option value="monthly" {{ request('type') == 'monthly' ? 'selected' : '' }}>شهري
                                         </option>
                                         <option value="yearly" {{ request('type') == 'yearly' ? 'selected' : '' }}>سنوي
@@ -107,7 +130,9 @@
                                     @forelse($attendances as $attendance)
                                         <tr>
                                             @php $student=$attendance->student; @endphp
-                                            <td> <a href="{{ route('admin.students.show',$student->id) }}">{{ $student->student_code ?? '---' }}</a></td>
+                                            <td> <a
+                                                    href="{{ route('admin.students.show', $student->id) }}">{{ $student->student_code ?? '---' }}</a>
+                                            </td>
                                             <td>{{ $student->name ?? '---' }}</td>
                                             <td>{{ $grades[$student->grade_level - 1] ?? '---' }}</td>
                                             <td>{{ $student->group->name ?? '---' }}</td>
