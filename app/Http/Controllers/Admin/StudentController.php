@@ -165,6 +165,7 @@ class StudentController extends Controller
 
             if ($zip->open($tempFile, \ZipArchive::CREATE) === TRUE) {
 
+                
                 // إنشاء ملفات Excel مؤقتة في الذاكرة
                 $attendanceContent = Excel::raw(new StudentAttendanceExport($attendances), \Maatwebsite\Excel\Excel::XLSX);
                 $examsContent = Excel::raw(new StudentExamsExport($student->exams_results, $student), \Maatwebsite\Excel\Excel::XLSX);
