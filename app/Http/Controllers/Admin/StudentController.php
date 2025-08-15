@@ -13,6 +13,7 @@ use App\Services\StudentService;
 use App\Exports\StudentExamsExport;
 use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\StudentPaymentsExport;
 use App\Exports\StudentAttendanceExport;
 
 class StudentController extends Controller
@@ -166,11 +167,11 @@ class StudentController extends Controller
                 // إنشاء ملفات Excel مؤقتة في الذاكرة
                 $attendanceContent = Excel::raw(new StudentAttendanceExport($attendances), \Maatwebsite\Excel\Excel::XLSX);
                 $examsContent = Excel::raw(new StudentExamsExport($student->exams_results, $student), \Maatwebsite\Excel\Excel::XLSX);
-
+                $studentPayment =     Excel::raw(new StudentPaymentsExport($student->payments, $student),\Maatwebsite\Excel\Excel::XLSX);
                 // إضافة الملفات للـ ZIP
                 $zip->addFromString('حضور وغياب.xlsx', $attendanceContent);
                 $zip->addFromString('امتحانات.xlsx', $examsContent);
-
+                $zip->addFromString('مدفوعات الطالب.xlsx', $studentPayment);
                 $zip->close();
 
                 return response()->download($tempFile, $zipFileName)->deleteFileAfterSend(true);
