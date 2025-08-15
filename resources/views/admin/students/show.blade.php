@@ -375,11 +375,7 @@
                                         12 => 'ديسمبر',
                                     ];
                                 @endphp
-                                <a href="{{ route('admin.students.show', $student->id) }}?{{ http_build_query(array_merge(request()->all(), ['download' => 'attendance_excel'])) }}"
-                                    class="btn btn-success mb-3">
-                                    تحميل ملف إكسل
-                                </a>
-
+                     
 
 
 
