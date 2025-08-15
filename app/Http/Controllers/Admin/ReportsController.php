@@ -81,7 +81,7 @@ class ReportsController extends Controller
         $from = $request->input('from');
         $to = $request->input('to');
 
-        $query = Attendance::with('student', 'student.group');
+        $query = Attendance::with('student', 'student.group')->whereHas('student');
 
         // فلترة حسب الطالب أو المجموعة
         if ($studentId) {
@@ -101,8 +101,7 @@ class ReportsController extends Controller
             $query->whereBetween('date', [$from, $to]);
         }
 
-        $attendances = $query->get();
-
+        $attendances = $query->orderBy('status',"DESC")->get();
         // حساب الحضور والغياب
         $presentCount = $attendances->where('status', 1)->count();
         $absentCount = $attendances->where('status', 0)->count();

@@ -106,12 +106,13 @@
                                 <tbody>
                                     @forelse($attendances as $attendance)
                                         <tr>
-                                            <td> <a href="{{ route('admin.students.show',$attendance->student->id) }}">{{ $attendance->student->student_code ?? '---' }}</a></td>
-                                            <td>{{ $attendance->student->name ?? '---' }}</td>
-                                            <td>{{ $grades[$attendance->student->grade_level - 1] ?? '---' }}</td>
-                                            <td>{{ $attendance->student->group->name ?? '---' }}</td>
-                                            <td>{{ $attendance->student->phone ?? '---' }}</td>
-                                            <td>{{ $attendance->student->parent_phone ?? '---' }}</td>
+                                            @php $student=$attendance->student; @endphp
+                                            <td> <a href="{{ route('admin.students.show',$student->id) }}">{{ $student->student_code ?? '---' }}</a></td>
+                                            <td>{{ $student->name ?? '---' }}</td>
+                                            <td>{{ $grades[$student->grade_level - 1] ?? '---' }}</td>
+                                            <td>{{ $student->group->name ?? '---' }}</td>
+                                            <td>{{ $student->phone ?? '---' }}</td>
+                                            <td>{{ $student->parent_phone ?? '---' }}</td>
                                             <td>{{ $attendance->date }}</td>
                                             <td>
                                                 @if ($attendance->status == 1)
