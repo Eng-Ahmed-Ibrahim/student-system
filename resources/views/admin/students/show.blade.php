@@ -45,8 +45,11 @@
                 </div>
                 <div class="d-flex align-items-center gap-2 gap-lg-3">
 
-                    <a href="#" class="btn btn-sm fw-bold btn-primary" data-bs-toggle="modal"
-                        data-bs-target="#kt_modal_create_app">Create</a>
+                    <a href="{{ route('admin.students.show', $student->id) }}?{{ http_build_query(array_merge(request()->all(), ['download' => 'all_excel'])) }}"
+                        class="btn btn-success mb-3">
+                        تحميل ملف إكسل
+                    </a>
+
                 </div>
             </div>
         </div>
@@ -531,11 +534,7 @@
                             </div>
                             <div class="tab-pane fade  {{ $tab == 3 ? ' show active' : ' ' }}" id="pills-scores"
                                 role="tabpanel" aria-labelledby="pills-scores-tab" tabindex="0">
-                                
-                                                 <a href="{{ route('admin.students.show', $student->id) }}?{{ http_build_query(array_merge(request()->all(), ['download' => 'exams_excel'])) }}"
-                                    class="btn btn-success mb-3">
-                                    تحميل ملف إكسل
-                                </a>
+
 
                                 @php
                                     $arabicMonths = [
@@ -563,7 +562,7 @@
                                             <option value="">الكل</option>
                                             @foreach ($arabicMonths as $key => $name)
                                                 <option value="{{ $key }}"
-                                                    {{ request('exam_month') == $key ? 'selected' : '' }}>
+                                                    {{ $exam_month == $key ? 'selected' : '' }}>
                                                     {{ $name }}
                                                 </option>
                                             @endforeach

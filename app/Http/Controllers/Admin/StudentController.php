@@ -14,6 +14,7 @@ use App\Exports\StudentExamsExport;
 use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\StudentAttendanceExport;
+
 class StudentController extends Controller
 {
 
@@ -61,89 +62,135 @@ class StudentController extends Controller
 
 
 
-public function show(Request $request, $id)
-{
-    $today = now()->format('l');
-    $todayDate = now()->toDateString();
+    public function show(Request $request, $id)
+    {
+        $today = now()->format('l');
+        $todayDate = now()->toDateString();
 
-    $month = $request->month ?? now()->month;
-    $year = $request->year ?? now()->year;
-    $exam_month=$request->exam_month ?? null;
-    $student = Student::withoutGlobalScopes()->with('group')
-        ->with(['fees' => function ($query) use ($month, $year) {
-            $query->where('month', $month)->where('year', $year);
-        }])
-        ->with(['payments' => function ($query) use ($month, $year) {
-            $query->whereHas('studentFee', function ($q) use ($month, $year) {
-                $q->where('month', $month)->where('year', $year);
-            });
-        }])
-        ->with([
-            'exams_results' => function ($query) use ($exam_month) {
-                $query->whereHas('exam', function ($q) use ($exam_month, ) {
-                    $q->where('month', $exam_month);
+        $month = $request->month ?? now()->month;
+        $year = $request->year ?? now()->year;
+        $exam_month = $request->exam_month ?? now()->month;
+        $student = Student::withoutGlobalScopes()->with('group')
+            ->with(['fees' => function ($query) use ($month, $year) {
+                $query->where('month', $month)->where('year', $year);
+            }])
+            ->with(['payments' => function ($query) use ($month, $year) {
+                $query->whereHas('studentFee', function ($q) use ($month, $year) {
+                    $q->where('month', $month)->where('year', $year);
                 });
-            },
-            'exams_results.exam:id,total_score,exam_date',
-        ])
-        ->withSum(['fees as total_fees' => function ($query) use ($year) {
-            $query->where('year', $year);
-        }], 'final_amount')
-        ->withSum(['payments as total_paid' => function ($query) use ($year) {
-            $query->whereHas('studentFee', function ($q) use ($year) {
-                $q->where('year', $year);
-            });
-        }], 'amount')
-        ->withCount([
-            'attendance as total_absent' => function ($query) use ($year) {
-                $query->where('status', false)->whereYear('date', $year);
-            },
-            'attendance as total_present' => function ($query) use ($year) {
-                $query->where('status', true)->whereYear('date', $year);
+            }])
+            ->with([
+                'exams_results' => function ($query) use ($exam_month) {
+                    $query->whereHas('exam', function ($q) use ($exam_month,) {
+                        $q->where('month', $exam_month);
+                    });
+                },
+                'exams_results.exam:id,total_score,exam_date',
+            ])
+            ->withSum(['fees as total_fees' => function ($query) use ($year) {
+                $query->where('year', $year);
+            }], 'final_amount')
+            ->withSum(['payments as total_paid' => function ($query) use ($year) {
+                $query->whereHas('studentFee', function ($q) use ($year) {
+                    $q->where('year', $year);
+                });
+            }], 'amount')
+            ->withCount([
+                'attendance as total_absent' => function ($query) use ($year) {
+                    $query->where('status', false)->whereYear('date', $year);
+                },
+                'attendance as total_present' => function ($query) use ($year) {
+                    $query->where('status', true)->whereYear('date', $year);
+                }
+            ])
+            ->findOrFail($id);
+
+        $availableMonths = $student->fees()->select('month')->distinct()->pluck('month');
+
+        $status = $request->status;
+
+        $query = Attendance::query();
+        if (!is_null($status)) {
+            $query->where("status", $status);
+        }
+
+        $attendances = $query->where("student_id", $student->id)
+            ->where("month", $month)
+            ->where("year", $year)
+            ->orderBy("id", "DESC")
+            ->get();
+
+        $presentCount = $attendances->where('status', 1)->count();
+        $absentCount = $attendances->where('status', 0)->count();
+
+        $tab = $request->tab ?? session('tab', 0);
+        session()->forget('tab');
+        $groups = Helpers::get_groups();
+
+        // // تحميل الحضور
+        // if ($request->has('download') && $request->download === 'excel') {
+        //             $excel_name= 'حضور وغياب_' . $student->name  .'.xlsx'; 
+
+        //     return Excel::download(new StudentAttendanceExport($attendances), $excel_name);
+        // }
+
+        // // تحميل الدرجات
+        // if ($request->has('download') && $request->download === 'exams_excel') {
+        //     $excel_name= 'امتحانات_' . $student->name  .'.xlsx'; 
+        //     return Excel::download(new StudentExamsExport($student->exams_results,$student), $excel_name);
+        // }
+
+        if ($request->has('download') && $request->download === 'all_excel') {
+            $arabicMonths = [
+                1 => 'يناير',
+                2 => 'فبراير',
+                3 => 'مارس',
+                4 => 'أبريل',
+                5 => 'مايو',
+                6 => 'يونيو',
+                7 => 'يوليو',
+                8 => 'أغسطس',
+                9 => 'سبتمبر',
+                10 => 'أكتوبر',
+                11 => 'نوفمبر',
+                12 => 'ديسمبر'
+            ];
+
+            $zipFileName = 'ملفات الطالب ' . $student->name . ' - ' . $arabicMonths[$month] . '.zip';
+
+            $zip = new \ZipArchive();
+            $tempFile = tempnam(sys_get_temp_dir(), 'zip');
+
+            if ($zip->open($tempFile, \ZipArchive::CREATE) === TRUE) {
+
+                // إنشاء ملفات Excel مؤقتة في الذاكرة
+                $attendanceContent = Excel::raw(new StudentAttendanceExport($attendances), \Maatwebsite\Excel\Excel::XLSX);
+                $examsContent = Excel::raw(new StudentExamsExport($student->exams_results, $student), \Maatwebsite\Excel\Excel::XLSX);
+
+                // إضافة الملفات للـ ZIP
+                $zip->addFromString('حضور وغياب.xlsx', $attendanceContent);
+                $zip->addFromString('امتحانات.xlsx', $examsContent);
+
+                $zip->close();
+
+                return response()->download($tempFile, $zipFileName)->deleteFileAfterSend(true);
             }
-        ])
-        ->findOrFail($id);
+        }
 
-    $availableMonths = $student->fees()->select('month')->distinct()->pluck('month');
 
-    $status = $request->status;
 
-    $query = Attendance::query();
-    if (!is_null($status)) {
-        $query->where("status", $status);
+        return view('admin.students.show', compact(
+            'groups',
+            'student',
+            'attendances',
+            'tab',
+            'presentCount',
+            'absentCount',
+            'availableMonths',
+            'month',
+            'exam_month'
+        ));
     }
-
-    $attendances = $query->where("student_id", $student->id)
-        ->where("month", $month)
-        ->where("year", $year)
-        ->orderBy("id", "DESC")
-        ->get();
-
-    $presentCount = $attendances->where('status', 1)->count();
-    $absentCount = $attendances->where('status', 0)->count();
-
-    $tab = $request->tab ?? session('tab', 0);
-    session()->forget('tab');
-    $groups = Helpers::get_groups();
-
-    // تحميل الحضور
-    if ($request->has('download') && $request->download === 'attendance_excel') {
-                $excel_name= 'حضور وغياب_' . $student->name  .'.xlsx'; 
-
-        return Excel::download(new StudentAttendanceExport($attendances), $excel_name);
-    }
-
-    // تحميل الدرجات
-    if ($request->has('download') && $request->download === 'exams_excel') {
-        $excel_name= 'امتحانات_' . $student->name  .'.xlsx'; 
-        return Excel::download(new StudentExamsExport($student->exams_results,$student), $excel_name);
-    }
-
-    return view('admin.students.show', compact(
-        'groups', 'student', 'attendances', 'tab', 'presentCount', 'absentCount',
-        'availableMonths', 'month'
-    ));
-}
 
     public function store(Request $request)
     {
