@@ -282,5 +282,6 @@ class PermissionSeeder extends Seeder
 
         ];
         DB::table('permissions')->insert($permissions);
+        
     }
 }

@@ -16,15 +16,11 @@ touch database/database.sqlite
 echo "[3/8] 📦 Installing packages using composer"
 php composer.phar install --no-interaction --prefer-dist --optimize-autoloader
 echo "[3.1] 🔁 Dumping Composer Autoload (for helpers/functions)"
-# Download Composer v2
+rm -f /usr/local/bin/composer
 php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-php composer-setup.php --2 --install-dir=$HOME/bin --filename=composer
+php composer-setup.php --2 --install-dir=/usr/local/bin --filename=composer
 php -r "unlink('composer-setup.php');"
-
-# Make sure $HOME/bin/composer is first in your PATH
-export PATH=$HOME/bin:$PATH
-rm -rf vendor composer.lock
-composer install
+composer install --no-interaction --prefer-dist --optimize-autoloader
 
 
 echo "[4/8] ⚙️ Publishing API Platform assets"
