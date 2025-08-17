@@ -18,26 +18,26 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // User::factory(10)->create();
-        $this->call(PermissionSeeder::class);
+        // $this->call(PermissionSeeder::class);
         
         
-        $admin = User::updateOrCreate(
-            ['email' => 'admin@gmail.com'],
-            [
-                'name' => 'Admin',
-                'password' => Hash::make('admin123'),
-            ]
-        );
+        // $admin = User::updateOrCreate(
+        //     ['email' => 'admin@gmail.com'],
+        //     [
+        //         'name' => 'Admin',
+        //         'password' => Hash::make('admin123'),
+        //     ]
+        // );
 
-        // إنشاء أو تحديث الدور
-        $role = Role::firstOrCreate(['name' => 'super-admin']);
+        // // إنشاء أو تحديث الدور
+        // $role = Role::firstOrCreate(['name' => 'super-admin']);
 
-        // ربط جميع الصلاحيات بالدور
-        $role->syncPermissions(Permission::all());
+        // // ربط جميع الصلاحيات بالدور
+        // $role->syncPermissions(Permission::all());
 
-        // ربط الدور باليوزر
-        if (! $admin->hasRole('super-admin')) {
-            $admin->assignRole($role);
-        }
+        // // ربط الدور باليوزر
+        // if (! $admin->hasRole('super-admin')) {
+        //     $admin->assignRole($role);
+        // }
     }
 }
