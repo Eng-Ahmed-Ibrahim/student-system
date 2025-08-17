@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\Group;
 use App\Models\Student;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Schema;
@@ -44,6 +45,7 @@ class AppServiceProvider extends ServiceProvider
             ->where('blocked', 0) // Only count non-blocked students
             ->groupBy('grade_level')
             ->pluck('count', 'grade_level');
+
 
         View::share([
             'groupCounts' => $groupCounts,

@@ -45,10 +45,12 @@
                 </div>
                 <div class="d-flex align-items-center gap-2 gap-lg-3">
 
+                    @can('download students excel sheet')
                     <a href="{{ route('admin.students.show', $student->id) }}?{{ http_build_query(array_merge(request()->all(), ['download' => 'all_excel'])) }}"
                         class="btn btn-success mb-3">
                         تحميل ملف إكسل
                     </a>
+                    @endcan
 
                 </div>
             </div>
@@ -110,11 +112,13 @@
                                                     </i>رقم ولي الامر : {{ $student->parent_phone }}</a>
                                             </div>
                                             <!--end::Info-->
+                                            @can('add payment for student')
                                             <!-- زر فتح المودال -->
                                             <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal"
                                                 data-bs-target="#paymentModal">
                                                 دفع جديد
                                             </button>
+                                            @endcan
                                         </div>
 
                                     </div>
@@ -350,9 +354,12 @@
                                             });
                                         </script>
                                     </div>
+
+                                    @can('edit students')
                                     <div class="modal-footer">
                                         <button class="w-100 btn btn-primary">حفظ</button>
                                     </div>
+                                    @endcan
                                 </form>
 
                             </div>

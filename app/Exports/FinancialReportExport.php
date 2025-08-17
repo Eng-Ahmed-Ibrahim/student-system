@@ -37,13 +37,15 @@ class FinancialReportExport implements FromCollection, WithHeadings
         // إضافة المستحقات غير المدفوعة
         foreach ($this->studentFees as $fee) {
             $student = $fee->student;
+            $remain= $fee->final_amount - $fee->payments_sum_amount;
             $rows->push([
                 'نوع'               => 'مستحق غير مدفوع',
                 'كود الطالب'        => $student->student_code ?? '---',
                 'اسم الطالب'        => $student->name ?? '---',
-                'المبلغ'            => $fee->final_amount,
+                'المبلغ المستحق '            => $fee->final_amount,
+                'المبلغ المدفوع'            => $fee->payments_sum_amount,
+                'المتبقي'            => $remain,
                 'التاريخ'           => $fee->date,
-                'الوصف'             => $fee->description ?? '---',
             ]);
         }
 
@@ -53,7 +55,7 @@ class FinancialReportExport implements FromCollection, WithHeadings
     public function headings(): array
     {
         return [
-            'نوع', 'كود الطالب', 'اسم الطالب', 'المبلغ', 'التاريخ', 'الوصف'
+            'نوع', 'كود الطالب', 'اسم الطالب', 'المبلغ المستحق ', 'المبلغ المدفوع', 'المتبقي' , 'التاريخ', 
         ];
     }
 }

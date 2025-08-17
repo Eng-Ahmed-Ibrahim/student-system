@@ -1,5 +1,7 @@
 @extends('admin.app')
+
 @php
+
     $title = $exam->name;
     $sub_title = 'الامتحانات';
 @endphp
@@ -22,11 +24,7 @@
                         <li class="breadcrumb-item text-muted">{{ $title }}</li>
                     </ul>
                 </div>
-                <div class="d-flex align-items-center gap-2 gap-lg-3">
 
-                    <a href="#" class="btn btn-sm fw-bold btn-primary" data-bs-toggle="modal"
-                        data-bs-target="#kt_modal_create_app">Create</a>
-                </div>
             </div>
         </div>
         <div id="kt_app_content" class="app-content flex-column-fluid">
@@ -53,7 +51,9 @@
                                     <th>اسم الطالب</th>
                                     <th>الدرجه</th>
                                     <th>من</th>
-                                    <th>تعديل الدرجه</th>
+                                    @can('add scores for students')
+                                        <th>تعديل الدرجه</th>
+                                    @endcan
                                 </tr>
                             </thead>
                             <tbody>
@@ -68,18 +68,20 @@
                                             {{ $result->score }}
                                         </td>
                                         <td>{{ $exam->total_score }}</td>
-                                        <td>
-                                            <form method="POST"
-                                                action="{{ route('admin.exams.update_student_score', $result->id) }}"
-                                                class="d-flex align-items-center gap-2">
-                                                @csrf
-                                                @method('PATCH')
-                                                <input type="number" name="score" step="0.01" min="0"
-                                                    max="{{ $exam->total_score }}" value="{{ $result->score }}"
-                                                    class="form-control" style="width: 100px;" required>
-                                                <button type="submit" class="btn btn-primary btn-sm ml-2">حفظ</button>
-                                            </form>
-                                        </td>
+                                        @can('add scores for students')
+                                            <td>
+                                                <form method="POST"
+                                                    action="{{ route('admin.exams.update_student_score', $result->id) }}"
+                                                    class="d-flex align-items-center gap-2">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <input type="number" name="score" step="0.01" min="0"
+                                                        max="{{ $exam->total_score }}" value="{{ $result->score }}"
+                                                        class="form-control" style="width: 100px;" required>
+                                                    <button type="submit" class="btn btn-primary btn-sm ml-2">حفظ</button>
+                                                </form>
+                                            </td>
+                                        @endcan
                                     </tr>
                                 @endforeach
                             </tbody>

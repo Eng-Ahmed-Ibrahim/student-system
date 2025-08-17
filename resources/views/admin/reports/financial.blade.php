@@ -39,11 +39,11 @@
                 </div>
                 <div class="d-flex align-items-center gap-2 gap-lg-3">
 
-
-                    <a href="{{ request()->fullUrlWithQuery(['download' => 'excel']) }}" class="btn btn-success mb-3">
-                        تحميل Excel 📥
-                    </a>
-
+                    @can('download financial reports')
+                        <a href="{{ request()->fullUrlWithQuery(['download' => 'excel']) }}" class="btn btn-success mb-3">
+                            تحميل Excel 📥
+                        </a>
+                    @endcan
                 </div>
             </div>
         </div>
@@ -134,7 +134,7 @@
                                     @endforelse
                                 </tbody>
                             </table>
-{{ $payments->links('vendor.pagination.custom', ['pageName' => 'payments_page']) }}
+                            {{ $payments->links('vendor.pagination.custom', ['pageName' => 'payments_page']) }}
 
                             <h4>📌 المستحقات</h4>
                             <table class="table table-bordered">
@@ -146,6 +146,8 @@
                                         <th>رقم التلفون ولي الامر</th>
                                         <th>الشهر</th>
                                         <th>المبلغ المستحق</th>
+                                        <th>المبلغ المدفوع</th>
+                                        <th>المبلغ المتبقي</th>
                                         <th>الحالة</th>
                                     </tr>
                                 </thead>
@@ -160,6 +162,9 @@
                                             <td>{{ $fee->student->parent_phone }}</td>
                                             <td>{{ $monthNames[$fee->month - 1] }}</td>
                                             <td>{{ number_format($fee->final_amount, 2) }}</td>
+                                            <td>{{ number_format($fee->payments_sum_amount, 2) }}</td>
+                                            @php $remain= $fee->final_amount - $fee->payments_sum_amount; @endphp
+                                            <td>{{ number_format($remain, 2) }}</td>
                                             <td>{{ $fee->status }}</td>
                                         </tr>
                                     @empty
@@ -169,7 +174,7 @@
                                     @endforelse
                                 </tbody>
                             </table>
-{{ $studentFees->links('vendor.pagination.custom', ['pageName' => 'fees_page']) }}
+                            {{ $studentFees->links('vendor.pagination.custom', ['pageName' => 'fees_page']) }}
 
                         </div>
 

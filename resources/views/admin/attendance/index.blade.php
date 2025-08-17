@@ -4,6 +4,65 @@
     $sub_title = 'الحضور والغياب';
 @endphp
 @section('title', $title)
+
+@section('css')
+
+
+    <style>
+        /* Print styles */
+        @media print {
+            body * {
+                visibility: hidden;
+                overflow: hidden;
+            }
+
+            .print-content,
+            .print-content * {
+                visibility: visible;
+            }
+
+            .print-content {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                text-align: center;
+                padding: 20px;
+            }
+
+            .barcode-container {
+                margin: 20px 0;
+            }
+
+            .student-info {
+                font-size: 18px;
+                margin: 10px 0;
+                font-weight: bold;
+            }
+        }
+
+        .print-content {
+            display: none;
+        }
+
+        .print-barcode-btn {
+            background-color: #17a2b8;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+
+        .print-barcode-btn:hover {
+            background-color: #138496;
+        }
+    </style>
+    
+@endsection
+
 @section('content')
     <div class="d-flex flex-column flex-column-fluid">
 
@@ -23,12 +82,12 @@
                     </ul>
                 </div>
                 <div class="d-flex align-items-center gap-2 gap-lg-3">
-
                     <a href="#" class="btn btn-sm fw-bold btn-primary" data-bs-toggle="modal"
                         data-bs-target="#kt_modal_create_app">Create</a>
                 </div>
             </div>
         </div>
+
         <div id="kt_app_content" class="app-content flex-column-fluid">
             <div id="kt_app_content_container" class="app-container container-xxl">
                 <div class="card">
@@ -64,7 +123,6 @@
                         <div id="barcode-result" class="alert d-none mt-2"></div>
 
                         <table class="table table-bordered">
-
                             <thead class="thead-dark">
                                 <tr>
                                     <th>الكود</th>
@@ -94,11 +152,19 @@
                                         @endphp
                                         <tr data-due-amount="{{ $dueAmount }}" data-student-id="{{ $student->id }}"
                                             data-student-code="{{ $student->student_code }}"
+                                            data-student-name="{{ $student->name }}"
                                             data-discount="{{ $student->discount }}"
-                                            data-status="{{ $attendance->status }}">
+                                            data-status="{{ $attendance->status }}"
+                                            data-barcode="{{ $student->barcode }}">
 
-                                            <td><a
-                                                    href="{{ route('admin.students.show', $student->id) }}">#{{ $student->student_code }}</a>
+                                            <td>
+                                                <a href="{{ route('admin.students.show', $student->id) }}">
+                                                    #{{ $student->student_code }}
+                                                </a>
+                                                <button class="print-barcode-btn" onclick="printStudentBarcode(this)"
+                                                    title="طباعة Barcode">
+                                                    🖨️
+                                                </button>
                                             </td>
                                             <td>{{ $student->name }}</td>
                                             <td>{{ $student->discount }}%</td>
@@ -155,29 +221,30 @@
                                             </div>
                                         </td>
                                     </tr>
-
                                 @endif
                             </tbody>
                         </table>
-
-
-
-
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- محتوى الطباعة المخفي -->
+    <div class="print-content" id="printContent">
+        <div class="student-info" id="studentInfo"></div>
+        <div class="barcode-container">
+            <canvas id="barcode"></canvas>
+        </div>
+        <div class="barcode-text" style="display: none" id="barcodeText"></div>
+    </div>
 
-    <!-- Modal -->
+    <!-- Payment Modal -->
     <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <form method="POST" action="{{ route('admin.payments.store') }}" onsubmit="return validatePayment()">
                 @csrf
                 <input type="hidden" name="student_id" id="studentId">
-                {{-- <input type="hidden" name="month" value="{{ $month }}">
-                <input type="hidden" name="year" value="{{ now()->year }}"> --}}
 
                 <div class="modal-content">
                     <div class="modal-header">
@@ -208,6 +275,161 @@
 
 @section('js')
     <script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.5/JsBarcode.all.min.js"></script>
+
+    <script>
+        // استبدل دالة printStudentBarcode بهذا الكود
+
+        function printStudentBarcode(button) {
+            const row = button.closest('tr');
+            let studentBarcode = row.dataset.barcode;
+            const studentName = row.dataset.studentName;
+            const studentCode = row.dataset.studentCode;
+
+            console.log('Student Barcode:', studentBarcode);
+
+            if (!studentBarcode && !studentCode) {
+                alert('لا يوجد barcode أو كود للطالب');
+                return;
+            }
+
+            // فحص إذا كان barcode عبارة عن صورة base64
+            if (studentBarcode.startsWith('iVBORw0KGgo') || studentBarcode.startsWith('data:image') || !studentBarcode) {
+                // استخدام كود الطالب بدلاً من الصورة
+                studentBarcode = studentCode;
+                console.log('Using student code as barcode:', studentBarcode);
+            }
+
+            // إظهار محتوى الطباعة مؤقتاً
+            const printContent = document.getElementById('printContent');
+            printContent.style.display = 'block';
+            printContent.style.position = 'fixed';
+            printContent.style.top = '0';
+            printContent.style.left = '0';
+            printContent.style.width = '100%';
+            printContent.style.height = 'auto';
+            printContent.style.background = 'white';
+            printContent.style.zIndex = '9999';
+            printContent.style.padding = '20px';
+            printContent.style.textAlign = 'center';
+
+
+
+            document.getElementById('barcodeText').innerHTML =
+                `<div style="font-size: 14px; margin-top: 10px;">${studentBarcode}</div>`;
+
+            try {
+                // تنظيف الـ canvas
+                const canvas = document.getElementById('barcode');
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                // إنشاء barcode للطباعة
+                JsBarcode("#barcode", studentBarcode, {
+                    format: "CODE128",
+                    width: 3,
+                    height: 80,
+                    displayValue: true,
+                    fontSize: 16,
+                    margin: 10,
+                    background: "#ffffff",
+                    lineColor: "#000000"
+                });
+
+                // انتظار قليل ثم طباعة
+                setTimeout(() => {
+                    window.print();
+
+                    // إخفاء المحتوى مرة أخرى بعد الطباعة
+                    setTimeout(() => {
+                        printContent.style.display = 'none';
+                        printContent.style.position = 'fixed';
+                        printContent.style.top = '-9999px';
+                        printContent.style.left = '-9999px';
+                    }, 1000);
+                }, 800);
+
+            } catch (error) {
+                console.error('Error generating barcode:', error);
+                alert('حدث خطأ في إنشاء الباركود. تأكد من صحة البيانات.');
+                // إخفاء المحتوى في حالة الخطأ
+                printContent.style.display = 'none';
+                printContent.style.position = 'fixed';
+                printContent.style.top = '-9999px';
+                printContent.style.left = '-9999px';
+            }
+        }
+
+        // نفس التعديل لدالة printStudentBarcodeFromRow
+        function printStudentBarcodeFromRow(row) {
+            let studentBarcode = row.dataset.barcode;
+            const studentName = row.dataset.studentName;
+            const studentCode = row.dataset.studentCode;
+
+            console.log('Auto printing barcode for:', studentName);
+
+            // فحص إذا كان barcode عبارة عن صورة base64
+            if (studentBarcode.startsWith('iVBORw0KGgo') || studentBarcode.startsWith('data:image') || !studentBarcode) {
+                studentBarcode = studentCode;
+            }
+
+            // إظهار محتوى الطباعة مؤقتاً
+            const printContent = document.getElementById('printContent');
+            printContent.style.display = 'block';
+            printContent.style.position = 'fixed';
+            printContent.style.top = '0';
+            printContent.style.left = '0';
+            printContent.style.width = '100%';
+            printContent.style.height = 'auto';
+            printContent.style.background = 'white';
+            printContent.style.zIndex = '9999';
+            printContent.style.padding = '20px';
+            printContent.style.textAlign = 'center';
+
+
+
+            document.getElementById('barcodeText').innerHTML =
+                `<div style="font-size: 14px; margin-top: 10px;">${studentBarcode}</div>`;
+
+            try {
+                // تنظيف الـ canvas
+                const canvas = document.getElementById('barcode');
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                JsBarcode("#barcode", studentBarcode, {
+                    format: "CODE128",
+                    width: 3,
+                    height: 80,
+                    displayValue: true,
+                    fontSize: 16,
+                    margin: 10,
+                    background: "#ffffff",
+                    lineColor: "#000000"
+                });
+
+                setTimeout(() => {
+                    window.print();
+
+                    // إخفاء المحتوى مرة أخرى بعد الطباعة
+                    setTimeout(() => {
+                        printContent.style.display = 'none';
+                        printContent.style.position = 'fixed';
+                        printContent.style.top = '-9999px';
+                        printContent.style.left = '-9999px';
+                    }, 1000);
+                }, 800);
+
+            } catch (error) {
+                console.error('Error generating barcode:', error);
+                // إخفاء المحتوى في حالة الخطأ
+                printContent.style.display = 'none';
+                printContent.style.position = 'fixed';
+                printContent.style.top = '-9999px';
+                printContent.style.left = '-9999px';
+            }
+        }
+    </script>
     <script>
         function validatePayment() {
             const due = parseFloat(document.getElementById('dueAmount').value);
@@ -222,8 +444,7 @@
             errorMsg.classList.add('d-none');
             return true;
         }
-    </script>
-    <script>
+
         function attendanceAbsentForm(studentId) {
             return `
                     <form
@@ -241,21 +462,33 @@
                         action="/admin/attendance/mark/${studentId}/1"
                         method="POST" class="d-inline">
                         @csrf
-                        <button class="btn btn-danger btn-sm">تسجيل حضور</button>
+                        <button class="btn btn-success btn-sm">تسجيل حضور</button>
                     </form>
             `;
         }
-        // دالة الحضور (نفس اللي كتبته بالضبط)
+
+        // دالة الحضور 
         function markAttendance(code) {
             const input = document.getElementById('barcode-input');
             const result = document.getElementById('barcode-result');
             let row = document.querySelector(`tr[data-student-code="${code}"]`);
+
+            if (!row) {
+                alert('لا يوجد طالب بهذا الكود');
+                input.disabled = false;
+                input.focus();
+                return;
+            }
+
             let AttendanceStatus = parseInt(row.dataset.status);
 
             if (AttendanceStatus == 1) {
-                alert('تم تحضير هذا الطالب من قبل')
+                alert('تم تحضير هذا الطالب من قبل');
+                input.disabled = false;
+                input.focus();
                 return;
             }
+
             if (!code) return;
 
             input.disabled = true;
@@ -280,29 +513,15 @@
 
                     if (data.success) {
                         let studentId = row.dataset.studentId;
-                        let studentDiscount = parseFloat(row.dataset.discount) || 0;
-                        let studentDueAmount = parseFloat(row.dataset.dueAmount) || 0;
-
                         let formAttendanceCell = row.querySelector('td.formAttendance');
                         let formStatusCell = row.querySelector('td.formStatus');
-                        let formFees = row.querySelector('td.Fees');
 
-                        let sessionPrice = parseFloat("{{ $group->monthly_fee }}") || 0;
-                        let price = sessionPrice - (sessionPrice * studentDiscount / 100);
-                        let dueAmount = price + studentDueAmount;
-                        // formFees.textContent = dueAmount.toFixed(2);
+                        formStatusCell.innerHTML = `<span class="badge bg-success">حاضر</span>`;
+                        formAttendanceCell.innerHTML = attendanceAbsentForm(studentId);
 
-                        formStatusCell.innerHTML = `
-                           <span
-                                class="badge bg-success">
-                                حاضر
-                                </span>
-                        `
-                        formAttendanceCell.innerHTML = attendanceAbsentForm(studentId)
-
-
-
-
+                        // طباعة barcode تلقائياً عند الحضور (بدون سؤال)
+                        console.log('طباعة تلقائية للطالب:', row.dataset.studentName);
+                        printStudentBarcodeFromRow(row);
                     }
                 })
                 .catch(() => {
@@ -320,47 +539,100 @@
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('barcode-form');
             const input = document.getElementById('barcode-input');
+            let typingTimer;
+            const typingDelay = 1000; // زيادة المدة إلى ثانية واحدة
+            let isProcessing = false; // متغير لمنع التنفيذ المتكرر
 
-            // تشغيل الفوكس تلقائيًا
             input.focus();
 
-            // عند إرسال الفورم (Enter من ماسح الباركود)
+            // عند إرسال الفورم
             form.addEventListener('submit', function(e) {
-                e.preventDefault(); // منع إعادة تحميل الصفحة
+                e.preventDefault();
+                if (isProcessing) return; // منع التنفيذ إذا كان هناك عملية جارية
+
                 const code = input.value.trim();
-                markAttendance(code);
+                if (code && code.length >= 3) { // التأكد من أن الكود له طول مناسب
+                    markAttendance(code);
+                }
             });
 
-            // البحث أثناء الكتابة
-            input.addEventListener('keyup', function() {
+            // تنفيذ بعد الانتهاء من الكتابة (عند توقف الكتابة لمدة ثانية)
+            input.addEventListener('keyup', function(e) {
+                clearTimeout(typingTimer);
+
+                // إذا تم الضغط على Enter، تنفيذ فوري
+                if (e.key === 'Enter') {
+                    clearTimeout(typingTimer);
+                    if (!isProcessing && input.value.trim() !== "") {
+                        form.dispatchEvent(new Event('submit'));
+                    }
+                    return;
+                }
+
+                // وقف البحث المباشر أثناء الكتابة
+                const currentValue = input.value.trim();
+                if (currentValue !== "" && currentValue.length >= 3) {
+                    typingTimer = setTimeout(() => {
+                        if (!isProcessing && input.value.trim() === currentValue) {
+                            form.dispatchEvent(new Event('submit'));
+                        }
+                    }, typingDelay);
+                }
+            });
+
+            // إزالة البحث المباشر أثناء الكتابة لتجنب التداخل
+            // input.addEventListener('input', function() {
+            //     // تم تعطيل البحث المباشر لتجنب الطباعة أثناء الكتابة
+            // });
+
+            // بحث يدوي فقط (اختياري - يمكن إضافته كزر منفصل)
+            function searchStudents() {
                 const search = input.value.trim().toLowerCase();
                 document.querySelectorAll('table tbody tr').forEach(row => {
-                    const code = row.dataset.studentCode.toLowerCase();
-                    if (code.includes(search) || search === '') {
-                        row.style.display = '';
-                    } else {
-                        row.style.display = 'none';
-                    }
+                    const code = row.dataset.studentCode ? row.dataset.studentCode.toLowerCase() : '';
+                    const name = row.dataset.studentName ? row.dataset.studentName.toLowerCase() : '';
+                    const isMatch = code.includes(search) || name.includes(search) || search === '';
+                    row.style.display = isMatch ? '' : 'none';
                 });
-            });
+            }
 
-        });
-    </script>
+            // تحديث دالة markAttendance لإدارة حالة المعالجة
+            const originalMarkAttendance = window.markAttendance;
+            window.markAttendance = function(code) {
+                if (isProcessing) {
+                    console.log('عملية معالجة جارية، يرجى الانتظار...');
+                    return;
+                }
 
+                isProcessing = true;
+                input.disabled = true;
 
+                // استدعاء الدالة الأصلية
+                const result = originalMarkAttendance(code);
 
-    <script>
-        const form = document.getElementById('barcode-form');
-        const input = document.getElementById('barcode-input');
+                // إعادة تفعيل الحقل بعد انتهاء العملية
+                setTimeout(() => {
+                    isProcessing = false;
+                    input.disabled = false;
+                    input.value = ''; // مسح الحقل بعد المعالجة
+                    input.focus();
+                }, 2000); // انتظار ثانيتين قبل السماح بعملية جديدة
 
-        form.addEventListener('submit', function(e) {
-            e.preventDefault(); // يمنع إرسال الفورم بالشكل التقليدي
-            const code = input.value.trim();
+                return result;
+            };
 
-            if (code !== '') {
-                markAttendance(code);
+            // إضافة مؤشر بصري لحالة المعالجة
+            const originalFetch = window.fetch;
+
+            function showProcessingState(show) {
+                if (show) {
+                    input.style.backgroundColor = '#fff3cd';
+                    input.placeholder = 'جاري المعالجة...';
+                } else {
+                    input.style.backgroundColor = '';
+                    input.placeholder = 'كود الطالب ، دوس انتر بعد كتابه الكود لتحضير الطالب';
+                }
             }
         });
     </script>
-
 @endsection

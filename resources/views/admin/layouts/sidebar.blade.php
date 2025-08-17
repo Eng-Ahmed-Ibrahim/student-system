@@ -1,10 +1,10 @@
+
 <div id="kt_app_sidebar" class="app-sidebar flex-column" data-kt-drawer="true" data-kt-drawer-name="app-sidebar"
     data-kt-drawer-activate="{default: true, lg: false}" data-kt-drawer-overlay="true" data-kt-drawer-width="225px"
     data-kt-drawer-direction="start" data-kt-drawer-toggle="#kt_app_sidebar_mobile_toggle">
     <div class="app-sidebar-logo px-6" id="kt_app_sidebar_logo">
-        <a  href="{{ route('admin.dashboard') }}">
-            <img alt="Logo" src="{{ asset('images/static/logo2.png') }}" class="h-55px app-sidebar-logo-default" />
-            <img alt="Logo" src="{{ asset('images/static/logo2.png') }}" class="h-20px app-sidebar-logo-minimize" />
+        <a  href="{{ route('admin.dashboard') }}" class="text-center w-100" style="font-size:20px;color: white">
+            The Leader
         </a>
         <div id="kt_app_sidebar_toggle"
             class="app-sidebar-toggle btn btn-icon btn-shadow btn-sm btn-color-muted btn-active-color-primary h-30px w-30px position-absolute top-50 start-100 translate-middle rotate"
@@ -26,6 +26,7 @@
                 <div class="menu menu-column menu-rounded menu-sub-indention fw-semibold fs-6" id="#kt_app_sidebar_menu"
                     data-kt-menu="true" data-kt-menu-expand="false">
 
+                    @can('view dashboard')
                     <div class="menu-item">
                         <a  href="{{ route('admin.dashboard') }}" class="menu-link">
                             <span class="menu-icon">
@@ -41,40 +42,16 @@
                             <span class="menu-title">لوحه التحكم</span>
                         </a>
                     </div>
+                    @endcan
 
 
-                    {{-- Home page --}}
-                    {{-- <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
-                        <span class="menu-link">
-                            <span class="menu-icon">
-                                <i class="ki-duotone ki-address-book fs-2">
-                                    <span class="path1"></span>
-                                    <span class="path2"></span>
-                                    <span class="path3"></span>
-                                </i>
-                            </span>
-                            <span class="menu-title">Home Page</span>
-                            <span class="menu-arrow"></span>
-                        </span>
-                        <div class="menu-sub menu-sub-accordion">
-                            <div class="menu-item">
-                                <a class="menu-link" >
-                                    <span class="menu-bullet">
-                                        <span class="bullet bullet-dot"></span>
-                                    </span>
-                                    <span class="menu-title">Background</span>
-                                </a>
-                            </div>
-
-                        </div>
-                    </div> --}}
-                    {{-- End of Home page --}}
-
+                    @if($current_user->can('view users') || $current_user->can('view roles') )
                     <div class="menu-item pt-5">
                         <div class="menu-content">
-                            <span class="menu-heading fw-bold text-uppercase fs-7">الصلاحيات</span>
+                            <span class="menu-heading fw-bold text-uppercase fs-7" > الصلاحيات & المستخدمين</span>
                         </div>
                     </div>
+                    @can("view roles")
                     <div class="menu-item">
                         <a href="{{ route('admin.roles.index') }}" class="menu-link">
                             <span class="menu-icon">
@@ -90,8 +67,28 @@
                             <span class="menu-title"> الصلاحيات </span>
                         </a>
                     </div>
+                    @endcan
+                    @can("view users")
+                    <div class="menu-item">
+                        <a href="{{ route('admin.users.index') }}" class="menu-link">
+                            <span class="menu-icon">
+                                <i class="ki-duotone ki-calendar-8 fs-2">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                    <span class="path3"></span>
+                                    <span class="path4"></span>
+                                    <span class="path5"></span>
+                                    <span class="path6"></span>
+                                </i>
+                            </span>
+                            <span class="menu-title"> المستخدمين </span>
+                        </a>
+                    </div>
+                    @endcan
+                    @endif
 
                     {{-- Groups --}}
+                    @can('view groups')
                     <div class="menu-item pt-5">
                         <div class="menu-content">
                             <span class="menu-heading fw-bold text-uppercase fs-7">المجموعات</span>
@@ -144,9 +141,11 @@
 
                         </div>
                     </div>
+                    @endcan
 
 
                     {{-- Students --}}
+                    @if($current_user->can('view students') ||$current_user->can('view blocked students')  )
                     <div class="menu-item pt-5">
                         <div class="menu-content">
                             <span class="menu-heading fw-bold text-uppercase fs-7">الطلاب</span>
@@ -165,7 +164,9 @@
                             <span class="menu-title">الطلاب</span>
                             <span class="menu-arrow"></span>
                         </span>
+
                         <div class="menu-sub menu-sub-accordion">
+                            @can('view students')
                             <div class="menu-item">
                                 <a href="{{ route('admin.students.index', ['grade_level' => 1]) }}"class="menu-link">
                                     <span class="menu-bullet">
@@ -196,6 +197,8 @@
 
                                 </a>
                             </div>
+                            @endcan
+                            @can('view blocked students')
                             <div class="menu-item">
                                 <a href="{{ route('admin.students.blocked') }}"class="menu-link">
                                     <span class="menu-bullet">
@@ -205,11 +208,14 @@
 
                                 </a>
                             </div>
+                            @endcan
 
                         </div>
                     </div>
+                    @endcan
 
                     {{-- Exams --}}
+                    @can('view exams')
                     <div class="menu-item pt-5">
                         <div class="menu-content">
                             <span class="menu-heading fw-bold text-uppercase fs-7">الامتحانات</span>
@@ -259,7 +265,9 @@
 
                         </div>
                     </div>
+                    @endcan
                     {{-- Reports --}}
+                    @if($current_user->can('view financial reports') || $current_user->can('view attendance reports') || $current_user->can('view exam reports'))
                     <div class="menu-item pt-5">
                         <div class="menu-content">
                             <span class="menu-heading fw-bold text-uppercase fs-7">التقارير</span>
@@ -279,6 +287,7 @@
                             <span class="menu-arrow"></span>
                         </span>
                         <div class="menu-sub menu-sub-accordion">
+                            @can('view financial reports')
                             <div class="menu-item">
                                 <a href="{{ route('admin.reports.financial') }}"class="menu-link">
                                     <span class="menu-bullet">
@@ -288,6 +297,8 @@
 
                                 </a>
                             </div>
+                            @endcan
+                            @can('view attendance reports')
                             <div class="menu-item">
                                 <a href="{{ route('admin.reports.attendance') }}"class="menu-link">
                                     <span class="menu-bullet">
@@ -297,6 +308,8 @@
 
                                 </a>
                             </div>
+                            @endcan
+                            @can('view exam reports')
                             <div class="menu-item">
                                 <a href="{{ route('admin.reports.examResults') }}"class="menu-link">
                                     <span class="menu-bullet">
@@ -306,10 +319,12 @@
 
                                 </a>
                             </div>
+                            @endcan
                
 
                         </div>
                     </div>
+                    @endif
 
 
 

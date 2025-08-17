@@ -20,13 +20,16 @@ class ReportsController extends Controller
 {
     public function financial(Request $request)
     {
+        $year=now()->year;
         $type = $request->input('type');
         $from = $request->input('from');
         $to = $request->input('to');
         $studentId = $request->input('student_id');
         // @phpstan-ignore-next-line
         $paymentQuery = Payment::query()->with('student')->whereHas('student');
-        $feeQuery = StudentFee::query()->with('student')->whereHas('student')->where('status', 'unpaid');
+        $feeQuery = StudentFee::query()->with(['student'])
+            ->withSum('payments', 'amount')
+            ->whereHas('student')->where('status', 'unpaid');
 
         // فلترة بالطالب
         if ($studentId) {
@@ -77,7 +80,7 @@ class ReportsController extends Controller
             );
         }
         $totalPayments = (clone $paymentQuery)->sum('amount');
-        $totalFees = (clone $feeQuery)->sum('final_amount');
+        $totalFees = (clone $feeQuery)->sum('final_amount') - $totalPayments;
 
         $payments = $paymentQuery->paginate(20, ['*'], 'payments_page')->withQueryString();
         $studentFees = $feeQuery->paginate(20, ['*'], 'fees_page')->withQueryString();

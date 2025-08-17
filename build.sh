@@ -29,8 +29,9 @@ fi
 echo "[5/8] 🧹 Clearing and caching config/routes/views"
 php artisan config:clear
 php artisan config:cache
-php artisan route:cache
 php artisan view:cache
+php artisan route:clear
+php artisan route:cache
 
 
 echo "[6/8] 🛠️ Migrating database"

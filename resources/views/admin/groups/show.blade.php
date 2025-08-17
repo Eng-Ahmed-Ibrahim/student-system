@@ -23,11 +23,15 @@
                     </ul>
                 </div>
                 <div class="d-flex align-items-center gap-2 gap-lg-3">
+                    @can('create students')
                     <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addStudentModal">إضافة
                         طالب</button>
-                        <a href="{{ route('admin.groups.export', $group->id) }}" class="btn btn-success mb-3">
-   تحميل اكسيل
-</a>
+                        @endcan
+                        @can('download students excel sheet of group')
+                    <a href="{{ route('admin.groups.export', $group->id) }}" class="btn btn-success mb-3">
+                        تحميل اكسيل
+                    </a>
+                    @endcan
 
                 </div>
             </div>
@@ -94,12 +98,12 @@
                                                 @method('DELETE')
                                                 <button class="btn btn-sm btn-danger">حذف</button>
                                             </form>
-                                                         <button
-                                                    class="btn btn-sm {{ $student->blocked ? 'btn-success' : 'btn-info' }} toggle-block-btn"
-                                                    data-id="{{ $student->id }}"
-                                                    data-blocked="{{ $student->blocked ? 1 : 0 }}">
-                                                    {{ $student->blocked ? 'إلغاء الحظر' : 'حظر' }}
-                                                </button>
+                                            <button
+                                                class="btn btn-sm {{ $student->blocked ? 'btn-success' : 'btn-info' }} toggle-block-btn"
+                                                data-id="{{ $student->id }}"
+                                                data-blocked="{{ $student->blocked ? 1 : 0 }}">
+                                                {{ $student->blocked ? 'إلغاء الحظر' : 'حظر' }}
+                                            </button>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -124,7 +128,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-      
+
                     <div class="mb-3">
                         <label for="name" class="form-label">اسم الطالب</label>
                         <input type="text" name="name" id="name" class="form-control" placeholder="اسم الطالب"
@@ -180,29 +184,27 @@
             </form>
         </div>
     </div>
-               <!-- Modal: سبب الحظر -->
-                        <div class="modal fade" id="blockModal" tabindex="-1" aria-labelledby="blockModalLabel"
-                            aria-hidden="true">
-                            <div class="modal-dialog">
-                                <form id="blockForm" method="POST" action="{{ route('admin.students.block') }}">
-                                    @csrf
-                                    <input type="hidden" name="student_id" id="modal_student_id">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title">سبب الحظر</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <textarea name="reason" id="block_reason" class="form-control" placeholder="اكتب سبب الحظر..." required></textarea>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="submit" class="btn btn-danger">تأكيد الحظر</button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
+    <!-- Modal: سبب الحظر -->
+    <div class="modal fade" id="blockModal" tabindex="-1" aria-labelledby="blockModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form id="blockForm" method="POST" action="{{ route('admin.students.block') }}">
+                @csrf
+                <input type="hidden" name="student_id" id="modal_student_id">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">سبب الحظر</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <textarea name="reason" id="block_reason" class="form-control" placeholder="اكتب سبب الحظر..." required></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-danger">تأكيد الحظر</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
 @endsection
 @section('js')
     <script>
@@ -216,7 +218,7 @@
                 row.style.display = name.includes(searchValue) ? '' : 'none';
             });
         });
-                $(document).on('click', '.toggle-block-btn', function() {
+        $(document).on('click', '.toggle-block-btn', function() {
             const studentId = $(this).data('id');
             const isBlocked = $(this).data('blocked');
 

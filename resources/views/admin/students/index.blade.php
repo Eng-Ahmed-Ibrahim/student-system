@@ -4,6 +4,8 @@
     $grade_level = request('grade_level');
     $title = $grades[$grade_level - 1];
     $sub_title = 'الطلاب';
+                $current_user = Auth::user();
+
 @endphp
 @section('title', $title)
 @section('content')
@@ -25,8 +27,10 @@
                     </ul>
                 </div>
                 <div class="d-flex align-items-center gap-2 gap-lg-3">
-                    <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addStudentModal">إضافة
-                        طالب</button>
+                    @can('create students')
+                        <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addStudentModal">إضافة
+                            طالب</button>
+                    @endcan
 
                 </div>
             </div>
@@ -102,8 +106,13 @@
                                 <tbody>
                                     @foreach ($students as $student)
                                         <tr>
-                                            <td><a
-                                                    href="{{ route('admin.students.show', $student->id) }}">{{ $student->student_code }}</a>
+                                            <td>
+                                                @if ($current_user->can('view student profile'))
+                                                    <a
+                                                        href="{{ route('admin.students.show', $student->id) }}">{{ $student->student_code }}</a>
+                                                @else
+                                                    <a>{{ $student->student_code }}</a>
+                                                @endif
                                             </td>
                                             <td>
                                                 @if ($student->barcode)
@@ -156,19 +165,23 @@
 
                                             <td class="d-flex gap-1">
 
-                                                <button
-                                                    class="btn btn-sm {{ $student->blocked ? 'btn-success' : 'btn-danger' }} toggle-block-btn"
-                                                    data-id="{{ $student->id }}"
-                                                    data-blocked="{{ $student->blocked ? 1 : 0 }}">
-                                                    {{ $student->blocked ? 'إلغاء الحظر' : 'حظر' }}
-                                                </button>
-                                                <form action="{{ route('admin.students.destroy', $student->id) }}"
-                                                    method="post"
-                                                    onsubmit="return confirm('هل أنت متأكد أنك تريد الحذف؟');">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button class="btn btn-sm btn-danger">حذف</button>
-                                                </form>
+                                                @can('block students')
+                                                    <button
+                                                        class="btn btn-sm {{ $student->blocked ? 'btn-success' : 'btn-danger' }} toggle-block-btn"
+                                                        data-id="{{ $student->id }}"
+                                                        data-blocked="{{ $student->blocked ? 1 : 0 }}">
+                                                        {{ $student->blocked ? 'إلغاء الحظر' : 'حظر' }}
+                                                    </button>
+                                                @endcan
+                                                @can('delete students')
+                                                    <form action="{{ route('admin.students.destroy', $student->id) }}"
+                                                        method="post"
+                                                        onsubmit="return confirm('هل أنت متأكد أنك تريد الحذف؟');">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button class="btn btn-sm btn-danger">حذف</button>
+                                                    </form>
+                                                @endcan
 
                                             </td>
                                         </tr>
@@ -250,32 +263,33 @@
                                                 placeholder="اسم الطالب" required>
                                         </div>
 
-                                        
+
                                         <div class="row">
                                             <div class="mb-3 col">
                                                 <label for="phone" class="form-label">تليفون الطالب</label>
                                                 <input type="text" name="phone" id="phone" class="form-control"
                                                     placeholder="تليفون الطالب" pattern="\d{11}" maxlength="11"
-                                                    minlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                                                    required title="رقم الهاتف يجب أن يتكون من 11 رقم">
+                                                    minlength="11"
+                                                    oninput="this.value = this.value.replace(/[^0-9]/g, '')" required
+                                                    title="رقم الهاتف يجب أن يتكون من 11 رقم">
                                             </div>
 
                                             <div class="mb-3 col">
                                                 <label for="parent_phone" class="form-label">تليفون ولي الأمر</label>
                                                 <input type="text" name="parent_phone" id="parent_phone"
-                                                class="form-control" placeholder="تليفون ولي الأمر" pattern="\d{11}"
-                                                maxlength="11" minlength="11"
-                                                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                                                title="رقم الهاتف يجب أن يتكون من 11 رقم" required>
+                                                    class="form-control" placeholder="تليفون ولي الأمر" pattern="\d{11}"
+                                                    maxlength="11" minlength="11"
+                                                    oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                                    title="رقم الهاتف يجب أن يتكون من 11 رقم" required>
                                             </div>
-                                            
+
                                             <div class="mb-3 col-12">
                                                 <label for="national_id" class="form-label">الرقم القومي</label>
                                                 <input type="text" name="national_id" id="national_id"
-                                                class="form-control" placeholder="الرقم القومي" pattern="\d{14}"
-                                                maxlength="14" minlength="14"
-                                                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                                                title="رقم قومي يجب أن يتكون من 14 رقم" required>
+                                                    class="form-control" placeholder="الرقم القومي" pattern="\d{14}"
+                                                    maxlength="14" minlength="14"
+                                                    oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                                    title="رقم قومي يجب أن يتكون من 14 رقم" required>
                                             </div>
                                         </div>
 

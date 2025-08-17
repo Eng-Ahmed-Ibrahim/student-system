@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Services\GroupService;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
@@ -22,6 +23,9 @@ class DashboardController extends Controller
         // $this->GroupService->update_code_of_students();
         // عدد الطلاب لكل صف (1، 2، 3)
 
+        if(! Auth::user()->can('view dashboard')) {
+            return view('admin.welcome'); 
+        }
         $studentsByGrade = Student::whereIn('grade_level', [1, 2, 3])
             ->selectRaw('grade_level, COUNT(*) as total')
             ->groupBy('grade_level')

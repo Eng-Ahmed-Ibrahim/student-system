@@ -4,6 +4,8 @@
     $grade_level = request('grade_level');
     $title = $grades[$grade_level - 1];
     $sub_title = 'الصفحات';
+            $current_user = Auth::user();
+
 @endphp
 @section('title', $title)
 @section('content')
@@ -24,11 +26,14 @@
                         <li class="breadcrumb-item text-muted">{{ $title }}</li>
                     </ul>
                 </div>
-                <div class="d-flex align-items-center gap-2 gap-lg-3">
+                @can('create exams')
+                    <div class="d-flex align-items-center gap-2 gap-lg-3">
 
-                    <a href="#" class="btn btn-sm fw-bold btn-primary" data-bs-toggle="modal"
-                        data-bs-target="#addExamModal">اضافه امتحان</a>
-                </div>
+
+                        <a href="#" class="btn btn-sm fw-bold btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#addExamModal">اضافه امتحان</a>
+                    </div>
+                @endcan
             </div>
         </div>
         <div id="kt_app_content" class="app-content flex-column-fluid">
@@ -46,18 +51,27 @@
                                     <th>اسم الامتحان</th>
                                     <th>تاريخ الامتحان</th>
                                     <th>الدرجة الكاملة</th>
+                                    @if($current_user->can('delete exams') || $current_user->can('edit exams'))
                                     <th>الإجراءات</th>
+                                    @endif
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($exams as $exam)
                                     <tr>
-                                        <td><a href="{{ route('admin.exams.show',$exam->id) }}">#{{ $exam->id }}</a></td>
+                                        <td>
+                                            @if($current_user->can('view exam results'))
+                                            <a href="{{ route('admin.exams.show', $exam->id) }}">#{{ $exam->id }}</a>
+                                            @else 
+                                            <a>#{{ $exam->id }}</a>
+                                            @endif
+                                        </td>
                                         <td>{{ $exam->group->name }}</td>
                                         <td>{{ $exam->name ?? '-' }}</td>
                                         <td>{{ $exam->exam_date }}</td>
                                         <td>{{ $exam->total_score }}</td>
                                         <td>
+                                            @can('edit exams')
                                             <button class="btn btn-sm btn-warning edit-btn" data-id="{{ $exam->id }}"
                                                 data-grade="{{ $exam->grade_level }}" data-group="{{ $exam->group_id }}"
                                                 data-name="{{ $exam->name }}" data-date="{{ $exam->exam_date }}"
@@ -65,12 +79,15 @@
                                                 data-bs-target="#editExamModal">
                                                 تعديل
                                             </button>
+                                            @endcan
+                                            @can("delete exams")
                                             <form action="{{ route('admin.exams.destroy', $exam->id) }}" method="POST"
                                                 class="d-inline">
                                                 @csrf @method('DELETE')
                                                 <button class="btn btn-sm btn-danger"
                                                     onclick="return confirm('هل أنت متأكد؟')">حذف</button>
                                             </form>
+                                            @endcan
                                         </td>
                                     </tr>
                                 @endforeach
@@ -120,39 +137,39 @@
                         </div>
 
 
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 @endsection
 
 @section('js')
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // فلترة المجموعات حسب الصف
-        document.querySelectorAll('#grade_level').forEach(select => {
-            select.addEventListener('change', function() {
-                let gradeId = this.value;
-                let groupSelect = this.closest('.modal-body').querySelector('#group_id');
-                groupSelect.querySelectorAll('option').forEach(option => {
-                    option.hidden = option.dataset.grade != gradeId && option.value !=
-                        '';
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // فلترة المجموعات حسب الصف
+            document.querySelectorAll('#grade_level').forEach(select => {
+                select.addEventListener('change', function() {
+                    let gradeId = this.value;
+                    let groupSelect = this.closest('.modal-body').querySelector('#group_id');
+                    groupSelect.querySelectorAll('option').forEach(option => {
+                        option.hidden = option.dataset.grade != gradeId && option.value !=
+                            '';
+                    });
+                });
+            });
+
+            // تعبئة بيانات التعديل
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    let form = document.getElementById('editExamForm');
+                    form.action = `/admin/exams/${this.dataset.id}`;
+                    form.querySelector('#group_id').value = this.dataset.group;
+                    form.querySelector('#name').value = this.dataset.name;
+                    form.querySelector('#exam_date').value = this.dataset.date;
+                    form.querySelector('#total_score').value = this.dataset.score;
                 });
             });
         });
-
-        // تعبئة بيانات التعديل
-        document.querySelectorAll('.edit-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                let form = document.getElementById('editExamForm');
-                form.action = `/admin/exams/${this.dataset.id}`;
-                form.querySelector('#group_id').value = this.dataset.group;
-                form.querySelector('#name').value = this.dataset.name;
-                form.querySelector('#exam_date').value = this.dataset.date;
-                form.querySelector('#total_score').value = this.dataset.score;
-            });
-        });
-    });
-</script>
+    </script>
 @endsection

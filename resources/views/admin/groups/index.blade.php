@@ -1,12 +1,10 @@
 @extends('admin.app')
 @php
-    $grades=[
-        "الصف الاول الثانوي",
-        "الصف الثاني الثانوي",
-        "الصف الثالث الثانوي"
-        ];
+    $grades = ['الصف الاول الثانوي', 'الصف الثاني الثانوي', 'الصف الثالث الثانوي'];
     $title = $grades[request('grade_level') - 1];
     $sub_title = 'المجموعات';
+                $current_user = Auth::user();
+
 @endphp
 @section('title', $title)
 @section('content')
@@ -27,11 +25,12 @@
                         <li class="breadcrumb-item text-muted">{{ $title }}</li>
                     </ul>
                 </div>
-                <div class="d-flex align-items-center gap-2 gap-lg-3">
-
-                    <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addGroupModal">اضافه مجموعه</button>
-
-                </div>
+                @can('create groups')
+                    <div class="d-flex align-items-center gap-2 gap-lg-3">
+                        <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addGroupModal">اضافه
+                            مجموعه</button>
+                    </div>
+                @endcan
             </div>
         </div>
         <div id="kt_app_content" class="app-content flex-column-fluid">
@@ -78,7 +77,16 @@
                                 @endphp
                                 @foreach ($groups as $group)
                                     <tr>
-                                        <td><a href="{{ route('admin.groups.show',$group->id) }}">#{{ $group->code }}</a></td>
+
+                                        <td>
+                                            @if ($current_user->can('view students of group'))
+                                                <a href="{{ route('admin.groups.show', $group->id) }}">#{{ $group->code }}
+                                                </a>
+                                            @else
+                                                <a >#{{ $group->code }}</a>
+                                            @endif
+
+                                        </td>
                                         <td>{{ $group->name }}</td>
                                         <td>{{ $grades[$group->grade_level] }}</td>
                                         <td>{{ $group->monthly_fee }}</td>
@@ -101,19 +109,23 @@
 
                                             <div class="d-flex gap-1">
 
-                                                <button class="btn btn-sm btn-warning edit-btn"
-                                                    data-id="{{ $group->id }}" data-name="{{ $group->name }}"
-                                                    data-code="{{ $group->code }}" data-limit="{{ $group->limit }}"
-                                                    data-days='@json($group->days)'
-                                                    data-time="{{ $group->time }}"
-                                                    data-monthly_fee="{{ $group->monthly_fee }}"
-                                                    data-grade_level="{{ $group->grade_level }}" data-bs-toggle="modal"
-                                                    data-bs-target="#editGroupModal">
-                                                    تعديل
-                                                </button>
-                                                <a class="btn btn-sm btn-primary"
-                                                    href="{{ route('admin.attendance.index', ['group' => $group->id]) }}">الحضور
-                                                    والغياب</a>
+                                                @can('edit groups')
+                                                    <button class="btn btn-sm btn-warning edit-btn"
+                                                        data-id="{{ $group->id }}" data-name="{{ $group->name }}"
+                                                        data-code="{{ $group->code }}" data-limit="{{ $group->limit }}"
+                                                        data-days='@json($group->days)'
+                                                        data-time="{{ $group->time }}"
+                                                        data-monthly_fee="{{ $group->monthly_fee }}"
+                                                        data-grade_level="{{ $group->grade_level }}" data-bs-toggle="modal"
+                                                        data-bs-target="#editGroupModal">
+                                                        تعديل
+                                                    </button>
+                                                @endcan
+                                                @can('attendance students')
+                                                    <a class="btn btn-sm btn-primary"
+                                                        href="{{ route('admin.attendance.index', ['group' => $group->id]) }}">الحضور
+                                                        والغياب</a>
+                                                @endcan
                                             </div>
                                         </td>
 
@@ -155,7 +167,7 @@
                                 الصف الثالث الثانوي
                             </option>
                         </select> --}}
-                                                <input type="hidden" value="{{ request('grade_level') }}" name="grade_level">
+                        <input type="hidden" value="{{ request('grade_level') }}" name="grade_level">
 
                     </div>
 
@@ -175,14 +187,14 @@
 
                         <div class="mb-3 col">
                             <label for="code" class="form-label">كود المجموعة</label>
-                            <input type="text" name="code" id="code" class="form-control" placeholder="كود المجموعة"
-                            required>
+                            <input type="text" name="code" id="code" class="form-control"
+                                placeholder="كود المجموعة" required>
                         </div>
-                        
+
                         <div class="mb-3 col">
                             <label for="limit" class="form-label">الحد الأقصى للطلاب</label>
                             <input type="number" name="limit" id="limit" class="form-control"
-                            placeholder="الحد الأقصى للطلاب" required>
+                                placeholder="الحد الأقصى للطلاب" required>
                         </div>
                     </div>
 
@@ -234,7 +246,8 @@
                             <option value="2">الصف الثاني الثانوي</option>
                             <option value="3">الصف الثالث الثانوي</option>
                         </select> --}}
-                        <input type="hidden" value="{{ request('grade_level') }}" id="editGradeLevel" name="grade_level">
+                        <input type="hidden" value="{{ request('grade_level') }}" id="editGradeLevel"
+                            name="grade_level">
                     </div>
 
                     <div class="row">
@@ -242,13 +255,13 @@
                         <div class="mb-3 col">
                             <label for="editName" class="form-label">اسم المجموعة</label>
                             <input type="text" name="name" class="form-control" id="editName"
-                            placeholder="اسم المجموعة" required>
+                                placeholder="اسم المجموعة" required>
                         </div>
-                        
+
                         <div class="mb-3 col">
                             <label for="editCode" class="form-label">كود المجموعة</label>
                             <input type="text" name="code" class="form-control" id="editCode"
-                            placeholder="كود المجموعة" required>
+                                placeholder="كود المجموعة" required>
                         </div>
                     </div>
 
