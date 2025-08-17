@@ -16,8 +16,16 @@ touch database/database.sqlite
 echo "[3/8] 📦 Installing packages using composer"
 php composer.phar install --no-interaction --prefer-dist --optimize-autoloader
 echo "[3.1] 🔁 Dumping Composer Autoload (for helpers/functions)"
-php composer.phar dump-autoload
-composer dump-autoload
+# Download Composer v2
+php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+php composer-setup.php --2 --install-dir=$HOME/bin --filename=composer
+php -r "unlink('composer-setup.php');"
+
+# Make sure $HOME/bin/composer is first in your PATH
+export PATH=$HOME/bin:$PATH
+rm -rf vendor composer.lock
+composer install
+
 
 echo "[4/8] ⚙️ Publishing API Platform assets"
 if php artisan list | grep -q "api-platform:"; then
