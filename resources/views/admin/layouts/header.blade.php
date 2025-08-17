@@ -79,6 +79,7 @@
                                 <div class="symbol symbol-50px me-5">
                                     <img alt="Logo" src="{{ asset("storage/".$current_user->avatar) }}" />
                                 </div>
+                                
                                 <!--end::Avatar-->
                                 <!--begin::Username-->
                                 <div class="d-flex flex-column">
