@@ -535,107 +535,36 @@
                 });
         }
 
-        // عند تحميل الصفحة
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.getElementById('barcode-form');
-            const input = document.getElementById('barcode-input');
-            let typingTimer;
-            const typingDelay = 1000; // زيادة المدة إلى ثانية واحدة
-            let isProcessing = false; // متغير لمنع التنفيذ المتكرر
+// عند تحميل الصفحة
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('barcode-form');
+    const input = document.getElementById('barcode-input');
+    let isProcessing = false; // متغير لمنع التنفيذ المتكرر
 
-            input.focus();
+    input.focus();
 
-            // عند إرسال الفورم
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
-                if (isProcessing) return; // منع التنفيذ إذا كان هناك عملية جارية
+    // عند إرسال الفورم
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (isProcessing) return; // منع التنفيذ إذا كان هناك عملية جارية
 
-                const code = input.value.trim();
-                if (code && code.length >= 3) { // التأكد من أن الكود له طول مناسب
-                    markAttendance(code);
-                }
-            });
+        const code = input.value.trim();
+        if (code && code.length >= 3) { // التأكد من أن الكود له طول مناسب
+            markAttendance(code);
+        }
+    });
 
-            // تنفيذ بعد الانتهاء من الكتابة (عند توقف الكتابة لمدة ثانية)
-            input.addEventListener('keyup', function(e) {
-                clearTimeout(typingTimer);
-
-                // إذا تم الضغط على Enter، تنفيذ فوري
-                if (e.key === 'Enter') {
-                    e.preventDefault(); // منع السلوك الافتراضي
-                    clearTimeout(typingTimer);
-
-                    const code = input.value.trim();
-                    if (!isProcessing && code !== "" && code.length >= 4) {
-                        // تنفيذ مباشر بدلاً من استخدام form submit
-                        markAttendance(code);
-                    }
-                    return;
-                }
-
-                // السكان التلقائي بعد توقف الكتابة (بدون Enter)
-                const currentValue = input.value.trim();
-                if (currentValue !== "" && currentValue.length >= 4) {
-                    typingTimer = setTimeout(() => {
-                        if (!isProcessing && input.value.trim() === currentValue) {
-                            markAttendance(currentValue);
-                        }
-                    }, typingDelay);
-                }
-            });
-            // إزالة البحث المباشر أثناء الكتابة لتجنب التداخل
-            // input.addEventListener('input', function() {
-            //     // تم تعطيل البحث المباشر لتجنب الطباعة أثناء الكتابة
-            // });
-
-            // بحث يدوي فقط (اختياري - يمكن إضافته كزر منفصل)
-            function searchStudents() {
-                const search = input.value.trim().toLowerCase();
-                document.querySelectorAll('table tbody tr').forEach(row => {
-                    const code = row.dataset.studentCode ? row.dataset.studentCode.toLowerCase() : '';
-                    const name = row.dataset.studentName ? row.dataset.studentName.toLowerCase() : '';
-                    const isMatch = code.includes(search) || name.includes(search) || search === '';
-                    row.style.display = isMatch ? '' : 'none';
-                });
+    // السماح فقط بزر Enter
+    input.addEventListener('keyup', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault(); // منع السلوك الافتراضي (مثلاً Reload)
+            const code = input.value.trim();
+            if (!isProcessing && code !== "" && code.length >= 3) {
+                markAttendance(code);
             }
+        }
+    });
+});
 
-            // تحديث دالة markAttendance لإدارة حالة المعالجة
-            const originalMarkAttendance = window.markAttendance;
-            window.markAttendance = function(code) {
-                if (isProcessing) {
-                    console.log('عملية معالجة جارية، يرجى الانتظار...');
-                    return;
-                }
-
-                isProcessing = true;
-                input.disabled = true;
-
-                // استدعاء الدالة الأصلية
-                const result = originalMarkAttendance(code);
-
-                // إعادة تفعيل الحقل بعد انتهاء العملية
-                setTimeout(() => {
-                    isProcessing = false;
-                    input.disabled = false;
-                    input.value = ''; // مسح الحقل بعد المعالجة
-                    input.focus();
-                }, 2000); // انتظار ثانيتين قبل السماح بعملية جديدة
-
-                return result;
-            };
-
-            // إضافة مؤشر بصري لحالة المعالجة
-            const originalFetch = window.fetch;
-
-            function showProcessingState(show) {
-                if (show) {
-                    input.style.backgroundColor = '#fff3cd';
-                    input.placeholder = 'جاري المعالجة...';
-                } else {
-                    input.style.backgroundColor = '';
-                    input.placeholder = 'كود الطالب ، دوس انتر بعد كتابه الكود لتحضير الطالب';
-                }
-            }
-        });
     </script>
 @endsection
