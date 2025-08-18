@@ -60,7 +60,7 @@
             background-color: #138496;
         }
     </style>
-    
+
 @endsection
 
 @section('content')
@@ -557,28 +557,17 @@
             });
 
             // تنفيذ بعد الانتهاء من الكتابة (عند توقف الكتابة لمدة ثانية)
+            // بدل ما تعتمد على typingDelay
             input.addEventListener('keyup', function(e) {
-                clearTimeout(typingTimer);
-
-                // إذا تم الضغط على Enter، تنفيذ فوري
                 if (e.key === 'Enter') {
-                    clearTimeout(typingTimer);
-                    if (!isProcessing && input.value.trim() !== "") {
+                    e.preventDefault();
+                    const code = input.value.trim();
+                    if (code !== "") {
                         form.dispatchEvent(new Event('submit'));
                     }
-                    return;
-                }
-
-                // وقف البحث المباشر أثناء الكتابة
-                const currentValue = input.value.trim();
-                if (currentValue !== "" && currentValue.length >= 3) {
-                    typingTimer = setTimeout(() => {
-                        if (!isProcessing && input.value.trim() === currentValue) {
-                            form.dispatchEvent(new Event('submit'));
-                        }
-                    }, typingDelay);
                 }
             });
+
 
             // إزالة البحث المباشر أثناء الكتابة لتجنب التداخل
             // input.addEventListener('input', function() {
