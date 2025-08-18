@@ -535,39 +535,31 @@
                 });
         }
 
-document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('barcode-form');
-    const input = document.getElementById('barcode-input');
-    let isProcessing = false;
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('barcode-form');
+            const input = document.getElementById('barcode-input');
 
-    input.focus();
+            input.focus();
+            // منع الـ form من عمل reload
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+            });
 
-    // منع الـ form من عمل reload
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-    });
+            // تنفيذ فقط عند الضغط على Enter
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                            e.preventDefault(); // منع الريلود
 
-    // تنفيذ فقط عند الضغط على Enter
-    input.addEventListener('keyup', function(e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-
-            if (isProcessing) return;
-
+                            // استنى شوية قبل ما تقرأ القيمة
+        setTimeout(() => {
             const code = input.value.trim();
-            if (code !== "" && code.length >= 3) {
-                isProcessing = true;
+            if (code) {
                 markAttendance(code);
-
-                // نفرغ الـ input عشان يكون جاهز للكود الجديد
-                input.value = "";
-                input.focus();
-
-                setTimeout(() => { isProcessing = false; }, 200);
             }
-        }
-    });
-});
-</script>
+        }, 100); 
+                }
+            });
+        });
+    </script>
 
 @endsection

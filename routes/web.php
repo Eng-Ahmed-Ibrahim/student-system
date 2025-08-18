@@ -8,3 +8,4 @@ use App\Http\Controllers\Admin\AuthController;
 
 Route::get("/",[AuthController::class,'login_form'])->name('login');
 Route::post("/login/submit",[AuthController::class,'login'])->name('login.submit');
+Route::view('test', 'admin.test')->name('test');
