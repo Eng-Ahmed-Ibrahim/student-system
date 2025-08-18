@@ -535,36 +535,39 @@
                 });
         }
 
-// عند تحميل الصفحة
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('barcode-form');
     const input = document.getElementById('barcode-input');
-    let isProcessing = false; // متغير لمنع التنفيذ المتكرر
+    let isProcessing = false;
 
     input.focus();
 
-    // عند إرسال الفورم
+    // منع الـ form من عمل reload
     form.addEventListener('submit', function(e) {
         e.preventDefault();
-        if (isProcessing) return; // منع التنفيذ إذا كان هناك عملية جارية
-
-        const code = input.value.trim();
-        if (code && code.length >= 3) { // التأكد من أن الكود له طول مناسب
-            markAttendance(code);
-        }
     });
 
-    // السماح فقط بزر Enter
+    // تنفيذ فقط عند الضغط على Enter
     input.addEventListener('keyup', function(e) {
         if (e.key === 'Enter') {
-            e.preventDefault(); // منع السلوك الافتراضي (مثلاً Reload)
+            e.preventDefault();
+
+            if (isProcessing) return;
+
             const code = input.value.trim();
-            if (!isProcessing && code !== "" && code.length >= 3) {
+            if (code !== "" && code.length >= 3) {
+                isProcessing = true;
                 markAttendance(code);
+
+                // نفرغ الـ input عشان يكون جاهز للكود الجديد
+                input.value = "";
+                input.focus();
+
+                setTimeout(() => { isProcessing = false; }, 200);
             }
         }
     });
 });
+</script>
 
-    </script>
 @endsection
