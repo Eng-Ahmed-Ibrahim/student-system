@@ -40,7 +40,7 @@
 
 
 
-                        {{-- <div id="reader" style="width: 300px;"></div>
+                        <div id="reader" style="width: 300px;"></div>
                         <p>Scanned Code: <span id="scanned-result"></span></p>
                         <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
                         <script>
@@ -63,7 +63,7 @@
                                 }
                             );
                             html5QrcodeScanner.render(onScanSuccess);
-                        </script> --}}
+                        </script>
 
 
                     </div>

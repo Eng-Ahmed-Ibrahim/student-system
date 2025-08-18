@@ -557,18 +557,32 @@
             });
 
             // تنفيذ بعد الانتهاء من الكتابة (عند توقف الكتابة لمدة ثانية)
-            // بدل ما تعتمد على typingDelay
             input.addEventListener('keyup', function(e) {
+                clearTimeout(typingTimer);
+
+                // إذا تم الضغط على Enter، تنفيذ فوري
                 if (e.key === 'Enter') {
-                    e.preventDefault();
+                    e.preventDefault(); // منع السلوك الافتراضي
+                    clearTimeout(typingTimer);
+
                     const code = input.value.trim();
-                    if (code !== "") {
-                        form.dispatchEvent(new Event('submit'));
+                    if (!isProcessing && code !== "" && code.length >= 4) {
+                        // تنفيذ مباشر بدلاً من استخدام form submit
+                        markAttendance(code);
                     }
+                    return;
+                }
+
+                // السكان التلقائي بعد توقف الكتابة (بدون Enter)
+                const currentValue = input.value.trim();
+                if (currentValue !== "" && currentValue.length >= 4) {
+                    typingTimer = setTimeout(() => {
+                        if (!isProcessing && input.value.trim() === currentValue) {
+                            markAttendance(currentValue);
+                        }
+                    }, typingDelay);
                 }
             });
-
-
             // إزالة البحث المباشر أثناء الكتابة لتجنب التداخل
             // input.addEventListener('input', function() {
             //     // تم تعطيل البحث المباشر لتجنب الطباعة أثناء الكتابة
