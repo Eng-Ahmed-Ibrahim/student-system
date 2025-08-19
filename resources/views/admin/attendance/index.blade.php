@@ -548,15 +548,15 @@
             // تنفيذ فقط عند الضغط على Enter
             input.addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
-                            e.preventDefault(); // منع الريلود
+                    e.preventDefault(); // منع الريلود
 
-                            // استنى شوية قبل ما تقرأ القيمة
-        setTimeout(() => {
-            const code = input.value.trim();
-            if (code) {
-                markAttendance(code);
-            }
-        }, 100); 
+                    // استنى شوية قبل ما تقرأ القيمة
+                    setTimeout(() => {
+                        const code = input.value.trim();
+                        if (code) {
+                            markAttendance(code);
+                        }
+                    }, 100);
                 }
             });
         });
