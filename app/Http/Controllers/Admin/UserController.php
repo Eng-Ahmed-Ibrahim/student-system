@@ -68,4 +68,13 @@ class UserController extends Controller
 
         return back()->with("success", "تم تحديث بيانات المستخدم بنجاح");
     }
+    public function destroy(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+
+        $user->delete();
+
+
+        return back()->with("success", "تم تحديث بيانات المستخدم بنجاح");
+    }
 }
