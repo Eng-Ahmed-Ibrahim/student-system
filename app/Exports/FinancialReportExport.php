@@ -56,7 +56,7 @@ class FinancialReportExport implements FromCollection, WithHeadings
                 'كود الطالب'        => $student->student_code ?? '---',
                 'اسم الطالب'        => $student->name ?? '---',
                 'المبلغ المستحق '            => $fee->final_amount,
-                'المبلغ المدفوع'            => $fee->payments_sum_amount,
+                'المبلغ المدفوع'            => $fee->payments_sum_amount ?? 0,
                 'المتبقي'            => $remain,
                 'التاريخ'           => $monthNames[$fee->month - 1],
             ]);
