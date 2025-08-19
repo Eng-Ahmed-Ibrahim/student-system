@@ -45,7 +45,7 @@ class FinancialReportExport implements FromCollection, WithHeadings
                 'المبلغ المستحق '            => $fee->final_amount,
                 'المبلغ المدفوع'            => $fee->payments_sum_amount,
                 'المتبقي'            => $remain,
-                'التاريخ'           => $fee->date,
+                // 'التاريخ'           => $fee->date,
             ]);
         }
 
@@ -55,7 +55,7 @@ class FinancialReportExport implements FromCollection, WithHeadings
     public function headings(): array
     {
         return [
-            'نوع', 'كود الطالب', 'اسم الطالب', 'المبلغ المستحق ', 'المبلغ المدفوع', 'المتبقي' , 'التاريخ', 
+            'نوع', 'كود الطالب', 'اسم الطالب', 'المبلغ المستحق ', 'المبلغ المدفوع', 'المتبقي' , 
         ];
     }
 }
