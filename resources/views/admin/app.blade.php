@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 
 <html direction="rtl" dir="rtl" style="direction: rtl">
@@ -21,7 +19,7 @@
     <meta property="og:site_name" content="Keenthemes | Metronic" />
     <link rel="canonical" href="https://preview.keenthemes.com/metronic8" />
 
-    <link rel="shortcut icon" href="{{ asset('static/logo.png')  }}" />
+    <link rel="shortcut icon" href="{{ asset('static/logo.png') }}" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
 
     <link href="{{ asset('assets/plugins/custom/fullcalendar/fullcalendar.bundle.rtl.css') }}" rel="stylesheet"
@@ -40,15 +38,19 @@
     @yield('css')
 
     <style>
-        html{
+        html {
             direction: rtl;
         }
-        *{
+
+        * {
             text-align: right;
         }
-        td,th{
+
+        td,
+        th {
             text-align: center !important;
         }
+
         .image-input.image-input-outline .image-input-wrapper {
             border: 3px solid var(--bs-body-bg);
             box-shadow: var(--bs-box-shadow);
@@ -65,14 +67,16 @@
             width: 24em;
             z-index: 99999999 !important;
         }
-        .card-body{
-                overflow-x: scroll;
+
+        .card-body {
+            overflow-x: scroll;
         }
     </style>
 </head>
 @php
     $current_user = auth()->user();
 @endphp
+
 <body id="kt_app_body" data-kt-app-layout="dark-sidebar" data-kt-app-header-fixed="true"
     data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true" data-kt-app-sidebar-hoverable="true"
     data-kt-app-sidebar-push-header="true" data-kt-app-sidebar-push-toolbar="true"
@@ -109,15 +113,30 @@
 
 
     <script>
-        
         @if ($errors->any())
-        @foreach ($errors->all() as $error)
-        toastr.error("{{ $error }}");
-        @endforeach
+            @foreach ($errors->all() as $error)
+                toastr.error("{{ $error }}");
+            @endforeach
         @endif
-        </script>
+        document.addEventListener("keydown", function(e) {
+            // منع F12
+            if (e.key === "F12") {
+                e.preventDefault();
+            }
 
-@yield('js')
+            // منع Ctrl+Shift+I
+            if (e.ctrlKey && e.shiftKey && e.key === "I") {
+                e.preventDefault();
+            }
+
+            // منع Ctrl+U (عرض السورس)
+            if (e.ctrlKey && e.key === "u") {
+                e.preventDefault();
+            }
+        });
+    </script>
+
+    @yield('js')
 </body>
 
 

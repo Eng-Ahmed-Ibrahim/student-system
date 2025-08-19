@@ -540,25 +540,27 @@
             const input = document.getElementById('barcode-input');
 
             input.focus();
+
             // منع الـ form من عمل reload
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
             });
 
-            // تنفيذ فقط عند الضغط على Enter
-            input.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault(); // منع الريلود
+            let typingTimer;
+            const doneTypingInterval = 1000; // 0.2 ثانية انتظار بعد آخر حرف
 
-                    // استنى شوية قبل ما تقرأ القيمة
-                    setTimeout(() => {
-                        const code = input.value.trim();
-                        if (code) {
-                            markAttendance(code);
-                        }
-                    }, 100);
-                }
+            input.addEventListener('input', function() {
+                clearTimeout(typingTimer);
+                typingTimer = setTimeout(() => {
+                    const code = input.value.trim();
+                    if (code.length >= 3) { // ✅ لازم 3 أرقام على الأقل
+                        markAttendance(code);
+                        input.value = ""; // فضي الـ input بعد ما تسجل الكود
+                    }
+                }, doneTypingInterval);
             });
+
+
         });
     </script>
 
