@@ -13,6 +13,7 @@ use App\Http\Controllers\Controller;
 
 class ExamController extends Controller
 {
+ 
     public function index()
     {
         $groups = Helpers::get_groups();

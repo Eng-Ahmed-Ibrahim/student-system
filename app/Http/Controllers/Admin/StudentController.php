@@ -8,6 +8,7 @@ use App\Models\Student;
 use App\Helpers\Helpers;
 use Milon\Barcode\DNS1D;
 use App\Models\Attendance;
+use App\Models\StudentFee;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Services\StudentService;
@@ -235,6 +236,7 @@ class StudentController extends Controller
         if ($exists) {
             return back()->with('error', 'هذا الطالب موجود بالفعل');
         }
+      
         $student = Student::create([
             'group_id' => $group->id,
             'student_code' => $student_code,
@@ -298,6 +300,19 @@ class StudentController extends Controller
         }
 
         $student->update($updateData);
+        if($student->discount > 0 ) {
+            $studentFees = StudentFee::where("student_id",$student->id)
+                ->where("status","unpaid")
+                ->get();
+            foreach($studentFees as $fee) {
+                $discount=($fee->amount * $request->discount) / 100 ;
+                $final_amount = $fee->amount - $discount;
+                $fee->update([
+                    'discount' => $discount,
+                    "final_amount" => $final_amount,
+                ]);
+            }
+        }
         session(['tab' => 0]);
         Helpers::recache_students();
 

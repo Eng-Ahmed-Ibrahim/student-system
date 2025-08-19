@@ -11,6 +11,16 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class GroupController extends Controller
 {
+       public function __construct()
+    {
+        // المجموعات
+        $this->middleware('permission:view groups')->only(['index']);
+        $this->middleware('permission:create groups')->only(['store']);
+        $this->middleware('permission:edit groups')->only(['update']);
+        $this->middleware('permission:view students of group')->only(['show']);
+        $this->middleware('permission:download students excel sheet of group')->only(['exportGroupStudents']);
+    }
+
     public function index(Request $request)
     {
         $groups = Group::where("grade_level", $request->grade_level)

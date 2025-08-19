@@ -16,6 +16,7 @@ class AttendanceController extends Controller
     public function __construct(AttendanceService $AttendanceService)
     {
         $this->AttendanceService = $AttendanceService;
+     
     }
     public function index(Request $request)
     {
@@ -26,10 +27,10 @@ class AttendanceController extends Controller
 
         $year = now()->year;
         $students = Student::whereHas('attendance', function ($query) use ($today) {
-                $query->where('date', $today);
-            })->with(['attendance' => function ($query) use ($today) {
-                $query->where('date', $today);
-            }])
+            $query->where('date', $today);
+        })->with(['attendance' => function ($query) use ($today) {
+            $query->where('date', $today);
+        }])
             ->withSum(['fees as total_fees' => function ($query) use ($year) {
                 $query->where('year', $year);
             }], 'final_amount')
