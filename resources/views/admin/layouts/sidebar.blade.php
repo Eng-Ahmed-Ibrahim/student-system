@@ -2,9 +2,9 @@
 <div id="kt_app_sidebar" class="app-sidebar flex-column" data-kt-drawer="true" data-kt-drawer-name="app-sidebar"
     data-kt-drawer-activate="{default: true, lg: false}" data-kt-drawer-overlay="true" data-kt-drawer-width="225px"
     data-kt-drawer-direction="start" data-kt-drawer-toggle="#kt_app_sidebar_mobile_toggle">
-    <div class="app-sidebar-logo px-6" id="kt_app_sidebar_logo">
+    <div class="app-sidebar-logo px-6" style="background: white;" id="kt_app_sidebar_logo">
         <a  href="{{ route('admin.dashboard') }}" class="text-center w-100" style="font-size:20px;color: white">
-            The Leader
+            <img style="height: 70px" src="{{ asset('static/leader_logo.png') }}" alt="">
         </a>
         <div id="kt_app_sidebar_toggle"
             class="app-sidebar-toggle btn btn-icon btn-shadow btn-sm btn-color-muted btn-active-color-primary h-30px w-30px position-absolute top-50 start-100 translate-middle rotate"
