@@ -12,5 +12,5 @@ Artisan::command('inspire', function () {
 
 
 Schedule::command(GenerateDailyAttendance::class)->dailyAt('00:00');
-Schedule::command(GenerateMonthly::class)->everyMinute('00:00');
+Schedule::command(GenerateMonthly::class)->dailyAt('00:00');
 
