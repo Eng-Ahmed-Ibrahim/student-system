@@ -12,10 +12,10 @@ class StudentService
     public function generate_genral_monthly_fee()
     {
         $today = Carbon::now();
-    if ($today->lessThan(Carbon::create(2025, 8, 24))) {
-        Log::info("No fees generated before 24/8/2025.");
-        return;
-    }
+        if ($today->lessThan(Carbon::create(2025, 8, 24))) {
+            Log::info("No fees generated before 24/8/2025.");
+            return;
+        }
 
         if ($today->month == 8 && $today->day >= 24) {
             // من 24/8 لآخر 8 → يعتبر شهر 9
