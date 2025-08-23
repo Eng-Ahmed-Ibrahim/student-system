@@ -12,9 +12,20 @@ class StudentService
     public function generate_genral_monthly_fee()
     {
         $today = Carbon::now();
-        $month = $today->month;
-        $year = $today->year;
+    if ($today->lessThan(Carbon::create(2025, 8, 24))) {
+        Log::info("No fees generated before 24/8/2025.");
+        return;
+    }
 
+        if ($today->month == 8 && $today->day >= 24) {
+            // من 24/8 لآخر 8 → يعتبر شهر 9
+            $month = 9;
+            $year = $today->year;
+        } else {
+            // عادي: الشهر الحالي
+            $month = $today->month;
+            $year = $today->year;
+        }
         Student::with('group')->chunk(500, function ($studentsChunk) use ($month, $year) {
             $studentIds = $studentsChunk->pluck('id')->toArray();
 
@@ -43,7 +54,7 @@ class StudentService
                     'status' => 'unpaid',
                     'month' => $month,
                     'year' => $year,
-                    'final_amount' => $final_amount,    
+                    'final_amount' => $final_amount,
                     'discount' => $discount,
                     'created_at' => now(),
                     'updated_at' => now(),
@@ -80,8 +91,8 @@ class StudentService
             ->exists();
 
         if (!$exists) {
-                $discount = is_numeric($student->discount) ? min(max($student->discount, 0), 100) : 0;
-                $final_amount = $monthlyFee -  ($monthlyFee * ($discount  / 100));
+            $discount = is_numeric($student->discount) ? min(max($student->discount, 0), 100) : 0;
+            $final_amount = $monthlyFee -  ($monthlyFee * ($discount  / 100));
 
             StudentFee::create([
                 'student_id' => $student->id,
@@ -90,8 +101,8 @@ class StudentService
                 'status' => 'unpaid',
                 'month' => $month,
                 'year' => $year,
-                'discount'=>$discount,
-                'final_amount'=>$final_amount,
+                'discount' => $discount,
+                'final_amount' => $final_amount,
                 'date' => now()->toDateString(),
             ]);
             Log::info("Created fee for student {$student->id} for $month/$year");

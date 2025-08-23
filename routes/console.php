@@ -11,6 +11,6 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 
-Schedule::command(GenerateDailyAttendance::class)->everyMinute();
-Schedule::command(GenerateMonthly::class)->everyMinute();
+Schedule::command(GenerateDailyAttendance::class)->dailyAt('00:00');
+Schedule::command(GenerateMonthly::class)->everyMinute('00:00');
 
