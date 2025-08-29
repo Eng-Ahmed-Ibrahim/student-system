@@ -134,6 +134,7 @@ class ReportsController extends Controller
             $query->whereHas('student', function ($q) use ($groupId) {
                 $q->where('group_id', $groupId);
             });
+            
             // $query->where('group_id', $groupId);
         }
 
