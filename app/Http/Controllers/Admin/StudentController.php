@@ -70,8 +70,21 @@ class StudentController extends Controller
         $today = now()->format('l');
         $todayDate = now()->toDateString();
 
-        $month = $request->month ?? now()->month;
-        $year = $request->year ?? now()->year;
+        $today = Carbon::now();
+
+
+        if ($today->month == 8 && $today->day >= 24) {
+            // من 24/8 لآخر 8 → يعتبر شهر 9
+            $month = 9;
+            $year = now()->year;
+        } else {
+            // عادي: الشهر الحالي
+            $month = now()->month;
+            $year = now()->year;
+        }
+
+        // $month = $request->month ?? now()->month;
+        // $year = $request->year ?? now()->year;
         $exam_month = $request->exam_month ?? now()->month;
         $student = Student::withoutGlobalScopes()->with('group')
             ->with(['fees' => function ($query) use ($month, $year) {
