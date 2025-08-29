@@ -20,7 +20,7 @@ class ReportsController extends Controller
 {
     public function financial(Request $request)
     {
-        $year=now()->year;
+        $year = now()->year;
         $type = $request->input('type');
         $from = $request->input('from');
         $to = $request->input('to');
@@ -114,14 +114,6 @@ class ReportsController extends Controller
 
         $query = Attendance::with('student', 'student.group')->whereHas('student');
 
-        // فلترة حسب الطالب أو المجموعة
-        if ($studentId && $studentId != 'all') {
-            $query->where('student_id', $studentId);
-        }
-        if ($groupId && $groupId != 'all') {
-            $query->where('group_id', $groupId);
-        }
-
         // فلترة حسب الفترة الزمنية
         if ($type === 'monthly') {
             $query->whereMonth('date', now()->month)
@@ -132,6 +124,17 @@ class ReportsController extends Controller
             $query->whereDate('date', now()->toDateString());
         } elseif ($type === 'custom' && $from && $to) {
             $query->whereBetween('date', [$from, $to]);
+        }
+
+        // فلترة حسب الطالب أو المجموعة
+        if ($studentId && $studentId != 'all') {
+            $query->where('student_id', $studentId);
+        }
+        if ($groupId && $groupId != 'all') {
+            $query->whereHas('student', function ($q) use ($groupId) {
+                $q->where('group_id', $groupId);
+            });
+            // $query->where('group_id', $groupId);
         }
 
         $presentCount = (clone $query)->where('status', 1)->count();
@@ -157,6 +160,7 @@ class ReportsController extends Controller
 
             return Excel::download(new AttendanceTableExport($attendances, $grades), $excel_name);
         }
+
         $attendances = $query->orderBy('status', "DESC")->paginate(20)->withQueryString();
         // حساب الحضور والغياب
         // $presentCount = $attendances->where('status', 1)->count();

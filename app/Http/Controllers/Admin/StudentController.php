@@ -166,7 +166,7 @@ class StudentController extends Controller
 
             if ($zip->open($tempFile, \ZipArchive::CREATE) === TRUE) {
 
-                
+
                 // إنشاء ملفات Excel مؤقتة في الذاكرة
                 $attendanceContent = Excel::raw(new StudentAttendanceExport($attendances), \Maatwebsite\Excel\Excel::XLSX);
                 $examsContent = Excel::raw(new StudentExamsExport($student->exams_results, $student), \Maatwebsite\Excel\Excel::XLSX);
@@ -236,7 +236,7 @@ class StudentController extends Controller
         if ($exists) {
             return back()->with('error', 'هذا الطالب موجود بالفعل');
         }
-      
+
         $student = Student::create([
             'group_id' => $group->id,
             'student_code' => $student_code,
@@ -292,20 +292,23 @@ class StudentController extends Controller
         ]);
 
         if ($student->group_id != $request->group_id) {
-
-            $group = Group::findOrFail($request->group_id);
+            $group = Group::withCount('students')->findOrFail($request->group_id);
+            $studentCount = $group->students_count;
+            if ($group->limit <= $studentCount) {
+                return back()->with("error", 'لقد تم الوصول إلى الحد الأقصى للطلاب في هذه المجموعة.');
+            }
             $lastStudent = Student::where('group_id', $group->id)->orderBy('student_code', 'desc')->first();
             $nextNumber = $lastStudent ? intval($lastStudent->student_code) + 1  : intval($group->code) + 1;
             $updateData['student_code'] = $nextNumber;
         }
 
         $student->update($updateData);
-        if($student->discount > 0 ) {
-            $studentFees = StudentFee::where("student_id",$student->id)
-                ->where("status","unpaid")
+        if ($student->discount > 0) {
+            $studentFees = StudentFee::where("student_id", $student->id)
+                ->where("status", "unpaid")
                 ->get();
-            foreach($studentFees as $fee) {
-                $discount=($fee->amount * $request->discount) / 100 ;
+            foreach ($studentFees as $fee) {
+                $discount = ($fee->amount * $request->discount) / 100;
                 $final_amount = $fee->amount - $discount;
                 $fee->update([
                     'discount' => $discount,

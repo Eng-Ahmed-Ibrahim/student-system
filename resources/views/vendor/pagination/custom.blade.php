@@ -64,10 +64,16 @@
                 $url = $paginator->url($i) . (strlen($queryString) ? '&'.$queryString : '');
             @endphp
 
-            @if ($i == $paginator->currentPage())
-                <div class="pagination-link current">{{ $i }}</div>
-            @else
-                <a href="{{ $url }}" class="pagination-link">{{ $i }}</a>
+            @if ($i == 1 || $i == $paginator->lastPage() || ($i >= $paginator->currentPage() - 2 && $i <= $paginator->currentPage() + 2))
+                {{-- عرض أول صفحة + آخر صفحة + 2 قبل و 2 بعد الصفحة الحالية --}}
+                @if ($i == $paginator->currentPage())
+                    <div class="pagination-link current">{{ $i }}</div>
+                @else
+                    <a href="{{ $url }}" class="pagination-link">{{ $i }}</a>
+                @endif
+            @elseif ($i == 2 || $i == $paginator->lastPage() - 1)
+                {{-- عرض "..." مرة واحدة بعد أول صفحة أو قبل آخر صفحة --}}
+                <div class="pagination-link disabled">...</div>
             @endif
         @endfor
 

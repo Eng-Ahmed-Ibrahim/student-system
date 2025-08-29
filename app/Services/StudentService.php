@@ -44,7 +44,8 @@ class StudentService
                 }
                 $monthlyFee = $student->group->monthly_fee ?? 0;
                 $discount = is_numeric($student->discount) ? min(max($student->discount, 0), 100) : 0;
-                $final_amount = $monthlyFee -  ($monthlyFee * ($discount  / 100));
+                $discount_amount = ($monthlyFee * ($discount  / 100));
+                $final_amount = $monthlyFee - $discount_amount ;
 
                 $insertData[] = [
                     'student_id' => $student->id,
@@ -55,7 +56,7 @@ class StudentService
                     'month' => $month,
                     'year' => $year,
                     'final_amount' => $final_amount,
-                    'discount' => $discount,
+                    'discount' => $discount_amount,
                     'created_at' => now(),
                     'updated_at' => now(),
                     'date' => now()->toDateString(),
@@ -75,8 +76,16 @@ class StudentService
     public function generateMonthlyFeeIfNotExists($student)
     {
         $today = Carbon::now();
-        $month = $today->month;
-        $year = $today->year;
+
+        if ($today->month == 8 && $today->day >= 24) {
+            // من 24/8 لآخر 8 → يعتبر شهر 9
+            $month = 9;
+            $year = $today->year;
+        } else {
+            // عادي: الشهر الحالي
+            $month = $today->month;
+            $year = $today->year;
+        }
 
         $group = $student->group;
         if (!$group) {
@@ -92,7 +101,8 @@ class StudentService
 
         if (!$exists) {
             $discount = is_numeric($student->discount) ? min(max($student->discount, 0), 100) : 0;
-            $final_amount = $monthlyFee -  ($monthlyFee * ($discount  / 100));
+            $discount_amount =  ($monthlyFee * ($discount  / 100));
+            $final_amount = $monthlyFee - $discount_amount;
 
             StudentFee::create([
                 'student_id' => $student->id,
@@ -101,7 +111,7 @@ class StudentService
                 'status' => 'unpaid',
                 'month' => $month,
                 'year' => $year,
-                'discount' => $discount,
+                'discount' => $discount_amount,
                 'final_amount' => $final_amount,
                 'date' => now()->toDateString(),
             ]);
