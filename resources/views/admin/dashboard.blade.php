@@ -31,7 +31,6 @@
             <div id="kt_app_content_container" class="app-container container-xxl">
                 <div class="row">
                     <div class="card col-md-6 col-12 mb-5">
-                        1111111111-----
                         <div class="card-body">
                             <h3 class="mb-4">💰 عدد المدفوعات لكل شهر</h3>
                             <h5>المجموع الكلي : {{ $total_payments }}</h5>
