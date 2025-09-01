@@ -73,15 +73,15 @@ class StudentController extends Controller
         $today = Carbon::now();
 
 
-        if ($today->month == 8 && $today->day >= 24) {
-            // من 24/8 لآخر 8 → يعتبر شهر 9
-            $month = 9;
-            $year = now()->year;
-        } else {
+        // if ($today->month == 8 && $today->day >= 24) {
+        //     // من 24/8 لآخر 8 → يعتبر شهر 9
+        //     $month = 9;
+        //     $year = now()->year;
+        // } else {
             // عادي: الشهر الحالي
             $month = now()->month;
             $year = now()->year;
-        }
+        // }
 
         // $month = $request->month ?? now()->month;
         // $year = $request->year ?? now()->year;
@@ -123,15 +123,20 @@ class StudentController extends Controller
 
         $availableMonths = $student->fees()->select('month')->distinct()->pluck('month');
 
-        $status = $request->status;
 
         $query = Attendance::query();
-        if (!is_null($status)) {
-            $query->where("status", $status);
-        }
 
+
+        if($request->filled('AttendanceStatus'))
+            $query->where('status',$request->AttendanceStatus);
+
+        if($request->filled('AttendanceMonth'))
+            $query->where('month',$request->AttendanceMonth);
+        else 
+            $query->where("month", $month);
+            
         $attendances = $query->where("student_id", $student->id)
-            ->where("month", $month)
+            
             ->where("year", $year)
             ->orderBy("id", "DESC")
             ->get();

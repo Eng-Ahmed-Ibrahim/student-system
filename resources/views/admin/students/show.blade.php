@@ -393,11 +393,11 @@
                                     <div class="row mb-3">
                                         <div class="col-md-6">
                                             <label for="month">اختر الشهر:</label>
-                                            <select name="month" id="month" class="form-select"
+                                            <select name="AttendanceMonth" id="month" class="form-select"
                                                 onchange="this.form.submit()">
                                                 @foreach ($arabicMonths as $key => $name)
                                                     <option value="{{ $key }}"
-                                                        {{ request('month', now()->month) == $key ? 'selected' : '' }}>
+                                                        {{ request('AttendanceMonth', now()->month) == $key ? 'selected' : '' }}>
                                                         {{ $name }}
                                                     </option>
                                                 @endforeach
@@ -406,12 +406,12 @@
 
                                         <div class="col-md-6">
                                             <label for="status">اختر الحالة:</label>
-                                            <select name="status" id="status" class="form-select"
+                                            <select name="AttendanceStatus" id="status" class="form-select"
                                                 onchange="this.form.submit()">
                                                 <option value="">الكل</option>
-                                                <option value="1" {{ request('status') === '1' ? 'selected' : '' }}>
+                                                <option value="1" {{ request('AttendanceStatus') === '1' ? 'selected' : '' }}>
                                                     حضور فقط</option>
-                                                <option value="0" {{ request('status') === '0' ? 'selected' : '' }}>
+                                                <option value="0" {{ request('AttendanceStatus') === '0' ? 'selected' : '' }}>
                                                     غياب فقط</option>
                                             </select>
                                         </div>
