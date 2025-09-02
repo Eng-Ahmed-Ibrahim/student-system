@@ -5,7 +5,7 @@ echo "🚀 Running deploy script"
 # Reset local changes to avoid git pull conflicts
 echo "[0] 🔄 Resetting local changes"
 git reset --hard HEAD
-git clean -fd
+git clean -fd -e testdemostudents
 
 echo "[1/8] 📥 Pulling latest code from GitHub"
 git pull origin main
