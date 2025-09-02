@@ -315,6 +315,10 @@ class StudentController extends Controller
             if ($group->limit <= $studentCount) {
                 return back()->with("error", 'لقد تم الوصول إلى الحد الأقصى للطلاب في هذه المجموعة.');
             }
+            $check=Attendance::where("student_id",$student->id)->where('group_id',$student->group_id)
+            ->where('date',now()->toDateString())->first();
+            if($check)
+                $check->delete();
             $lastStudent = Student::where('group_id', $group->id)->orderBy('student_code', 'desc')->first();
             $nextNumber = $lastStudent ? intval($lastStudent->student_code) + 1  : intval($group->code) + 1;
             $updateData['student_code'] = $nextNumber;

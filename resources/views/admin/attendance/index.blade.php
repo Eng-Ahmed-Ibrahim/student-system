@@ -27,11 +27,11 @@
                 left: 0;
                 width: 100%;
                 text-align: center;
-                padding: 20px;
+                /* padding: 20px; */
             }
 
             .barcode-container {
-                margin: 20px 0;
+                /* margin: 20px 0; */
             }
 
             .student-info {
@@ -310,7 +310,7 @@
             printContent.style.height = 'auto';
             printContent.style.background = 'white';
             printContent.style.zIndex = '9999';
-            printContent.style.padding = '20px';
+            printContent.style.padding = '0px';
             printContent.style.textAlign = 'center';
 
 
@@ -328,10 +328,10 @@
                 JsBarcode("#barcode", studentBarcode, {
                     format: "CODE128",
                     width: 3,
-                    height: 80,
+                    height: 35,
                     displayValue: true,
                     fontSize: 16,
-                    margin: 10,
+                    margin: 0,
                     background: "#ffffff",
                     lineColor: "#000000"
                 });
