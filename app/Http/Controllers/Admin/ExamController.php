@@ -31,6 +31,7 @@ class ExamController extends Controller
             ])
             ->select('id', 'group_id', 'name', 'exam_date', 'total_score')
             ->findOrFail($id);
+            // return $exam;
         return view('admin.exams.show', compact('exam'));
     }
 

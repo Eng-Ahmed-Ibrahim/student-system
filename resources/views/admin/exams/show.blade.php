@@ -35,6 +35,7 @@
 
 
 
+
                         <h2>العنوان: {{ $exam->name }} (Group: {{ $exam->group->name }})</h2>
                         <p> التارخ: {{ $exam->exam_date }}</p>
                         <p> درجع الامتحان: {{ $exam->total_score }}</p>
@@ -58,31 +59,33 @@
                             </thead>
                             <tbody>
                                 @foreach ($exam->results as $index => $result)
-                                    <tr>
-                                        <td># {{ $index + 1 }}</td>
-                                        <td class="student-code"><a
-                                                href="{{ route('admin.students.show', $result->student->id) }}">{{ $result->student->student_code }}</a>
-                                        </td>
-                                        <td class="student-name">{{ $result->student->name }}</td>
-                                        <td>
-                                            {{ $result->score }}
-                                        </td>
-                                        <td>{{ $exam->total_score }}</td>
-                                        @can('add scores for students')
-                                            <td>
-                                                <form method="POST"
-                                                    action="{{ route('admin.exams.update_student_score', $result->id) }}"
-                                                    class="d-flex align-items-center gap-2">
-                                                    @csrf
-                                                    @method('PATCH')
-                                                    <input type="number" name="score" step="0.01" min="0"
-                                                        max="{{ $exam->total_score }}" value="{{ $result->score }}"
-                                                        class="form-control" style="width: 100px;" required>
-                                                    <button type="submit" class="btn btn-primary btn-sm ml-2">حفظ</button>
-                                                </form>
+                                    @if ($result->student)
+                                        <tr>
+                                            <td># {{ $index + 1 }}</td>
+                                            <td class="student-code"><a
+                                                    href="{{ route('admin.students.show', $result->student->id) }}">{{ $result->student->student_code }}</a>
                                             </td>
-                                        @endcan
-                                    </tr>
+                                            <td class="student-name">{{ $result->student->name }}</td>
+                                            <td>
+                                                {{ $result->score }}
+                                            </td>
+                                            <td>{{ $exam->total_score }}</td>
+                                            @can('add scores for students')
+                                                <td>
+                                                    <form method="POST"
+                                                        action="{{ route('admin.exams.update_student_score', $result->id) }}"
+                                                        class="d-flex align-items-center gap-2">
+                                                        @csrf
+                                                        @method('PATCH')
+                                                        <input type="number" name="score" step="0.01" min="0"
+                                                            max="{{ $exam->total_score }}" value="{{ $result->score }}"
+                                                            class="form-control" style="width: 100px;" required>
+                                                        <button type="submit" class="btn btn-primary btn-sm ml-2">حفظ</button>
+                                                    </form>
+                                                </td>
+                                            @endcan
+                                        </tr>
+                                    @endif
                                 @endforeach
                             </tbody>
                         </table>
