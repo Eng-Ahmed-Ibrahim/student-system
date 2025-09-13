@@ -126,7 +126,7 @@
                                                             <!-- زر تحميل -->
                                                             <a class="btn btn-sm btn-success"
                                                                 href="data:image/png;base64,{{ $student->barcode }}"
-                                                                download="barcode-{{ $student->student_code }}.png">💾</a>
+                                                                download="{{ $student->name }}-{{ $student->student_code }}.png">💾</a>
                                                         </div>
                                                     </div>
                                                 @else
