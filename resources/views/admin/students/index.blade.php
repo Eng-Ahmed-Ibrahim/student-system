@@ -188,7 +188,7 @@
                                     @endforeach
                                 </tbody>
                             </table>
-                            {{ $students->links('vendor.pagination.custom') }}
+                            {{-- {{ $students->links('vendor.pagination.custom') }} --}}
 
                         </div>
 
