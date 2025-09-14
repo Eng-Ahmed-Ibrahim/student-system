@@ -14,6 +14,7 @@
         'نوفمبر',
         'ديسمبر',
     ];
+    $grades = ['الصف الاول الثانوي', 'الصف الثاني الثانوي', 'الصف الثالث الثانوي'];
 
     $title = 'الماليات';
     $sub_title = 'التقارير';
@@ -86,6 +87,21 @@
                                     </select>
                                 </div>
 
+                                <div class="col-md-3">
+                                    <label class="form-label"> الصف </label>
+                                    <select name="grade_level" class="form-select" onchange="toggleCustomDates(this.value)">
+                                        <option value="">اختر</option>
+                                        <option value="1" {{ request('grade_level') == 1 ? 'selected' : '' }}>الاول
+                                            الثانوي
+                                        <option value="2" {{ request('grade_level') == 2 ? 'selected' : '' }}>الثاني
+                                            الثانوي
+                                        <option value="3" {{ request('grade_level') == 3 ? 'selected' : '' }}>الثالث
+                                            الثانوي
+                                        </option>
+
+                                    </select>
+                                </div>
+
                                 <div class="col-md-3 custom-dates" style="display: none;">
                                     <label class="form-label">من</label>
                                     <input type="date" name="from" value="{{ request('from') }}"
@@ -113,6 +129,7 @@
                                     <tr>
                                         <th>كود</th>
                                         <th>اسم الطالب</th>
+                                        <th>الصف</th>
                                         <th>تاريخ الدفع</th>
                                         <th>المبلغ</th>
                                     </tr>
@@ -124,6 +141,7 @@
                                                     href="{{ route('admin.students.show', $payment->student->id) }}">{{ $payment->student->student_code ?? '---' }}</a>
                                             </td>
                                             <td>{{ $payment->student->name }}</td>
+                                            <td>{{ $grades[$payment->grade_level - 1] }}</td>
                                             <td>{{ $payment->payment_date }}</td>
                                             <td>{{ number_format($payment->amount, 2) }}</td>
                                         </tr>
@@ -144,6 +162,8 @@
                                         <th>اسم الطالب</th>
                                         <th>رقم التلفون</th>
                                         <th>رقم التلفون ولي الامر</th>
+                                        <th>الصف</th>
+
                                         <th>الشهر</th>
                                         <th>المبلغ المستحق</th>
                                         <th>المبلغ المدفوع</th>
@@ -160,6 +180,8 @@
                                             <td>{{ $fee->student->name }}</td>
                                             <td>{{ $fee->student->phone }}</td>
                                             <td>{{ $fee->student->parent_phone }}</td>
+                                            <td>{{ $grades[$fee->grade_level - 1] }}</td>
+
                                             <td>{{ $monthNames[$fee->month - 1] }}</td>
                                             <td>{{ number_format($fee->final_amount, 2) }}</td>
                                             <td>{{ number_format($fee->payments_sum_amount, 2) }}</td>

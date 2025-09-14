@@ -24,6 +24,7 @@ class ReportsController extends Controller
         $type = $request->input('type');
         $from = $request->input('from');
         $to = $request->input('to');
+        $grade_level = $request->input('grade_level');
         $studentId = $request->input('student_id');
         // @phpstan-ignore-next-line
         $paymentQuery = Payment::query()->with('student')->whereHas('student');
@@ -35,6 +36,10 @@ class ReportsController extends Controller
         if ($studentId) {
             $paymentQuery->where('student_id', $studentId);
             $feeQuery->where('student_id', $studentId);
+        }
+        if ($grade_level) {
+            $paymentQuery->where('grade_level', $grade_level);
+            $feeQuery->where('grade_level', $grade_level);
         }
 
         // تحديد النطاق الزمني
