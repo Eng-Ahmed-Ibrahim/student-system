@@ -30,7 +30,8 @@ class ReportsController extends Controller
         $paymentQuery = Payment::query()->with('student')->whereHas('student');
         $feeQuery = StudentFee::query()->with(['student'])
             ->withSum('payments', 'amount')
-            ->whereHas('student')->where('status', 'unpaid');
+            ->whereHas('student')
+            ->where('status', 'unpaid');
 
         // فلترة بالطالب
         if ($studentId) {
@@ -85,7 +86,7 @@ class ReportsController extends Controller
             );
         }
         $totalPayments = (clone $paymentQuery)->sum('amount');
-        $totalFees = (clone $feeQuery)->sum('final_amount') - $totalPayments;
+        $totalFees = (clone $feeQuery)->sum('final_amount') ;
 
         $payments = $paymentQuery->paginate(20, ['*'], 'payments_page')->withQueryString();
         $studentFees = $feeQuery->paginate(20, ['*'], 'fees_page')->withQueryString();
