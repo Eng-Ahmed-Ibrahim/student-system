@@ -91,7 +91,7 @@
 
                                 <div class="col-md-3">
                                     <label class="form-label"> الصف </label>
-                                    <select name="grade_level" class="form-select" onchange="toggleCustomDates(this.value)">
+                                    <select name="grade_level" class="form-select" >
                                         <option value="">اختر</option>
                                         <option value="1" {{ request('grade_level') == 1 ? 'selected' : '' }}>الاول
                                             الثانوي
