@@ -76,6 +76,8 @@
                                     <label class="form-label">نوع التقرير</label>
                                     <select name="type" class="form-select" onchange="toggleCustomDates(this.value)">
                                         <option value="">اختر</option>
+                                        <option value="daily" {{ request('type') == 'daily' ? 'selected' : '' }}>يومي
+                                        </option>
                                         <option value="weekly" {{ request('type') == 'weekly' ? 'selected' : '' }}>أسبوعي
                                         </option>
                                         <option value="monthly" {{ request('type') == 'monthly' ? 'selected' : '' }}>شهري

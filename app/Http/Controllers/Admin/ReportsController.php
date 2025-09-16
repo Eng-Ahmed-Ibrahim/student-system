@@ -47,6 +47,9 @@ class ReportsController extends Controller
         if ($type === 'weekly') {
             $start = Carbon::now()->startOfWeek();
             $end = Carbon::now()->endOfWeek();
+        } elseif ($type === 'daily') {
+            $start = now()->toDateString();
+            $end = now()->toDateString();
         } elseif ($type === 'monthly') {
             $start = Carbon::now()->startOfMonth();
             $end = Carbon::now()->endOfMonth();
@@ -86,7 +89,7 @@ class ReportsController extends Controller
             );
         }
         $totalPayments = (clone $paymentQuery)->sum('amount');
-        $totalFees = (clone $feeQuery)->sum('final_amount') ;
+        $totalFees = (clone $feeQuery)->sum('final_amount');
 
         $payments = $paymentQuery->paginate(20, ['*'], 'payments_page')->withQueryString();
         $studentFees = $feeQuery->paginate(20, ['*'], 'fees_page')->withQueryString();
@@ -140,7 +143,7 @@ class ReportsController extends Controller
             $query->whereHas('student', function ($q) use ($groupId) {
                 $q->where('group_id', $groupId);
             });
-            
+
             // $query->where('group_id', $groupId);
         }
 

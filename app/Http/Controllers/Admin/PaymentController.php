@@ -50,8 +50,10 @@ class PaymentController extends Controller
                     'student_fee_id' => $fee->id,
                     'amount' => $paymentAmount,
                     'student_id' => $student_id,
+                    // "grade_level"=>$
                     'payment_date' => now(),
                     'time' => now()->format('H:i:s'),
+                    "grade_level"=>$fee->grade_level ?? null,
                 ]);
 
                 $amountToDistribute -= $paymentAmount; // بتنقص فيمه القيمه الي هتدفع لو قيمه الشهر ٢٠٠ وهو دفع ٣٠٠ ف هينفص ٢٠٠ يتبقي ١٠٠ للشهر الي جاي

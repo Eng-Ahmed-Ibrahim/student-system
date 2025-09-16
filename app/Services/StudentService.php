@@ -60,6 +60,7 @@ class StudentService
                     'created_at' => now(),
                     'updated_at' => now(),
                     'date' => now()->toDateString(),
+                    'grade_level'=>$student->grade_level,
                 ];
             }
 
@@ -114,6 +115,7 @@ class StudentService
                 'discount' => $discount_amount,
                 'final_amount' => $final_amount,
                 'date' => now()->toDateString(),
+                "grade_level"=>$student->grade_level,
             ]);
             Log::info("Created fee for student {$student->id} for $month/$year");
         }
