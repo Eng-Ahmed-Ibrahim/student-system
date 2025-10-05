@@ -199,6 +199,8 @@ class StudentController extends Controller
                 return response()->download($tempFile, $zipFileName)->deleteFileAfterSend(true);
             }
         }
+        $fees=StudentFee::where("student_id",$student->id)
+        ->latest()->get();
 
 
 
@@ -207,6 +209,7 @@ class StudentController extends Controller
             'student',
             'attendances',
             'tab',
+            'fees',
             'presentCount',
             'absentCount',
             'availableMonths',

@@ -46,10 +46,10 @@
                 <div class="d-flex align-items-center gap-2 gap-lg-3">
 
                     @can('download students excel sheet')
-                    <a href="{{ route('admin.students.show', $student->id) }}?{{ http_build_query(array_merge(request()->all(), ['download' => 'all_excel'])) }}"
-                        class="btn btn-success mb-3">
-                        تحميل ملف إكسل
-                    </a>
+                        <a href="{{ route('admin.students.show', $student->id) }}?{{ http_build_query(array_merge(request()->all(), ['download' => 'all_excel'])) }}"
+                            class="btn btn-success mb-3">
+                            تحميل ملف إكسل
+                        </a>
                     @endcan
 
                 </div>
@@ -113,11 +113,11 @@
                                             </div>
                                             <!--end::Info-->
                                             @can('add payment for student')
-                                            <!-- زر فتح المودال -->
-                                            <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal"
-                                                data-bs-target="#paymentModal">
-                                                دفع جديد
-                                            </button>
+                                                <!-- زر فتح المودال -->
+                                                <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal"
+                                                    data-bs-target="#paymentModal">
+                                                    دفع جديد
+                                                </button>
                                             @endcan
                                         </div>
 
@@ -216,6 +216,11 @@
                                 <button class="nav-link {{ $tab == 3 ? 'active' : ' ' }} " id="pills-scores-tab"
                                     data-bs-toggle="pill" data-bs-target="#pills-scores" type="button" role="tab"
                                     aria-controls="pills-scores" aria-selected="false">الدرجات</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link {{ $tab == 4 ? 'active' : ' ' }} " id="pills-fees-tab"
+                                    data-bs-toggle="pill" data-bs-target="#pills-fees" type="button" role="tab"
+                                    aria-controls="pills-fees" aria-selected="false">المستحقات</button>
                             </li>
 
                         </ul>
@@ -356,9 +361,9 @@
                                     </div>
 
                                     @can('edit students')
-                                    <div class="modal-footer">
-                                        <button class="w-100 btn btn-primary">حفظ</button>
-                                    </div>
+                                        <div class="modal-footer">
+                                            <button class="w-100 btn btn-primary">حفظ</button>
+                                        </div>
                                     @endcan
                                 </form>
 
@@ -382,7 +387,7 @@
                                         12 => 'ديسمبر',
                                     ];
                                 @endphp
-                     
+
 
 
 
@@ -409,9 +414,11 @@
                                             <select name="AttendanceStatus" id="status" class="form-select"
                                                 onchange="this.form.submit()">
                                                 <option value="">الكل</option>
-                                                <option value="1" {{ request('AttendanceStatus') === '1' ? 'selected' : '' }}>
+                                                <option value="1"
+                                                    {{ request('AttendanceStatus') === '1' ? 'selected' : '' }}>
                                                     حضور فقط</option>
-                                                <option value="0" {{ request('AttendanceStatus') === '0' ? 'selected' : '' }}>
+                                                <option value="0"
+                                                    {{ request('AttendanceStatus') === '0' ? 'selected' : '' }}>
                                                     غياب فقط</option>
                                             </select>
                                         </div>
@@ -589,6 +596,116 @@
                                         @endforeach
                                     </tbody>
                                 </table>
+                            </div>
+                            <div class="tab-pane fade {{ $tab == 4 ? 'show active' : '' }}" id="pills-fees"
+                                role="tabpanel" aria-labelledby="pills-fees-tab" tabindex="0">
+
+                                <div class="table-responsive mt-3">
+                                    <table class="table table-bordered table-striped align-middle text-center">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>#</th>
+                                                <th>المبلغ المستحق</th>
+                                                <th>المبلغ المدفوع</th>
+                                                <th>المتبقي</th>
+                                                <th>الشهر</th>
+                                                <th>السنة</th>
+                                                <th>الحالة</th>
+                                                <th>التحكم</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($fees as $index => $fee)
+                                                @php
+                                                    $remaining = $fee->final_amount - $fee->paid_amount;
+                                                @endphp
+                                                <tr>
+                                                    <td>{{ $index + 1 }}</td>
+                                                    <td>{{ number_format($fee->final_amount, 2) }}</td>
+                                                    <td>{{ number_format($fee->paid_amount, 2) }}</td>
+                                                    <td>{{ number_format($remaining, 2) }}</td>
+                                                    <td>{{ $fee->month }}</td>
+                                                    <td>{{ $fee->year }}</td>
+                                                    <td>
+                                                        @if ($fee->status == 'unpaid')
+                                                            <span class="badge bg-warning text-dark">غير مدفوعة</span>
+                                                        @else
+                                                            <span class="badge bg-success">مدفوعة</span>
+                                                        @endif
+                                                    </td>
+                                                    <td>
+                                                        @if ($fee->status == 'unpaid')
+                                                            <div class="d-flex justify-content-center gap-2">
+                                                                {{-- زر التعديل --}}
+                                                                <button type="button" class="btn btn-sm btn-primary"
+                                                                    data-bs-toggle="modal"
+                                                                    data-bs-target="#editFeeModal{{ $fee->id }}">
+                                                                    تعديل
+                                                                </button>
+
+                                                                {{-- زر الحذف --}}
+                                                                {{-- <form
+                                                                    action="{{ route('admin.student_fees.destroy', $fee->id) }}"
+                                                                    method="POST"
+                                                                    onsubmit="return confirm('هل أنت متأكد من حذف هذه الرسوم؟')">
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                    <button type="submit" class="btn btn-sm btn-danger">
+                                                                        حذف
+                                                                    </button>
+                                                                </form> --}}
+                                                            </div>
+                                                        @else
+                                                            <span class="text-muted">—</span>
+                                                        @endif
+                                                    </td>
+                                                </tr>
+
+                                                {{-- مودال تعديل الرسوم --}}
+                                                <div class="modal fade" id="editFeeModal{{ $fee->id }}"
+                                                    tabindex="-1" aria-labelledby="editFeeModalLabel{{ $fee->id }}"
+                                                    aria-hidden="true">
+                                                    <div class="modal-dialog">
+                                                        <form action="{{ route('admin.student_fees.update', $fee->id) }}"
+                                                            method="POST">
+                                                            @csrf
+                                                            @method('PUT')
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title"
+                                                                        id="editFeeModalLabel{{ $fee->id }}">
+                                                                        تعديل قيمة الرسوم
+                                                                    </h5>
+                                                                    <button type="button" class="btn-close"
+                                                                        data-bs-dismiss="modal"
+                                                                        aria-label="Close"></button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <div class="mb-3">
+                                                                        <label for="amount{{ $fee->id }}"
+                                                                            class="form-label">المبلغ المستحق</label>
+                                                                        <input type="number" name="final_amount"
+                                                                            id="amount{{ $fee->id }}"
+                                                                            class="form-control"
+                                                                            value="{{ $fee->final_amount }}"
+                                                                            step="0.01" required>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-secondary"
+                                                                        data-bs-dismiss="modal">إلغاء</button>
+                                                                    <button type="submit" class="btn btn-primary">حفظ
+                                                                        التعديلات</button>
+                                                                </div>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+
                             </div>
 
                         </div>

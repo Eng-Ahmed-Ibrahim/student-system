@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class StudentFee extends Model
 {
     protected $guarded = [];
+    protected $appends = ['paid_amount'];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

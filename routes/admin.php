@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\ReportsController;
 use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\AttendanceController;
+use App\Http\Controllers\Admin\StudentFeesController;
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
@@ -46,6 +47,12 @@ Route::name("reports.")->prefix("/reports/")->controller(ReportsController::clas
     Route::get('/financial', 'financial')->name('financial');
     Route::get('/attendance', 'attendance')->name('attendance');
     Route::get('/examResults', 'examResults')->name('examResults');
+});
+
+Route::name("student_fees.")->prefix("/reports/")->controller(StudentFeesController::class)->group(function () {
+    // Route::delete('/destroy', 'destroy')->name('destroy');
+    Route::put('/update/{id}', 'update')->name('update');
+
 });
 
 Route::get('/users', [UserController::class, 'index'])->name('users.index');
