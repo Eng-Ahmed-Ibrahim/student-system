@@ -611,7 +611,9 @@
                                                 <th>الشهر</th>
                                                 <th>السنة</th>
                                                 <th>الحالة</th>
+                                                @can("edit fees of student")
                                                 <th>التحكم</th>
+                                                @endcan
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -633,6 +635,7 @@
                                                             <span class="badge bg-success">مدفوعة</span>
                                                         @endif
                                                     </td>
+                                                    @can("edit fees of student")
                                                     <td>
                                                         @if ($fee->status == 'unpaid')
                                                             <div class="d-flex justify-content-center gap-2">
@@ -659,6 +662,7 @@
                                                             <span class="text-muted">—</span>
                                                         @endif
                                                     </td>
+                                                    @endcan
                                                 </tr>
 
                                                 {{-- مودال تعديل الرسوم --}}
